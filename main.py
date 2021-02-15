@@ -31,6 +31,7 @@ rsi_oversold = 20
 
 
 
+
 closes = []
 has_position = False
 #endregion
@@ -72,8 +73,8 @@ def process_message(msg):
     candle_closed = candle['x']
     close = candle['c']
     symbol = msg['s']
-    # print(f"{symbol}, message received")
-    # print(msg)
+    print(f"{symbol}, message received")
+    print(msg)
 
     
     if candle_closed:
@@ -133,6 +134,6 @@ def process_message(msg):
 # pass a list of stream names
 bm = BinanceSocketManager(client, user_timeout=60)
 conn_key = bm.start_kline_socket(symbol="BNBUSDT", callback=process_message, interval=KLINE_INTERVAL_1MINUTE)
-# conn_key = bm.start_kline_socket(symbol="DOGEUSDT", callback=process_message, interval=KLINE_INTERVAL_1MINUTE)
+conn_key = bm.start_kline_socket(symbol="DOGEUSDT", callback=process_message, interval=KLINE_INTERVAL_1MINUTE)
 
 bm.start() #start the socket manager
