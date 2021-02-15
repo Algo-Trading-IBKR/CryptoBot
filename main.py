@@ -52,7 +52,11 @@ if str(client.ping()) == '{}': #{} means that it is connected
     bnb = client.get_asset_balance(asset='BNB')
     # trades = client.get_my_trades(symbol='BNBUSDT')
     print(f"Je hebt {balance['free']} USDT en {bnb['free']} BNB")
-
+    print("data ophalen")
+    klines = client.get_historical_klines("BNBUSDT", interval=Client.KLINE_INTERVAL_1MINUTE, start_str="150 minutes ago CET", end_str='1 minutes ago CET')
+    for kline in klines:
+        closes.append(float(kline[4]))
+    print("data opgehaald")
 
 def order(side, quantity, symbol,order_type=ORDER_TYPE_MARKET):
     try:
@@ -73,8 +77,8 @@ def process_message(msg):
     candle_closed = candle['x']
     close = candle['c']
     symbol = msg['s']
-    print(f"{symbol}, message received")
-    print(msg)
+    # print(f"{symbol}, message received")
+    # print(msg)
 
     
     if candle_closed:
@@ -86,14 +90,8 @@ def process_message(msg):
         if len(closes) > rsi_period:
             np_closes = np.array(closes)
             rsi = talib.RSI(np_closes, rsi_period)
-            print("closes: ", closes)
-            print("np_closes: ", np_closes)
-
-            print(len(closes))
             last_rsi = rsi[-1]
             print("latest rsi: ", last_rsi)
-            print(rsi)
-            
             
             # kopen
             if last_rsi< rsi_oversold:
@@ -119,21 +117,20 @@ def process_message(msg):
                 else:
                     print("It is overbought, but we don't own any. Nothing to do.")
 
-            #reduce list to max 100 items to not get unlimited list
-            closes = closes[-100:]
-                
+
+            #reduce list to max 150 items to not get unlimited list
+            closes = closes[-150:]
 
 
 
 
 
 
-    # do something
 
 
 # pass a list of stream names
 bm = BinanceSocketManager(client, user_timeout=60)
 conn_key = bm.start_kline_socket(symbol="BNBUSDT", callback=process_message, interval=KLINE_INTERVAL_1MINUTE)
-conn_key = bm.start_kline_socket(symbol="DOGEUSDT", callback=process_message, interval=KLINE_INTERVAL_1MINUTE)
+# conn_key = bm.start_kline_socket(symbol="DOGEUSDT", callback=process_message, interval=KLINE_INTERVAL_1MINUTE)
 
 bm.start() #start the socket manager
