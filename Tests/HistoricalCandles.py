@@ -20,11 +20,14 @@ closes = []
 client = Client(API_KEY, SECRET_KEY)
 klines = client.get_historical_klines("BNBUSDT", interval=Client.KLINE_INTERVAL_1MINUTE, start_str="150 minutes ago CET", end_str='1 minutes ago CET')
 # print(klines[-1][4]) #last close of last candle
-print(len(klines))
+print(len(closes))
 
 for kline in klines:
     # print("kline: ", kline)
     closes.append(float(kline[4]))
+
+print(len(closes))
+
 
 # print(closes)
 
