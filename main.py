@@ -26,16 +26,11 @@ rsi_period = 11
 rsi_overbought = 80
 rsi_oversold = 20
 
-# macd
-
-
-
-
-
 closes = []
 has_position = False
 #endregion
 
+# client aanmaken
 client = Client(API_KEY, SECRET_KEY)
 
 
@@ -72,28 +67,24 @@ def order(side, quantity, symbol,order_type=ORDER_TYPE_MARKET):
 
 def process_message(msg):
     global closes
-    # print("message type: {}".format(msg['e']))
     candle = msg['k']
     candle_closed = candle['x']
     close = candle['c']
     symbol = msg['s']
-    # print(f"{symbol}, message received")
-    # print(msg)
-
     
     if candle_closed:
         print("candle closed at {}".format(close))
         closes.append(float(close))
-        # print("closes: ", closes)
-
 
         if len(closes) > rsi_period:
             np_closes = np.array(closes)
             rsi = talib.RSI(np_closes, rsi_period)
+            macd, macdsignal, macdhist = talib.MACD(np_closes, fastperiod=12, slowperiod=26, signalperiod=9)
+            last_macdhist = macdhist[-1]
             last_rsi = rsi[-1]
-            print("latest rsi: ", last_rsi)
+            print(f'macdhist: {last_macdhist}, rsi: {last_rsi}.')
             
-            # kopen
+            # KOPEN
             if last_rsi< rsi_oversold:
                 if has_position:
                     print("It is oversold, but you already own it, nothing to do.")
@@ -103,9 +94,9 @@ def process_message(msg):
                     # order_succeeded = order(SIDE_BUY, TRADE_QUANTITY, TRADE_SYMBOL)
                     order_succeeded = True
                     if order_succeeded:
-                        in_position = True
+                        has_position = True
             
-            # verkopen
+            # VERKOPEN
             if last_rsi > rsi_overbought:
                 if has_position:
                     print("Overbought! Sell! Sell! Sell!")
@@ -113,13 +104,14 @@ def process_message(msg):
                     # order_succeeded = order(SIDE_SELL, TRADE_QUANTITY, TRADE_SYMBOL)
                     order_succeeded = True
                 if order_succeeded:
-                        in_position = False
+                        has_position = False
                 else:
                     print("It is overbought, but we don't own any. Nothing to do.")
 
 
             #reduce list to max 150 items to not get unlimited list
             closes = closes[-150:]
+            # print("lengte: ", len(closes))
 
 
 
@@ -129,7 +121,7 @@ def process_message(msg):
 
 
 # pass a list of stream names
-bm = BinanceSocketManager(client, user_timeout=60)
+bm = BinanceSocketManager(client)
 conn_key = bm.start_kline_socket(symbol="BNBUSDT", callback=process_message, interval=KLINE_INTERVAL_1MINUTE)
 # conn_key = bm.start_kline_socket(symbol="DOGEUSDT", callback=process_message, interval=KLINE_INTERVAL_1MINUTE)
 
