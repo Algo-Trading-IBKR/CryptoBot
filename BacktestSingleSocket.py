@@ -48,7 +48,7 @@ has_position = False
 
 #region initialize client
 # client aanmaken
-logging.basicConfig(filename="newfile.log", format='%(asctime)s %(message)s', filemode='a') 
+logging.basicConfig(filename="./Logs/First.log", format='%(asctime)s %(message)s', filemode='a') 
 
 client = Client(API_KEY, SECRET_KEY)
 
@@ -66,7 +66,7 @@ if str(client.ping()) == '{}': #{} means that it is connected
     # tickers = client.get_ticker()
     # account_info = client.get_account()
     balance = client.get_asset_balance(asset='USDT')
-    bnb = client.get_asset_balance(asset='LIT')
+    LIT = client.get_asset_balance(asset='LIT')
     # trades = client.get_my_trades(symbol='BNBUSDT')
     print(f"Je hebt {balance['free']} USDT en {LIT['free']} LIT")
     print("data ophalen")
