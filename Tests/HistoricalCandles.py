@@ -29,7 +29,7 @@ for kline in klines:
 print(len(closes))
 
 
-# print(closes)
+# test
 
 np_closes = np.array(closes)
 rsi = talib.RSI(np_closes, timeperiod=11)
