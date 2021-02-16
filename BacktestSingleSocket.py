@@ -48,7 +48,12 @@ has_position = False
 
 #region initialize client
 # client aanmaken
+logging.basicConfig(filename="newfile.log", format='%(asctime)s %(message)s', filemode='a') 
+
 client = Client(API_KEY, SECRET_KEY)
+
+logger=logging.getLogger() 
+logger.setLevel(logging.INFO) 
 
 
 if str(client.ping()) == '{}': #{} means that it is connected
@@ -129,6 +134,7 @@ def process_message(msg):
                     buy_price = np_closes[-1]
                     limit_lost = buy_price-(buy_price*(stop_loss/100))
                     limit_profit = buy_price *(1 + (take_profit/100))
+                    logger.info(f"bought at {buy_price}") 
 
                     # Binance buy order
                     # order_succeeded = order(SIDE_BUY, TRADE_QUANTITY, TRADE_SYMBOL)
@@ -145,10 +151,12 @@ def process_message(msg):
                 # order_succeeded = order(SIDE_SELL, TRADE_QUANTITY, TRADE_SYMBOL)
                 if current_price > limit_profit:
                     print("sold at win")
+                    logger.info(f"sold at {current_price} with profit") 
                     order_succeeded = True
 
                 if current_price < limit_lost:
                     print("sold at loss")
+                    logger.info(f"sold at {current_price} with loss") 
                     order_succeeded = True
 
                 if order_succeeded:
