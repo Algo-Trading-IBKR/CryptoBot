@@ -30,6 +30,7 @@ closes = []
 has_position = False
 #endregion
 
+#region initialize client
 # client aanmaken
 client = Client(API_KEY, SECRET_KEY)
 
@@ -52,7 +53,9 @@ if str(client.ping()) == '{}': #{} means that it is connected
     for kline in klines:
         closes.append(float(kline[4]))
     print("data opgehaald")
+#endregion
 
+# order for binance
 def order(side, quantity, symbol,order_type=ORDER_TYPE_MARKET):
     try:
         print("send order to binance")
@@ -85,11 +88,12 @@ def process_message(msg):
             print(f'macdhist: {last_macdhist}, rsi: {last_rsi}.')
             
             # KOPEN
-            if last_rsi< rsi_oversold:
+            if last_rsi< rsi_oversold and last_macdhist < 0:
                 if has_position:
                     print("It is oversold, but you already own it, nothing to do.")
                 else:
                     print("Oversold! Buy! Buy! Buy!")
+                    buy_price = np_closes[-1]
                     #Binance buy order
                     # order_succeeded = order(SIDE_BUY, TRADE_QUANTITY, TRADE_SYMBOL)
                     order_succeeded = True
@@ -97,21 +101,25 @@ def process_message(msg):
                         has_position = True
             
             # VERKOPEN
-            if last_rsi > rsi_overbought:
-                if has_position:
-                    print("Overbought! Sell! Sell! Sell!")
-                    #binance sell order
-                    # order_succeeded = order(SIDE_SELL, TRADE_QUANTITY, TRADE_SYMBOL)
-                    order_succeeded = True
-                if order_succeeded:
-                        has_position = False
-                else:
-                    print("It is overbought, but we don't own any. Nothing to do.")
+            if has_position:
+                prev_price = np_closes[-2]
+                current_price = np_closes[-1]
+
+
+
+                
+                #binance sell order
+                # order_succeeded = order(SIDE_SELL, TRADE_QUANTITY, TRADE_SYMBOL)
+                order_succeeded = True
+            if order_succeeded:
+                    has_position = False
+            else:
+                print("It is overbought, but we don't own any. Nothing to do.")
 
 
             #reduce list to max 150 items to not get unlimited list
             closes = closes[-150:]
-            # print("lengte: ", len(closes))
+            # print("lengte: ", len(closes)) #check of de lengte wel 150 is
 
 
 

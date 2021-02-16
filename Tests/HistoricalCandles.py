@@ -35,3 +35,6 @@ np_closes = np.array(closes)
 rsi = talib.RSI(np_closes, timeperiod=11)
 last_rsi = rsi[-1]
 print("latest rsi: ", last_rsi)
+current_price = np_closes[-1]
+previous = np_closes[-2]
+print(current_price, previous)
