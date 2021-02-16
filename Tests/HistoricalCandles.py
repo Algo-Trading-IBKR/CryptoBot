@@ -26,7 +26,7 @@ for kline in klines:
     # print("kline: ", kline)
     closes.append(float(kline[4]))
 
-print(len(closes))
+print(klines[-1])
 
 
 # test webhook
