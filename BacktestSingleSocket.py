@@ -167,6 +167,9 @@ def process_message(msg):
 
             #reduce list to max 150 items to not get unlimited list
             closes = closes[-150:]
+            highs = highs[-150:]
+            lows = lows[-150:]
+            volumes = volumes[-150:]
             # print("lengte: ", len(closes)) #check of de lengte wel 150 is
 
 
