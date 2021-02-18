@@ -20,11 +20,11 @@ API_KEY_TESTNET = "hmuUZY958uABtMw2JVYI88Dc1CEPIo589bvCTPs6ZEGevQ6Nd7ARzsCdXcapi
 SECRET_KEY_TESTNET = "8l1P0MyhNKw8P4Xanr7zTrojFhBTFAoBTKFW5DiUil78kh7zRXtztilje5jQ6RYT"
 
 #indicator vars
-TRADE_SYMBOL = 'LITUSDT'
+TRADE_SYMBOL = 'ONEUSDT'
 TRADE_QUANTITY = 15
 
 # rsi
-rsi_period = 11
+rsi_period = 12
 rsi_overbought = 80
 rsi_oversold = 20
 
@@ -43,12 +43,13 @@ highs = []
 lows = []
 volumes = []
 closes = []
+
 has_position = False
 #endregion
 
 #region initialize client
 # client aanmaken
-logging.basicConfig(filename="./Logs/First.log", format='%(asctime)s %(message)s', filemode='a') 
+logging.basicConfig(filename="./Logs/ONEUSDT.log", format='%(asctime)s %(message)s', filemode='a') 
 
 client = Client(API_KEY, SECRET_KEY)
 
@@ -65,12 +66,12 @@ if str(client.ping()) == '{}': #{} means that it is connected
     # avg_price = client.get_avg_price(symbol='BNBUSDT')
     # tickers = client.get_ticker()
     # account_info = client.get_account()
-    balance = client.get_asset_balance(asset='USDT')
-    LIT = client.get_asset_balance(asset='LIT')
+    # balance = client.get_asset_balance(asset='USDT')
+    # LIT = client.get_asset_balance(asset='LIT')
     # trades = client.get_my_trades(symbol='BNBUSDT')
-    print(f"Je hebt {balance['free']} USDT en {LIT['free']} LIT")
+    # print(f"Je hebt {balance['free']} USDT en {LIT['free']} LIT")
     print("data ophalen")
-    klines = client.get_historical_klines("LITUSDT", interval=Client.KLINE_INTERVAL_1MINUTE, start_str="150 minutes ago CET", end_str='1 minutes ago CET')
+    klines = client.get_historical_klines("ONEUSDT", interval=Client.KLINE_INTERVAL_1MINUTE, start_str="150 minutes ago CET", end_str='1 minutes ago CET')
     for kline in klines:
         closes.append(float(kline[4]))
         highs.append(float(kline[2]))
@@ -141,12 +142,13 @@ def process_message(msg):
                     order_succeeded = True
                     if order_succeeded:
                         has_position = True
+                        order_succeeded = False
             
             # VERKOPEN
             if has_position:
                 # prev_price = np_closes[-2]
+                # print("test sell order")
                 current_price = np_closes[-1]
-                
                 #binance sell order
                 # order_succeeded = order(SIDE_SELL, TRADE_QUANTITY, TRADE_SYMBOL)
                 if current_price > limit_profit:
@@ -161,6 +163,7 @@ def process_message(msg):
 
                 if order_succeeded:
                     has_position = False
+                    order_succeeded = False
                 else:
                     print("didn't sell")
 
@@ -176,7 +179,7 @@ def process_message(msg):
 
 # pass a list of stream names
 bm = BinanceSocketManager(client)
-conn_key = bm.start_kline_socket(symbol="LITUSDT", callback=process_message, interval=KLINE_INTERVAL_1MINUTE)
+conn_key = bm.start_kline_socket(symbol="ONEUSDT", callback=process_message, interval=KLINE_INTERVAL_1MINUTE)
 # conn_key = bm.start_kline_socket(symbol="DOGEUSDT", callback=process_message, interval=KLINE_INTERVAL_1MINUTE)
 
 bm.start() #start the socket manager
