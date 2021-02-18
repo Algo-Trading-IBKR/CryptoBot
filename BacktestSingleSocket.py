@@ -24,7 +24,7 @@ TRADE_SYMBOL = 'ONEUSDT'
 TRADE_QUANTITY = 15
 
 # rsi
-rsi_period = 12
+rsi_period = 14
 rsi_overbought = 80
 rsi_oversold = 20
 
@@ -151,6 +151,7 @@ def process_message(msg):
                 current_price = np_closes[-1]
                 #binance sell order
                 # order_succeeded = order(SIDE_SELL, TRADE_QUANTITY, TRADE_SYMBOL)
+                order_succeeded = False
                 if current_price > limit_profit:
                     print("sold at win")
                     logger.info(f"sold at {current_price} with profit") 
