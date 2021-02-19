@@ -17,7 +17,8 @@ client = Client(API_KEY, SECRET_KEY)
 
 
 
-tickers = client.get_ticker(symbol='BNBBTC')
+ticker = client.get_ticker(symbol='BNBUSDT')
+change = ticker["priceChangePercent"]
 # avg_price = client.get_avg_price(symbol='BNBBTC')
 
-print(tickers)
+print(change)
