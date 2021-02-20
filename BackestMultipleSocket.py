@@ -7,6 +7,7 @@ from binance.websockets import BinanceSocketManager
 from binance.enums import *
 import json
 
+from Classes.ticker import Ticker
 
 #endregion
 #region variables
@@ -30,10 +31,10 @@ mfi_overbought = 80
 mfi_oversold = 12
 
 # others, to be changed
-highs = []
-lows = []
-volumes = []
-closes = []
+
+
+
+
 limit_lost = 1000
 limit_profit = 0
 has_position = False
@@ -50,6 +51,26 @@ client = Client(API_KEY, SECRET_KEY)
 if str(client.ping()) == '{}': #{} means that it is connected
     status = client.get_system_status()
     print("Connected, status server: ", status["msg"])
+    print("data ophalen")
+
+    instances = []
+    for x in range(len(tickers)):
+        instances.append(Ticker(tickers[x]))
+        
+        klines = client.get_historical_klines(tickers[x], interval=Client.KLINE_INTERVAL_1MINUTE, start_str="150 minutes ago CET", end_str='1 minutes ago CET')
+        for k in klines:
+            instances[x].closes.append(float(k[4]))
+            instances[x].highs.append(float(k[2]))
+            instances[x].lows.append(float(k[3]))
+            instances[x].volumes.append(float(k[5]))
+
+
+
+    for i in instances:
+        print(i.ticker, ' last close: ',i.closes[-1])
+
+    print("data opgehaald")
+    
     
 
 
@@ -59,15 +80,13 @@ def process_message(msg):
     candle = msg['k']
     candle_closed = candle['x']
     
-    if candle_closed:
-        print("message: ", msg)
+    print("message: ", msg)
+    # if candle_closed:
+    #     print("message: ", msg)
         
 
     
 def check_change(ticker):
-    print(ticker)
-
-def make_list(ticker):
     print(ticker)
 
 
@@ -75,8 +94,8 @@ def make_list(ticker):
 #create the websockets
 bm = BinanceSocketManager(client, user_timeout=60)
 
-for ticker in tickers:
-    make_list(ticker)
-    conn_key = bm.start_kline_socket(symbol=ticker, callback=process_message, interval=KLINE_INTERVAL_1MINUTE)
+
+for i in instances:
+    conn_key = bm.start_kline_socket(symbol=i.ticker, callback=process_message, interval=KLINE_INTERVAL_1MINUTE)
 
 bm.start() #start the socket manager
