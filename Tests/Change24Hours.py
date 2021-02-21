@@ -21,4 +21,4 @@ ticker = client.get_ticker(symbol='BNBUSDT')
 change = ticker["priceChangePercent"]
 # avg_price = client.get_avg_price(symbol='BNBBTC')
 
-print(change)
+print(ticker)
