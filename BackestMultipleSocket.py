@@ -55,16 +55,15 @@ if str(client.ping()) == '{}': #{} means that it is connected
 
     instances = []
     for x in range(len(tickers)):
-        instances.append(Ticker(tickers[x]))
-        
+        vars()[tickers[x]] = Ticker(tickers[x])
+        instances.append(vars()[tickers[x]]) 
         klines = client.get_historical_klines(tickers[x], interval=Client.KLINE_INTERVAL_1MINUTE, start_str="150 minutes ago CET", end_str='1 minutes ago CET')
+        
         for k in klines:
-            instances[x].closes.append(float(k[4]))
-            instances[x].highs.append(float(k[2]))
-            instances[x].lows.append(float(k[3]))
-            instances[x].volumes.append(float(k[5]))
-
-
+            vars()[tickers[x]].closes.append(float(k[4]))
+            vars()[tickers[x]].highs.append(float(k[2]))
+            vars()[tickers[x]].lows.append(float(k[3]))
+            vars()[tickers[x]].volumes.append(float(k[5]))
 
     for i in instances:
         print(i.ticker, ' last close: ',i.closes[-1])

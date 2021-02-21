@@ -105,7 +105,7 @@ def process_message(msg):
     volume = candle['v']
 
     symbol = msg['s']
-    
+    print(msg)
     if candle_closed:
         print("candle closed at {}".format(close))
         closes.append(float(close))
