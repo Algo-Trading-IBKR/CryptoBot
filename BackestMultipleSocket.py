@@ -11,7 +11,7 @@ from binance.websockets import BinanceSocketManager
 from binance.enums import *
 import json
 import numpy as np
-import logging 
+# import logging 
 
 
 #endregion
@@ -40,9 +40,8 @@ mfi_oversold = 12
 tickers = ["BNBUSDT", "DOGEUSDT", "XRPUSDT", "LITUSDT", "CAKEUSDT", "OMGUSDT", "REEFUSDT", "DODOUSDT", "RVNUSDT"]
 client = Client(API_KEY, SECRET_KEY)
 
-logging.basicConfig(filename="./Logs/Test.log", format='%(asctime)s %(message)s', filemode='a') 
-logger=logging.getLogger() 
-logger.setLevel(logging.INFO) 
+
+
 
 
 if str(client.ping()) == '{}': #{} means that it is connected
@@ -55,17 +54,23 @@ if str(client.ping()) == '{}': #{} means that it is connected
         globals()[tickers[x]] = Ticker(tickers[x])
         instances.append(globals()[tickers[x]]) 
         klines = client.get_historical_klines(tickers[x], interval=Client.KLINE_INTERVAL_1MINUTE, start_str="150 minutes ago CET", end_str='1 minutes ago CET')
-
+        
         for k in klines:
             globals()[tickers[x]].closes.append(float(k[4]))
             globals()[tickers[x]].highs.append(float(k[2]))
             globals()[tickers[x]].lows.append(float(k[3]))
             globals()[tickers[x]].volumes.append(float(k[5]))
 
+            
+
     for i in instances:
         print(i.ticker, 'Object aangemaakt')
+        # i.log_sell(profit=True, price=1.2)
+        
 
     print("data opgehaald")
+
+    
     
 
 def process_message(msg):
@@ -82,7 +87,6 @@ def process_message(msg):
     volume = candle['v']
             
     if candle_closed:
-        print(symbol.ticker, " -> candle closed at: ", close)
         symbol.closes.append(float(close))
         symbol.highs.append(float(high))
         symbol.lows.append(float(low))
@@ -95,16 +99,21 @@ def process_message(msg):
             last_rsi = rsi[-1]
             last_mfi = mfi[-1]
 
+            print(symbol.ticker, " -> candle closed at: ", close, " with rsi: ",last_rsi ," and mfi: ", last_mfi)
+
             # koopstrategie
             if last_rsi < rsi_oversold and last_mfi < mfi_oversold:
                 if symbol.has_position:
                     print(f"Je hebt {name} momenteel al.")
                 else:
                     print(f"{name} is oversold. Placing order.")
-                    logger.info(f"bought {name} at {buy_price}")
+                    
 
                     symbol.buy_price = symbol.closes[-1]
                     symbol.stop_loss = get_low(symbol.ticker)
+
+                    symbol.log_buy(buy_price=symbol.buy_price, ticker=name)
+                    # logger.info(f"bought {name} at {symbol.buy_price}")
 
                     if symbol.stop_loss < (symbol.buy_price - (symbol.buy_price*0.02)):
                         symbol.stop_loss = symbol.buy_price - (symbol.buy_price*0.02)
@@ -122,12 +131,12 @@ def process_message(msg):
 
                 if current_price > symbol.take_profit:
                     print("sold with profit")
-                    logger.info(f"PROFIT, Sold {name} at {current_price}")
+                    symbol.log_sell(profit=True,price=current_price,ticker=name)
                     symbol.order_succeeded = True
 
                 if current_price < symbol.stop_loss:
                     print("sold at loss")
-                    logger.info(f"LOSS, Sold {name} at {current_price}")
+                    symbol.log_sell(profit=False,price=current_price,ticker=name)
                     symbol.order_succeeded = True
 
                 if symbol.order_succeeded:
