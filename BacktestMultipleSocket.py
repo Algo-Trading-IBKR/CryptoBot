@@ -1,5 +1,5 @@
 #region imports
-# own classes
+# Own classes
 from Classes.ticker import Ticker
 
 # libraries
