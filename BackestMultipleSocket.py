@@ -70,6 +70,13 @@ def process_message(msg):
     #ticker
     if msg['e'] == 'error':
         print('error: ', msg)
+        print(Fore.CYAN + 'Closing and restarting sockets.')
+        bm.close()
+        for i in instances:
+            conn_key = bm.start_kline_socket(symbol=i.ticker, callback=process_message, interval=KLINE_INTERVAL_1MINUTE)
+            print(f"{i.ticker} socket is restarted.")
+        bm.start()
+        print(Fore.CYAN + 'Restart succeeded.')
     else:
         candle = msg['k']
         candle_closed = candle['x']
@@ -103,7 +110,7 @@ def process_message(msg):
                 # koopstrategie
                 if last_rsi < rsi_oversold and last_mfi < mfi_oversold:
                     if symbol.has_position:
-                        print(f"you already own {name}.")
+                        print(f"You already own {name}.")
                     else:
 
                         symbol.buy_price = symbol.closes[-1]
@@ -119,7 +126,7 @@ def process_message(msg):
                             symbol.stop_loss = symbol.buy_price - (symbol.buy_price*0.03)
                         symbol.take_profit = symbol.buy_price * 1.03                   
                         symbol.order_succeeded = True
-                        
+
                         if symbol.order_succeeded:
                             print(Fore.GREEN + f"{name} bought rsi: {last_rsi} mfi: {last_mfi}. Stop loss at {symbol.stop_loss} and take profit at {symbol.take_profit}")
 
