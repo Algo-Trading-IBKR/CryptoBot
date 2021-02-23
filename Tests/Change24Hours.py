@@ -19,6 +19,12 @@ client = Client(API_KEY, SECRET_KEY)
 
 ticker = client.get_ticker(symbol='BNBUSDT')
 change = ticker["priceChangePercent"]
-# avg_price = client.get_avg_price(symbol='BNBBTC')
 
-print(ticker)
+
+status = client.get_account_status()
+# avg_price = client.get_avg_price(symbol='BNBBTC')
+details = client.get_asset_details()
+balance = client.get_asset_balance(asset='BNBUSDT')
+accounts = client.get_sub_account_list()
+info = client.get_account()
+print(info)
