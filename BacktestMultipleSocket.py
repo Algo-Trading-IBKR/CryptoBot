@@ -61,7 +61,7 @@ if str(client.ping()) == '{}': #{} means that it is connected
             globals()[tickers[x]].lows.append(float(k[3]))
             globals()[tickers[x]].volumes.append(float(k[5]))
         percentage += (100 / len(tickers))
-        print(f'{percentage:.0f}% loaded in')
+        print(f'{percentage:.0f}% loaded')
     print(f"Data fetched, you have {total_money} dollar buying power in your spot wallet.")
 
     
