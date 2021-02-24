@@ -1,8 +1,7 @@
 #region imports
-# Own classes
 from Classes.ticker import Ticker
+from twisted.internet import reactor
 
-# libraries
 import time, talib
 import pandas as pd
 import config
@@ -10,11 +9,13 @@ from binance.client import Client
 from binance.websockets import BinanceSocketManager
 from binance.enums import *
 import json
+from tqdm import tqdm
 import numpy as np
 from colorama import Fore, Back, Style,init
 init(autoreset=True)
 
 #endregion
+
 #region variables
 
 API_KEY = "hKclENu75kFYky6xVXxHqVNzdzOQc0RAZ5kElzJggmF3N2EQDn4XjP2XPhHtbxjI"
@@ -22,7 +23,6 @@ SECRET_KEY = "2albG5h0FVjUpvIjg1aQvoVXH6sDgUvWsMmyzkajjaPkIrHaKUYUVgvraC86a7iS"
 # Testnet keys
 API_KEY_TESTNET = "hmuUZY958uABtMw2JVYI88Dc1CEPIo589bvCTPs6ZEGevQ6Nd7ARzsCdXcapiKof"
 SECRET_KEY_TESTNET = "8l1P0MyhNKw8P4Xanr7zTrojFhBTFAoBTKFW5DiUil78kh7zRXtztilje5jQ6RYT"
-
 # rsi
 rsi_period = 14
 rsi_overbought = 80
@@ -33,14 +33,19 @@ mfi_period = 12
 mfi_overbought = 80
 mfi_oversold = 12
 
-percentage = 0
+
 #endregion
 
-# tickers = ["BNBUSDT", "DOGEUSDT", "XRPUSDT", "LITUSDT", "CAKEUSDT", "OMGUSDT", "REEFUSDT", "DODOUSDT", "RVNUSDT"]
-tickers = ["BTCUSDT", "ETHUSDT", "DOTUSDT", "ADAUSDT", "SFPUSDT","FTMUSDT","XEMUSDT","NPXSUSDT","KSMUSDT","SOLUSDT","ONTUSDT","RLCUSDT","ONGUSDT","OMGUSDT","MANAUSDT","XRPUSDT","BNBUSDT"]
-# tickers = ["BNBUSDT"]
+# region initialize
 client = Client(API_KEY, SECRET_KEY)
 
+pairs = ["BTCUSDT", "ETHUSDT", "DOTUSDT", "ADAUSDT", "SFPUSDT","FTMUSDT","XEMUSDT","NPXSUSDT","KSMUSDT","SOLUSDT","ONTUSDT","RLCUSDT","ONGUSDT","OMGUSDT","MANAUSDT","XRPUSDT","BNBUSDT"]
+tickers = []
+for p in pairs:
+    p = p.lower() + '@kline_1m'
+    tickers.append(p)
+# print(tickers)
+# tickers = ["btcusdt@kline_1m","ethusdt@kline_1m","dotusdt@kline_1m"]
 
 if str(client.ping()) == '{}': #{} means that it is connected
     status = client.get_system_status()
@@ -50,49 +55,56 @@ if str(client.ping()) == '{}': #{} means that it is connected
     total_money = data["free"]
 
     instances = []
-    for x in range(len(tickers)):
-        globals()[tickers[x]] = Ticker(tickers[x])
-        instances.append(globals()[tickers[x]]) 
-        klines = client.get_historical_klines(tickers[x], interval=Client.KLINE_INTERVAL_1MINUTE, start_str="150 minutes ago CET", end_str='1 minutes ago CET')
+    for x in tqdm(range(len(tickers))):
+        name = tickers[x][:-9].upper()
+        globals()[name] = Ticker(name)
+        instances.append(globals()[name]) 
+        uppercase_name = name.upper()
+        klines = client.get_historical_klines(uppercase_name, interval=Client.KLINE_INTERVAL_1MINUTE, start_str="150 minutes ago CET", end_str='1 minutes ago CET')
         
         for k in klines:
-            globals()[tickers[x]].closes.append(float(k[4]))
-            globals()[tickers[x]].highs.append(float(k[2]))
-            globals()[tickers[x]].lows.append(float(k[3]))
-            globals()[tickers[x]].volumes.append(float(k[5]))
-        percentage += (100 / len(tickers))
-        print(f'{percentage:.0f}% loaded')
+            globals()[name].closes.append(float(k[4]))
+            globals()[name].highs.append(float(k[2]))
+            globals()[name].lows.append(float(k[3]))
+            globals()[name].volumes.append(float(k[5]))
     print(f"Data fetched, you have {total_money} dollar buying power in your spot wallet.")
 
-    
+# endregion
 
-def process_message(msg):
-    #ticker
-    if msg['e'] == 'error':
-        print('error: ', msg)
-        print(Fore.CYAN + 'Closing and restarting sockets.')
-        bm.close()
-        for i in instances:
-            conn_key = bm.start_kline_socket(symbol=i.ticker, callback=process_message, interval=KLINE_INTERVAL_1MINUTE)
-            print(f"{i.ticker} socket is restarted.")
-        bm.start()
-        print(Fore.CYAN + 'Restart succeeded.')
+# region functions
+def get_change(ticker):
+    data = client.get_ticker(symbol=ticker)
+    change = data["priceChangePercent"]
+    # print(ticker, " change in price: ", change)
+    return change
+
+def get_low(ticker):
+    data = client.get_ticker(symbol=ticker)
+    low = data["lowPrice"]
+    # print(ticker, " change in price: ", change)
+    return low
+
+# endregion
+
+# main callback function
+def process_m_message(msg):
+    # print("stream: {} data: {}".format(msg['stream'], msg['data']))
+    if msg['data']['e'] == 'error':
+        print("error while restarting socket")
     else:
-        candle = msg['k']
+        candle = msg['data']['k']
         candle_closed = candle['x']
 
-        name = msg['s']
+        name = msg['data']['s']
         symbol = globals()[name]
 
         change_in_price = get_change(symbol.ticker) 
-
         close = candle['c']
         high = candle['h']
         low = candle['l']
         volume = candle['v']
 
         if candle_closed:
-            # print(msg)
             symbol.closes.append(float(close))
             symbol.highs.append(float(high))
             symbol.lows.append(float(low))
@@ -105,14 +117,11 @@ def process_message(msg):
                 last_rsi = rsi[-1]
                 last_mfi = mfi[-1]
 
-                # print(symbol.ticker, " -> candle closed at: ", close, " with rsi: ",last_rsi ," and mfi: ", last_mfi)
-
                 # koopstrategie
                 if last_rsi < rsi_oversold and last_mfi < mfi_oversold:
                     if symbol.has_position:
                         print(f"You already own {name}.")
                     else:
-
                         symbol.buy_price = symbol.closes[-1]
 
                         # calculate how much quantity I can buy
@@ -121,7 +130,6 @@ def process_message(msg):
                         symbol.log_buy(amount=symbol.position ,buy_price=symbol.buy_price, ticker=name, money=symbol.money)
                         symbol.money = 0
 
-
                         if float(symbol.stop_loss) > (symbol.buy_price - (symbol.buy_price*0.03)):
                             symbol.stop_loss = symbol.buy_price - (symbol.buy_price*0.03)
                         symbol.take_profit = symbol.buy_price * 1.03                   
@@ -129,7 +137,6 @@ def process_message(msg):
 
                         if symbol.order_succeeded:
                             print(Fore.GREEN + f"{name} bought rsi: {last_rsi} mfi: {last_mfi}. Stop loss at {symbol.stop_loss} and take profit at {symbol.take_profit}")
-
                             symbol.has_position = True
                             symbol.order_succeeded = False
 
@@ -165,25 +172,6 @@ def process_message(msg):
                 symbol.volumes = symbol.volumes[-150:]
                 
 
-
-def get_change(ticker):
-    data = client.get_ticker(symbol=ticker)
-    change = data["priceChangePercent"]
-    # print(ticker, " change in price: ", change)
-    return change
-
-def get_low(ticker):
-    data = client.get_ticker(symbol=ticker)
-    low = data["lowPrice"]
-    # print(ticker, " change in price: ", change)
-    return low
-
-    
-#create the websockets
 bm = BinanceSocketManager(client, user_timeout=600)
-
-
-for i in instances:
-    conn_key = bm.start_kline_socket(symbol=i.ticker, callback=process_message, interval=KLINE_INTERVAL_1MINUTE)
-
+conn_key = bm.start_multiplex_socket(tickers, process_m_message)
 bm.start() #start the socket manager
