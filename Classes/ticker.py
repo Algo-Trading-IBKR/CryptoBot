@@ -11,15 +11,20 @@ class Ticker:
         self.volumes = []
         self.closes = []
 
-        self.has_position = False
+        
         self.buy_price = 0
         self.stop_loss = 0
         self.take_profit = 0
-        self.order_succeeded = False
         self.position = 0
 
         self.log_file = open(f"./Logs/{ticker}.txt","w+")
         self.log_file.close()
+
+        self.order_succeeded = False
+        self.profit = 0
+        self.loss = 0
+        self.has_position = False
+        self.amount = 0
         
         
 
