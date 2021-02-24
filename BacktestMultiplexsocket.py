@@ -2,6 +2,7 @@
 from Classes.ticker import Ticker
 from twisted.internet import reactor
 
+from clickatell.rest import Rest
 import time, talib
 import pandas as pd
 import config
@@ -18,11 +19,13 @@ init(autoreset=True)
 
 #region variables
 
-API_KEY = "01rU5GpozT4Owzs0MJNqSIO9KloKJERtpJscOs1gC7gYkcSTWdry4KJYMTl1Sxu4 "
+API_KEY = "01rU5GpozT4Owzs0MJNqSIO9KloKJERtpJscOs1gC7gYkcSTWdry4KJYMTl1Sxu4"
 SECRET_KEY = "mzYubBy1mRUVElxg2xP4lNAZW76BFDKRxkpDAUJK86pio8FHAxMVxDCCM5AgFPs6"
 # Testnet keys
 API_KEY_TESTNET = "hmuUZY958uABtMw2JVYI88Dc1CEPIo589bvCTPs6ZEGevQ6Nd7ARzsCdXcapiKof"
 SECRET_KEY_TESTNET = "8l1P0MyhNKw8P4Xanr7zTrojFhBTFAoBTKFW5DiUil78kh7zRXtztilje5jQ6RYT"
+
+clickatell = Rest("VmGMIQOQRryF3X8Yg-iUZw==");
 # rsi
 rsi_period = 14
 rsi_overbought = 80
@@ -137,6 +140,10 @@ def process_m_message(msg):
 
                         if symbol.order_succeeded:
                             print(Fore.GREEN + f"{name} bought rsi: {last_rsi} mfi: {last_mfi}. Stop loss at {symbol.stop_loss} and take profit at {symbol.take_profit}")
+                            try:
+                                response = clickatell.sendMessage(to=['32470579542'], message=f"{name} bought rsi: {last_rsi} mfi: {last_mfi}. Stop loss at {symbol.stop_loss} and take profit at {symbol.take_profit}")
+                            except Exception as e:
+                                pass
                             symbol.has_position = True
                             symbol.order_succeeded = False
 
@@ -148,6 +155,10 @@ def process_m_message(msg):
                     if current_price > float(symbol.take_profit):
                         print(Fore.RED + f"{name} sold with a profit.")
                         symbol.money = symbol.position * current_price
+                        try:
+                            response = clickatell.sendMessage(to=['32470579542'], message=f"{name} sold with a profit. money left: {symbol.money}.")
+                        except Exception as e:
+                            pass
                         symbol.log_sell(profit=True ,price=current_price ,ticker=name ,amount=symbol.position ,money=symbol.money)
                         symbol.order_succeeded = True
                         symbol.position = 0
@@ -156,6 +167,10 @@ def process_m_message(msg):
                     if current_price < float(symbol.stop_loss):
                         print(Fore.RED  +f"{name} sold with a loss.")
                         symbol.money = symbol.position * current_price
+                        try:
+                            response = clickatell.sendMessage(to=['32470579542'], message=f"{name} sold with a loss. money left: {symbol.money}.")
+                        except Exception as e:
+                            pass     
                         symbol.log_sell(profit=False ,price=current_price ,ticker=name ,amount=symbol.position ,money=symbol.money)
                         symbol.order_succeeded = True
                         symbol.position = 0
