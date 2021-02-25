@@ -110,6 +110,7 @@ def process_message(msg):
 
                 last_rsi = rsi[-1]
                 last_mfi = mfi[-1]
+                print(Fore.GREEN + f"{name} . rsi: {last_rsi} mfi: {last_mfi}.")
 
                 # print(symbol.ticker, " -> candle closed at: ", close, " with rsi: ",last_rsi ," and mfi: ", last_mfi)
 

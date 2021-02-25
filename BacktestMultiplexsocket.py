@@ -108,6 +108,7 @@ def process_m_message(msg):
         volume = candle['v']
 
         if candle_closed:
+            print(Fore.RED + f"{name}")
             symbol.closes.append(float(close))
             symbol.highs.append(float(high))
             symbol.lows.append(float(low))
@@ -119,6 +120,7 @@ def process_m_message(msg):
 
                 last_rsi = rsi[-1]
                 last_mfi = mfi[-1]
+                # print(Fore.GREEN + f"{name} . rsi: {last_rsi} mfi: {last_mfi}.")
 
                 # koopstrategie
                 if last_rsi < rsi_oversold and last_mfi < mfi_oversold:
@@ -139,9 +141,9 @@ def process_m_message(msg):
                         symbol.order_succeeded = True
 
                         if symbol.order_succeeded:
-                            print(Fore.GREEN + f"{name} bought rsi: {last_rsi} mfi: {last_mfi}. Stop loss at {symbol.stop_loss} and take profit at {symbol.take_profit}")
+                            print(Fore.GREEN + f"{name} bought for {symbol.buy_price} dollar. rsi: {last_rsi} mfi: {last_mfi}. Stop loss at {symbol.stop_loss} and take profit at {symbol.take_profit}")
                             try:
-                                response = clickatell.sendMessage(to=['32470579542'], message=f"{name} bought rsi: {last_rsi} mfi: {last_mfi}. Stop loss at {symbol.stop_loss} and take profit at {symbol.take_profit}")
+                                response = clickatell.sendMessage(to=['32470579542'], message=f"{name} bought for {symbol.buy_price} dollar. Stop loss at {symbol.stop_loss} and take profit at {symbol.take_profit}.")
                             except Exception as e:
                                 pass
                             symbol.has_position = True
@@ -151,7 +153,7 @@ def process_m_message(msg):
                 if symbol.has_position:
                     current_price = symbol.closes[-1]
                     symbol.order_succeeded = False
-
+                    print(name, " -> {current_price}")
                     if current_price > float(symbol.take_profit):
                         print(Fore.RED + f"{name} sold with a profit.")
                         symbol.money = symbol.position * current_price
@@ -187,6 +189,6 @@ def process_m_message(msg):
                 symbol.volumes = symbol.volumes[-150:]
                 
 
-bm = BinanceSocketManager(client, user_timeout=600)
+bm = BinanceSocketManager(client, user_timeout=30)
 conn_key = bm.start_multiplex_socket(tickers, process_m_message)
 bm.start() #start the socket manager
