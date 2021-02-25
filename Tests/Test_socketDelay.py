@@ -90,13 +90,16 @@ def get_low(ticker):
 
 
 def process_m_message(msg):
-    candle = msg['data']['k']
-    candle_closed = candle['x']
-    name = msg['data']['s']
-    symbol = globals()[name]
-    if candle_closed:
-        print(Fore.GREEN + symbol.ticker)
-    
+    if msg['data']['e'] == 'error':
+        print("error while restarting socket")
+    else:
+        candle = msg['data']['k']
+        candle_closed = candle['x']
+        name = msg['data']['s']
+        symbol = globals()[name]
+        if candle_closed:
+            print(Fore.GREEN + symbol.ticker)
+        
 
 
 if str(client.ping()) == '{}':
