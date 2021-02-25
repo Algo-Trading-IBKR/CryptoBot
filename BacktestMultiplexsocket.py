@@ -41,6 +41,7 @@ mfi_oversold = 12
 
 # region initialize
 client = Client(API_KEY, SECRET_KEY)
+bm = BinanceSocketManager(client, user_timeout=600)
 
 pairs = ["BTCUSDT", "ETHUSDT", "DOTUSDT", "ADAUSDT", "SFPUSDT","FTMUSDT","XEMUSDT","NPXSUSDT","KSMUSDT","SOLUSDT","ONTUSDT","RLCUSDT","ONGUSDT","OMGUSDT","MANAUSDT","XRPUSDT","BNBUSDT"]
 tickers = []
@@ -101,14 +102,13 @@ def process_m_message(msg):
         name = msg['data']['s']
         symbol = globals()[name]
 
-        # change_in_price = get_change(symbol.ticker) 
         close = candle['c']
         high = candle['h']
         low = candle['l']
         volume = candle['v']
 
         if candle_closed:
-            print(Fore.RED + f"{name}")
+            # print(Fore.RED + f"{name}")
             symbol.closes.append(float(close))
             symbol.highs.append(float(high))
             symbol.lows.append(float(low))
@@ -189,6 +189,7 @@ def process_m_message(msg):
                 symbol.volumes = symbol.volumes[-150:]
                 
 
-bm = BinanceSocketManager(client, user_timeout=30)
-conn_key = bm.start_multiplex_socket(tickers, process_m_message)
-bm.start() #start the socket manager
+# start the sockets
+if str(client.ping()) == '{}':
+    conn_key = bm.start_multiplex_socket(tickers, process_m_message)
+    bm.start() #start the socket manager
