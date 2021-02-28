@@ -124,7 +124,6 @@ def process_m_message(msg):
         name = msg['data']['s']
         symbol = globals()[name]
 
-        change_in_price = get_change(symbol.ticker) 
         close = candle['c']
         high = candle['h']
         low = candle['l']
