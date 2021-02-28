@@ -1,0 +1,4 @@
+25 Feb 2021 - 23:08:01 | Bought 3.123 DOTUSDT with 100 dollar for 32.0189 dollar per unit. 
+25 Feb 2021 - 23:33:01 | PROFIT, sold 3.123155386349937 DOTUSDT for 32.9978 dollar per unit. Money left 103.05725680769795 dollar
+26 Feb 2021 - 03:02:01 | Bought 3.556 DOTUSDT with 103.05725680769795 dollar for 28.9787 dollar per unit. 
+26 Feb 2021 - 03:07:01 | PROFIT, sold 3.5563105594004547 DOTUSDT for 29.9177 dollar per unit. Money left 106.39663242297499 dollar

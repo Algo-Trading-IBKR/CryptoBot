@@ -1,0 +1,4 @@
+26 Feb 2021 - 00:45:05 | Bought 200.803 ONGUSDT with 100 dollar for 0.498 dollar per unit. 
+26 Feb 2021 - 01:06:02 | LOSS, sold 200.80321285140562 ONGUSDT for 0.4819 dollar per unit. Money left 96.76706827309236 dollar
+26 Feb 2021 - 01:36:08 | Bought 208.056 ONGUSDT with 96.76706827309236 dollar for 0.4651 dollar per unit. 
+26 Feb 2021 - 01:51:08 | PROFIT, sold 208.05647876390532 ONGUSDT for 0.4802 dollar per unit. Money left 99.90872110242734 dollar
