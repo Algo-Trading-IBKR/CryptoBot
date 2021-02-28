@@ -3,7 +3,7 @@ from datetime import datetime
 
 
 class Ticker:
-    def __init__(self, ticker):
+    def __init__(self, ticker,log_file):
         self.ticker = ticker
         self.money = 100
         self.highs = []
@@ -17,7 +17,8 @@ class Ticker:
         self.take_profit = 0
         self.position = 0
 
-        self.log_file = open(f"./StrategyTests/TwoPercentTp/{ticker}.txt","w+")
+        self.log = log_file
+        self.log_file = open(f"{log_file}/{ticker}.txt","w+")
         self.log_file.close()
 
         self.order_succeeded = False
@@ -39,7 +40,7 @@ class Ticker:
         day = datetime.today()
         day = day.strftime("%d %b %Y")
         now = now.strftime("%H:%M:%S")
-        self.log_file = open(f"./Logs/{ticker}.txt", "a+")
+        self.log_file = open(f"{self.log}/{ticker}.txt", "a+")
         self.log_file.write(f"{day} - {now} | Bought {amount:.3f} {ticker} with {money} dollar for {buy_price} dollar per unit. \n")
         self.log_file.close()
 
@@ -50,7 +51,7 @@ class Ticker:
         now = now.strftime("%H:%M:%S")
         day = day.strftime("%d %b %Y")
 
-        self.log_file = open(f"./Logs/{ticker}.txt", "a+")
+        self.log_file = open(f"{self.log}/{ticker}.txt", "a+")
         if profit:
             self.log_file.write(f"{day} - {now} | PROFIT, sold {amount} {ticker} for {price} dollar per unit. Money left {money} dollar\n")
             self.log_file.close()
