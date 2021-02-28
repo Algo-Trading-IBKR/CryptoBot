@@ -43,7 +43,7 @@ mfi_oversold = 12
 client = Client(API_KEY, SECRET_KEY)
 bm = BinanceSocketManager(client, user_timeout=600)
 
-pairs = ["BTCUSDT", "ETHUSDT", "DOTUSDT", "ADAUSDT", "SFPUSDT","FTMUSDT","XEMUSDT","NPXSUSDT","KSMUSDT","SOLUSDT","ONTUSDT","RLCUSDT","ONGUSDT","OMGUSDT","MANAUSDT","XRPUSDT","BNBUSDT"]
+pairs = ["BTCUSDT", "ETHUSDT", "DOTUSDT", "ADAUSDT", "SFPUSDT","FTMUSDT","XEMUSDT","NPXSUSDT","KSMUSDT","ONTUSDT","RLCUSDT","ONGUSDT","OMGUSDT","MANAUSDT","XRPUSDT","BNBUSDT"]
 tickers = []
 for p in pairs:
     p = p.lower() + '@kline_1m'
@@ -137,7 +137,8 @@ def process_m_message(msg):
 
                         if float(symbol.stop_loss) > (symbol.buy_price - (symbol.buy_price*0.03)):
                             symbol.stop_loss = symbol.buy_price - (symbol.buy_price*0.03)
-                        symbol.take_profit = symbol.buy_price * 1.03                   
+                        # symbol.stop_loss = symbol.buy_price - (symbol.buy_price*0.03)
+                        symbol.take_profit = symbol.buy_price * 1.03                  
                         symbol.order_succeeded = True
 
                         if symbol.order_succeeded:
@@ -153,7 +154,7 @@ def process_m_message(msg):
                 if symbol.has_position:
                     current_price = symbol.closes[-1]
                     symbol.order_succeeded = False
-                    print(name, " -> {current_price}")
+                    # print(name, f" -> {current_price}")
                     if current_price > float(symbol.take_profit):
                         print(Fore.RED + f"{name} sold with a profit.")
                         symbol.money = symbol.position * current_price
