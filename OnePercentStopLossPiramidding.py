@@ -134,9 +134,10 @@ def process_m_message(msg):
                         # calculate how much quantity I can buy
                         symbol.position = (symbol.money/2)/symbol.buy_price
                         symbol.stop_loss = get_low(symbol.ticker)
-                        symbol.log_buy(amount=symbol.position ,buy_price=symbol.buy_price, ticker=name, money=(symbol.money/2))
+                        symbol.money -= symbol.position * symbol.average_price
+                        symbol.log_buy(amount=symbol.position ,buy_price=symbol.buy_price, ticker=name, money=symbol.money)
 
-                        symbol.money = 50
+                        
 
                         if float(symbol.stop_loss) > (symbol.buy_price - (symbol.buy_price*0.03)):
                             symbol.stop_loss = symbol.buy_price - (symbol.buy_price*0.03)
@@ -161,7 +162,7 @@ def process_m_message(msg):
 
                     if current_price > float(symbol.take_profit):
                         print(Fore.RED + f"{name} sold with a profit.")
-                        symbol.money = symbol.position * current_price
+                        symbol.money += symbol.position * current_price
                         try:
                             response = clickatell.sendMessage(to=['32470579542'], message=f"{name} sold with a profit. money left: {symbol.money}.")
                         except Exception as e:
@@ -180,13 +181,13 @@ def process_m_message(msg):
                             symbol.buy_price = symbol.closes[-1]
                             amount = symbol.money/symbol.buy_price                   
                             symbol.log_buy(amount=amount ,buy_price=symbol.buy_price, ticker=name, money=symbol.money)
-                            symbol.position = symbol.position +  (symbol.money/symbol.buy_price)
+                            symbol.position += amount
                             symbol.average_price = 100/ symbol.position
                             symbol.stop_loss = get_low(symbol.ticker)
                             if float(symbol.stop_loss) > (symbol.buy_price - (symbol.buy_price*0.05)):
                                 symbol.stop_loss = symbol.buy_price - (symbol.buy_price*0.05)
                             # symbol.stop_loss = symbol.buy_price - (symbol.buy_price*0.03)
-                            symbol.money = 0
+                            symbol.money -= symbol.buy_price * amount
                             symbol.take_profit = symbol.average_price * 1.012
                             symbol.order_succeeded = True
 
@@ -201,7 +202,7 @@ def process_m_message(msg):
 
                         else: 
                             print(Fore.RED  +f"{name} sold with a loss.")
-                            symbol.money = symbol.position * current_price
+                            symbol.money += symbol.position * current_price
                             try:
                                 response = clickatell.sendMessage(to=['32470579542'], message=f"{name} sold with a loss. money left: {symbol.money}.")
                             except Exception as e:
