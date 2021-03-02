@@ -42,6 +42,7 @@ mfi_oversold = 12
 # region initialize
 client = Client(API_KEY, SECRET_KEY)
 bm = BinanceSocketManager(client, user_timeout=600)
+log_file = "./Logs"
 
 pairs = ["BTCUSDT", "ETHUSDT", "DOTUSDT", "ADAUSDT", "SFPUSDT","FTMUSDT","XEMUSDT","NPXSUSDT","KSMUSDT","ONTUSDT","RLCUSDT","ONGUSDT","OMGUSDT","MANAUSDT","XRPUSDT","BNBUSDT"]
 tickers = []
@@ -61,7 +62,7 @@ if str(client.ping()) == '{}': #{} means that it is connected
     instances = []
     for x in tqdm(range(len(tickers))):
         name = tickers[x][:-9].upper()
-        globals()[name] = Ticker(name)
+        globals()[name] = Ticker(name,log_file)
         instances.append(globals()[name]) 
         uppercase_name = name.upper()
         klines = client.get_historical_klines(uppercase_name, interval=Client.KLINE_INTERVAL_1MINUTE, start_str="150 minutes ago CET", end_str='1 minutes ago CET')

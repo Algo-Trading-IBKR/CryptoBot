@@ -7,12 +7,12 @@ from clickatell.http import Http
  
 clickatell = Rest("VmGMIQOQRryF3X8Yg-iUZw==");
 balls = "balls"
- 
+response = clickatell.sendMessage(to=['32470579542'], message=f"dab")
 
-try:
-    response = clickatell.sendMessage(to=['32470579542'], message=f"")
-except Exception as e:
-    pass
+# try:
+#     response = clickatell.sendMessage(to=['32476067619','32470579542'], message=f"dab")
+# except Exception as e:
+#     pass
 
 print("didnt crash dab")
 # for entry in response: 
