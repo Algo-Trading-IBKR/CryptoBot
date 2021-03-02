@@ -25,6 +25,8 @@ SECRET_KEY = "mzYubBy1mRUVElxg2xP4lNAZW76BFDKRxkpDAUJK86pio8FHAxMVxDCCM5AgFPs6"
 API_KEY_TESTNET = "hmuUZY958uABtMw2JVYI88Dc1CEPIo589bvCTPs6ZEGevQ6Nd7ARzsCdXcapiKof"
 SECRET_KEY_TESTNET = "8l1P0MyhNKw8P4Xanr7zTrojFhBTFAoBTKFW5DiUil78kh7zRXtztilje5jQ6RYT"
 
+phone_numbers = ["32470579542"]
+
 clickatell = Rest("VmGMIQOQRryF3X8Yg-iUZw==");
 # rsi
 rsi_period = 14
@@ -148,7 +150,7 @@ def process_m_message(msg):
                         if symbol.order_succeeded:
                             print(Fore.GREEN + f"{name} bought for {symbol.buy_price} dollar. rsi: {last_rsi} mfi: {last_mfi}. Stop loss at {symbol.stop_loss} and take profit at {symbol.take_profit}")
                             try:
-                                response = clickatell.sendMessage(to=['32470579542'], message=f"{name} bought for {symbol.buy_price} dollar.")
+                                response = clickatell.sendMessage(to=phone_numbers, message=f"{name} bought for {symbol.buy_price} dollar.")
                             except Exception as e:
                                 pass
                             symbol.has_position = True
@@ -164,7 +166,7 @@ def process_m_message(msg):
                         print(Fore.RED + f"{name} sold with a profit.")
                         symbol.money += symbol.position * current_price
                         try:
-                            response = clickatell.sendMessage(to=['32470579542'], message=f"{name} sold with a profit. money left: {symbol.money}.")
+                            response = clickatell.sendMessage(to=phone_numbers, message=f"{name} sold with a profit. money left: {symbol.money}.")
                         except Exception as e:
                             pass
                         symbol.log_sell(profit=True ,price=current_price ,ticker=name ,amount=symbol.position ,money=symbol.money)
@@ -194,7 +196,7 @@ def process_m_message(msg):
                             if symbol.order_succeeded:
                                 print(Fore.GREEN + f"{name} bought for {symbol.buy_price} dollar.")
                                 try:
-                                    response = clickatell.sendMessage(to=['32470579542'], message=f"SECOND BUY: {name} bought for {symbol.buy_price} dollar.")
+                                    response = clickatell.sendMessage(to=phone_numbers, message=f"SECOND BUY: {name} bought for {symbol.buy_price} dollar.")
                                 except Exception as e:
                                     pass
                                 symbol.has_position = True
@@ -204,7 +206,7 @@ def process_m_message(msg):
                             print(Fore.RED  +f"{name} sold with a loss.")
                             symbol.money += symbol.position * current_price
                             try:
-                                response = clickatell.sendMessage(to=['32470579542'], message=f"{name} sold with a loss. money left: {symbol.money}.")
+                                response = clickatell.sendMessage(to=phone_numbers, message=f"{name} sold with a loss. money left: {symbol.money}.")
                             except Exception as e:
                                 pass     
                             symbol.log_sell(profit=False ,price=current_price ,ticker=name ,amount=symbol.position ,money=symbol.money)
