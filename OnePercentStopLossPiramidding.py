@@ -25,7 +25,7 @@ SECRET_KEY = "mzYubBy1mRUVElxg2xP4lNAZW76BFDKRxkpDAUJK86pio8FHAxMVxDCCM5AgFPs6"
 API_KEY_TESTNET = "hmuUZY958uABtMw2JVYI88Dc1CEPIo589bvCTPs6ZEGevQ6Nd7ARzsCdXcapiKof"
 SECRET_KEY_TESTNET = "8l1P0MyhNKw8P4Xanr7zTrojFhBTFAoBTKFW5DiUil78kh7zRXtztilje5jQ6RYT"
 
-phone_numbers = ["32470579542"]
+phone_numbers = ["32470579542","0476067619"]
 
 clickatell = Rest("VmGMIQOQRryF3X8Yg-iUZw==");
 # rsi
@@ -139,8 +139,6 @@ def process_m_message(msg):
                         symbol.money -= symbol.position * symbol.average_price
                         symbol.log_buy(amount=symbol.position ,buy_price=symbol.buy_price, ticker=name, money=symbol.money)
 
-                        
-
                         if float(symbol.stop_loss) > (symbol.buy_price - (symbol.buy_price*0.03)):
                             symbol.stop_loss = symbol.buy_price - (symbol.buy_price*0.03)
                         # symbol.stop_loss = symbol.buy_price - (symbol.buy_price*0.03)
@@ -181,11 +179,14 @@ def process_m_message(msg):
                         if float(symbol.money) > 20:
                             print(Fore.RED  +f"{name} price dropped under the stop loss, buy a second time")
                             symbol.buy_price = symbol.closes[-1]
-                            amount = symbol.money/symbol.buy_price                   
+                            amount = symbol.money/symbol.buy_price  
+
+                            symbol.average_price = (symbol.position*symbol.average_price + amount*symbol.buy_price) / (symbol.position+amount)
+
                             symbol.log_buy(amount=amount ,buy_price=symbol.buy_price, ticker=name, money=symbol.money)
                             symbol.position += amount
-                            symbol.average_price = 100/ symbol.position
                             symbol.stop_loss = get_low(symbol.ticker)
+
                             if float(symbol.stop_loss) > (symbol.buy_price - (symbol.buy_price*0.05)):
                                 symbol.stop_loss = symbol.buy_price - (symbol.buy_price*0.05)
                             # symbol.stop_loss = symbol.buy_price - (symbol.buy_price*0.03)
