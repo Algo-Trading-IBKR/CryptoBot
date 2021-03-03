@@ -25,9 +25,9 @@ SECRET_KEY = "mzYubBy1mRUVElxg2xP4lNAZW76BFDKRxkpDAUJK86pio8FHAxMVxDCCM5AgFPs6"
 API_KEY_TESTNET = "hmuUZY958uABtMw2JVYI88Dc1CEPIo589bvCTPs6ZEGevQ6Nd7ARzsCdXcapiKof"
 SECRET_KEY_TESTNET = "8l1P0MyhNKw8P4Xanr7zTrojFhBTFAoBTKFW5DiUil78kh7zRXtztilje5jQ6RYT"
 
-phone_numbers = ["32470579542","0476067619"]
+phone_numbers = ["32470579542","32476067619"]
 
-clickatell = Rest("VmGMIQOQRryF3X8Yg-iUZw==");
+clickatell = Rest("VmGMIQOQRryF3X8Yg-iUZw==")
 # rsi
 rsi_period = 14
 rsi_overbought = 80

@@ -1,18 +1,22 @@
 from clickatell.rest import Rest
-from clickatell.http import Http
 # private static string Url = "https://platform.clickatell.com/v1/message";
-# private static string ApiKey = "VmGMIQOQRryF3X8Yg-iUZw==";
+# private static string ApiKey = "VmGMIQOQRryF3X8Yg-iUZw=="
 
+phone_numbers = ["32470579542", "32476067619"]
 
  
-clickatell = Rest("VmGMIQOQRryF3X8Yg-iUZw==");
-balls = "balls"
-response = clickatell.sendMessage(to=['32470579542'], message=f"dab")
+clickatell = Rest("VmGMIQOQRryF3X8Yg-iUZw==")
+# balls = "balls"
+# response = clickatell.sendMessage(to=['32470579542'], message=f"dab")
 
 # try:
 #     response = clickatell.sendMessage(to=['32476067619','32470579542'], message=f"dab")
 # except Exception as e:
 #     pass
+
+
+response = clickatell.sendMessage(to=phone_numbers, message="testpi")
+
 
 print("didnt crash dab")
 # for entry in response: 
