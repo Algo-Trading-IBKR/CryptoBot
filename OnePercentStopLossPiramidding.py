@@ -216,7 +216,7 @@ def process_m_message(msg):
 
                             if symbol.order_succeeded:
                                 symbol.has_position = False
-                                order_succeeded = False
+                                symbol.order_succeeded = False
 
                     
                     # else: 
