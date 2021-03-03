@@ -39,7 +39,7 @@ mfi_oversold = 12
 
 # tickers
 pairs = ["BTCUSDT", "ETHUSDT", "DOTUSDT", "ADAUSDT", "SFPUSDT","FTMUSDT","XEMUSDT","NPXSUSDT","KSMUSDT","ONTUSDT","RLCUSDT","ONGUSDT","OMGUSDT","MANAUSDT","XRPUSDT","BNBUSDT","CAKEUSDT"]
-log_file = "./StrategyTests/OnePercentStopLossPiramidding"
+log_file = "./StrategyTests/OnePercentStopLossPiramiddingV2"
 #endregion
 
 # region initialize
