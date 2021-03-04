@@ -116,7 +116,7 @@ def process_m_message(msg):
                         symbol.stop_loss = get_low(symbol.ticker)
                         if float(symbol.stop_loss) > (symbol.average_price - (symbol.average_price*0.03)):
                             symbol.stop_loss = symbol.average_price - (symbol.average_price*0.03)
-                        symbol.take_profit = symbol.buy_price * 1.012
+                        symbol.take_profit = symbol.average_price * 1.012
 
                         # put real order here later
                         order_succeeded = True
