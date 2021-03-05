@@ -105,33 +105,6 @@ def process_m_message(msg):
                 last_rsi = rsi[-1]
                 last_mfi = mfi[-1]
 
-                # kopen
-                if last_rsi < rsi_oversold and last_mfi < mfi_oversold:
-                    if symbol.has_position:
-                        print(f"You already own {name}.")
-                    else:
-                        symbol.average_price = symbol.closes[-1]
-                        symbol.amount = (symbol.money/2)/symbol.average_price
-                        symbol.money -= symbol.amount * symbol.average_price
-                        symbol.stop_loss = get_low(symbol.ticker)
-                        if float(symbol.stop_loss) > (symbol.average_price - (symbol.average_price*0.03)):
-                            symbol.stop_loss = symbol.average_price - (symbol.average_price*0.03)
-                        symbol.take_profit = symbol.average_price * 1.012
-
-                        # put real order here later
-                        order_succeeded = True
-
-                        if order_succeeded:
-                            # log buy
-                            symbol.log_buy(amount=symbol.amount ,buy_price=symbol.average_price, ticker=name, money=symbol.money)
-                            print(Fore.GREEN + f"{name} bought for {symbol.average_price} dollar. rsi: {last_rsi} mfi: {last_mfi}. Stop loss at {symbol.stop_loss} and take profit at {symbol.take_profit}")
-                            try:
-                                response = clickatell.sendMessage(to=phone_numbers, message=f"{name} bought for {symbol.average_price} dollar.")
-                            except Exception as e:
-                                pass
-                            symbol.has_position = True
-                            order_succeeded = False
-                
                 # verkopen
                 if symbol.has_position:
                     current_price = symbol.closes[-1]
@@ -193,6 +166,33 @@ def process_m_message(msg):
                             if order_succeeded:
                                 symbol.has_position = False
                                 order_succeeded = False
+
+                # kopen
+                if last_rsi < rsi_oversold and last_mfi < mfi_oversold:
+                    if symbol.has_position:
+                        print(f"You already own {name}.")
+                    else:
+                        symbol.average_price = symbol.closes[-1]
+                        symbol.amount = (symbol.money/2)/symbol.average_price
+                        symbol.money -= symbol.amount * symbol.average_price
+                        symbol.stop_loss = get_low(symbol.ticker)
+                        if float(symbol.stop_loss) > (symbol.average_price - (symbol.average_price*0.03)):
+                            symbol.stop_loss = symbol.average_price - (symbol.average_price*0.03)
+                        symbol.take_profit = symbol.average_price * 1.012
+
+                        # put real order here later
+                        order_succeeded = True
+
+                        if order_succeeded:
+                            # log buy
+                            symbol.log_buy(amount=symbol.amount ,buy_price=symbol.average_price, ticker=name, money=symbol.money)
+                            print(Fore.GREEN + f"{name} bought for {symbol.average_price} dollar. rsi: {last_rsi} mfi: {last_mfi}. Stop loss at {symbol.stop_loss} and take profit at {symbol.take_profit}")
+                            try:
+                                response = clickatell.sendMessage(to=phone_numbers, message=f"{name} bought for {symbol.average_price} dollar.")
+                            except Exception as e:
+                                pass
+                            symbol.has_position = True
+                            order_succeeded = False
 
             symbol.closes = symbol.closes[-150:]
             symbol.highs = symbol.highs[-150:]
