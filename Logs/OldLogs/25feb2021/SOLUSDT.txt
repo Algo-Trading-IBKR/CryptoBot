@@ -1,5 +1,0 @@
-25 Feb 2021 - 22:35:02 | Bought 6.729 SOLUSDT with 100 dollar for 14.8616 dollar per unit. 
-25 Feb 2021 - 23:05:01 | LOSS, sold 6.728750605587555 SOLUSDT for 14.4055 dollar per unit. Money left 96.93101684879153 dollar
-25 Feb 2021 - 23:11:01 | Bought 6.832 SOLUSDT with 96.93101684879153 dollar for 14.1871 dollar per unit. 
-26 Feb 2021 - 00:51:02 | LOSS, sold 6.832334786446246 SOLUSDT for 13.7346 dollar per unit. Money left 93.83938535792461 dollar
-26 Feb 2021 - 05:37:01 | Bought 6.549 SOLUSDT with 93.83938535792461 dollar for 14.3297 dollar per unit. 
