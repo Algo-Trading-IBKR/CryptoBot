@@ -17,7 +17,7 @@ class Database():
     account_info = db["AccountInfo"]
     error_log = db["ErrorLog"]
     
-    #region Symbols
+    #region Tickers
     @staticmethod
     def insert_ticker(ticker: str, datetime: dt.datetime, shares: float, averagePrice: float, realizedpnl: float, unrealizedpnl: float):
         # data = {"Symbol": symbol, "DateTime": datetime, "Shares": shares, "AveragePrice": averagePrice,"RealizedPnL": realizedpnl, "UnrealizedPnL": unrealizedpnl, "LatestUpdate": dt.datetime.now() }
@@ -25,10 +25,10 @@ class Database():
         insert = Database.tickers.insert_one(data)
       
     @staticmethod
-    def update_ticker(ticker: str, datetime: dt.datetime, shares: float, averagePrice: float, realizedpnl: float, unrealizedpnl: float):
+    def update_ticker(ticker: str, datetime: dt.datetime, shares: float, averagePrice: float, realizedpnl: float):
         data = {"Ticker": ticker}
         # newdata = {"$set": {"Symbol": symbol, "DateTime": datetime, "Shares": shares, "AveragePrice": averagePrice,"RealizedPnL": realizedpnl, "UnrealizedPnL": unrealizedpnl, "LatestUpdate": dt.datetime.now() } }
-        newdata = {"$set": {"Symbol": symbol, "DateTime": datetime, "Shares": shares, "AveragePrice": averagePrice, "UnrealizedPnL": unrealizedpnl } }
+        newdata = {"$set": {"Ticker": ticker, "DateTime": datetime, "Shares": shares, "AveragePrice": averagePrice, "RealizedPnL": realizedpnl } }
         Database.tickers.update_one(data, newdata, upsert=True)
     
     @staticmethod
@@ -70,7 +70,7 @@ class Database():
         newdata = {"$set": {"Canceled": True} }
         Database.order_log.update_one(data, newdata)
 
-    @staticmethodS
+    @staticmethod
     def get_unfinished_orders():
         query = {"Filled": False, "Canceled": False}
         items = Database.order_log.find(query)
@@ -173,12 +173,11 @@ class Database():
     #endregion
 
 
-# nog aan te passen vanaf hier
 
 
-    #region Commission Logs
+    #region Commission Logs - to be edited
     @staticmethod # Insert New Commission Log
-    def insert_commission_log(execid: str, datetime: dt.datetime, commission: float, realizedpnl: float):
+    def insert_commission_log(ticker: str, datetime: dt.datetime, commission: float, realizedpnl: float):
         execution = Database.read_execution_log_by_id(execid)
         if execution != None:
             symbol = execution["Symbol"]

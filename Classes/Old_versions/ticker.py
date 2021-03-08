@@ -1,5 +1,7 @@
 from datetime import datetime
 
+
+
 class Ticker:
     def __init__(self, ticker,log_file):
         self.ticker = ticker
@@ -9,15 +11,29 @@ class Ticker:
         self.volumes = []
         self.closes = []
 
+        self.average_price = 0  
+        self.buy_price = 0
+        self.stop_loss = 0
+        self.take_profit = 0
+        self.position = 0
+
         self.log = log_file
         self.log_file = open(f"{log_file}/{ticker}.txt","w+")
         self.log_file.close()
 
+        self.order_succeeded = False
+        self.profit = 0
+        self.loss = 0
         self.has_position = False
-        self.average_price = 0 
-        self.stop_loss = 0
-        self.take_profit = 0
         self.amount = 0
+        
+        
+
+    
+
+    def get_highs(self):
+        print(self.highs)
+        
 
     def log_buy(self, buy_price, ticker, amount, money):
         now = datetime.now()
@@ -28,6 +44,7 @@ class Ticker:
         self.log_file.write(f"{day} - {now} | Bought {amount:.3f} {ticker} with {money} dollar for {buy_price} dollar per unit. \n")
         self.log_file.close()
 
+        
     def log_sell(self, profit, price, ticker, amount, money):
         now = datetime.now()
         day = datetime.today()
@@ -41,3 +58,12 @@ class Ticker:
         else:
             self.log_file.write(f"{day} - {now} | LOSS, sold {amount} {ticker} for {price} dollar per unit. Money left {money} dollar\n")
             self.log_file.close()
+
+
+
+
+
+    
+
+
+
