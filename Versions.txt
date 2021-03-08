@@ -1,0 +1,18 @@
+OnePercentStopLossPiramiddingV2:
+- Verkoopt als de close hoger is dan de Take_profit
+
+
+OnePercentStopLossPiramiddingV3:
+-Verkoopt vanaf de Take_profit gehit is
+
+
+OnePercentStopLossPiramiddingV4:
+-has error log
+
+
+NoStopLossV4:
+-same as OnePercentStopLossPiramiddingV3 but without a stop_loss
+
+
+CryptoBotV1:
+- first live version of the bot
