@@ -1,7 +1,7 @@
 #region imports
 # own classes
 # from Classes.ticker import Ticker
-from Classes.tickerV2 import Ticker
+from Classes.ticker import Ticker
 # sms
 from clickatell.rest import Rest
 # strategy
