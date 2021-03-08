@@ -12,15 +12,15 @@
 from clickatell.rest import Rest
 
 clickatell = Rest("VmGMIQOQRryF3X8Yg-iUZw==")
-response = clickatell.sendMessage(['32470579542'], "My Message rest")
+clickatell.sendMessage(['32470579542'], "My Message rest-PI")
 
-print(response) #Returns the headers with all the messages
+# print(response) #Returns the headers with all the messages
 
-for entry in response['messages']:
-    print(entry) #Returns all the message details per message
-    print(entry['apiMessageId'])
-    print(entry['to'])
-    print(entry['accepted'])
-    print(entry['error'])
+# for entry in response['messages']:
+#     print(entry) #Returns all the message details per message
+#     print(entry['apiMessageId'])
+#     print(entry['to'])
+#     print(entry['accepted'])
+#     print(entry['error'])
 
 
