@@ -89,7 +89,10 @@ if str(client.ping()) == '{}': #{} means that it is connected
 
 # endregion
 
-
+# https://python-binance.readthedocs.io/en/latest/margin.html#orders
+# when buy order is received -> send money to margin (Isolated if cross is not available)
+# when sold -> transfer isolated margin back to spot wallet
+# make order function
 
 
 
