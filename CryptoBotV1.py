@@ -88,96 +88,45 @@ if str(client.ping()) == '{}': #{} means that it is connected
     print(f"Data fetched, you have {(float(total_money)):.2f} dollar of buying power in your spot wallet.")
 
 # endregion
+# region functions
+def get_low(ticker):
+    data = client.get_ticker(symbol=ticker)
+    low = data["lowPrice"]
+    return low
+
+def get_money():
+    global total_money
+    data = client.get_asset_balance(asset='USDT')
+    total_money = data["free"]
+
+# orders
+def send_order(side, quantity, ticker, price, order_type):
+    try:
+        print("Sending order...")
+        order = client.create_margin_order(symbol=ticker,side=side,type=order_type,timeInForce=TIME_IN_FORCE_IOC,quantity=quantity,price=price)
+        print(order)
+    except Exception as e:
+        print("an exception occured - {}".format(e))
+        return False
+    return True
+
+def cancel_order(ticker,order_id):
+    try:
+        print("Cancelling order...")
+        result = client.cancel_margin_order(symbol=ticker,orderId=order_id)        
+        print(result)
+    except Exception as e:
+        print("an exception occured - {}".format(e))
+        return False
+    return True
+
+
+
+# endregion
+
+
 
 # https://python-binance.readthedocs.io/en/latest/margin.html#orders
 # when buy order is received -> send money to margin (Isolated if cross is not available)
 # when sold -> transfer isolated margin back to spot wallet
-# make order function
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
