@@ -10,10 +10,13 @@ import numpy as np
 import logging 
 
 #region variables
-API_KEY = "hKclENu75kFYky6xVXxHqVNzdzOQc0RAZ5kElzJggmF3N2EQDn4XjP2XPhHtbxjI"
-SECRET_KEY = "2albG5h0FVjUpvIjg1aQvoVXH6sDgUvWsMmyzkajjaPkIrHaKUYUVgvraC86a7iS"
+API_KEY = "01rU5GpozT4Owzs0MJNqSIO9KloKJERtpJscOs1gC7gYkcSTWdry4KJYMTl1Sxu4"
+SECRET_KEY = "mzYubBy1mRUVElxg2xP4lNAZW76BFDKRxkpDAUJK86pio8FHAxMVxDCCM5AgFPs6"
 client = Client(API_KEY, SECRET_KEY)
 
 balance = client.get_asset_balance(asset='USDT')
+details = client.get_max_margin_loan(asset='BTC')
+
 # info = client.get_exchange_info()
 print(balance)
+print(details)
