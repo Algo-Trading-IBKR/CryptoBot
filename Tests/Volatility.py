@@ -15,8 +15,10 @@ SECRET_KEY = "mzYubBy1mRUVElxg2xP4lNAZW76BFDKRxkpDAUJK86pio8FHAxMVxDCCM5AgFPs6"
 client = Client(API_KEY, SECRET_KEY)
 
 balance = client.get_asset_balance(asset='USDT')
-details = client.get_max_margin_loan(asset='BTC')
+info = client.get_margin_account()
+info = client.get_isolated_margin_account()
 
-# info = client.get_exchange_info()
+
+# info = client.get_exchange_info() 
 print(balance)
-print(details)
+print(info)
