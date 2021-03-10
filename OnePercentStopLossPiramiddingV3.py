@@ -23,7 +23,7 @@ init(autoreset=True)
 API_KEY = "01rU5GpozT4Owzs0MJNqSIO9KloKJERtpJscOs1gC7gYkcSTWdry4KJYMTl1Sxu4"
 SECRET_KEY = "mzYubBy1mRUVElxg2xP4lNAZW76BFDKRxkpDAUJK86pio8FHAxMVxDCCM5AgFPs6"
 
-phone_numbers = ["32470579542","32476067619"]
+phone_numbers = ["32470579542"  ]
 
 clickatell = Rest("VmGMIQOQRryF3X8Yg-iUZw==")
 
@@ -36,6 +36,7 @@ rsi_oversold = 19
 mfi_period = 12
 mfi_overbought = 88
 mfi_oversold = 12
+
 
 # tickers
 pairs = ["BTCUSDT", "ETHUSDT", "DOTUSDT", "ADAUSDT", "SFPUSDT","FTMUSDT","XEMUSDT","NPXSUSDT","KSMUSDT","ONTUSDT","RLCUSDT","ONGUSDT","OMGUSDT","MANAUSDT","XRPUSDT","BNBUSDT","CAKEUSDT","REEFUSDT", "TROYUSDT", "DODOUSDT" ,"ENJUSDT", "VTHOUSDT","AXSUSDT","CRVUSDT","UNFIUSDT"]
