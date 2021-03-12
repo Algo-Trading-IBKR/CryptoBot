@@ -14,6 +14,7 @@ from binance.client import Client
 from binance.websockets import BinanceSocketManager
 from binance.enums import *
 # extra
+import sys,os
 import json
 import datetime as dt
 from tqdm import tqdm
@@ -63,9 +64,15 @@ client = Client(API_KEY, SECRET_KEY)
 bm = BinanceSocketManager(client, user_timeout=600)
 
 tickers = []
+# x = list for websocket | y = make isolated wallet accounts 
 for p in pairs:
-    p = p.lower() + '@kline_1m' # dotusdt@kline_1m
-    tickers.append(p)
+    x = p.lower() + '@kline_1m' # dotusdt@kline_1m
+    y = p[:-4]
+    try:
+        account = client.create_isolated_margin_account(base=y, quote='USDT')
+    except Exception as e:
+        print(e)     
+    tickers.append(x)
 
 if str(client.ping()) == '{}': #{} means that it is connected
     status = client.get_system_status()
@@ -86,8 +93,6 @@ if str(client.ping()) == '{}': #{} means that it is connected
             globals()[name].volumes.append(float(k[5]))
         Database.update_ticker(ticker=name, datetime=dt.datetime.now(),shares=0.0, averagePrice=0.0, realizedpnl=0.0)
     print(f"Data fetched, you have {(float(total_money)):.2f} dollar of buying power in your spot wallet.")
-    print(f"{(float(total_money)):.2f} dollar of buying power in your spot wallet.") #spot wallet
-    print() #margin wallet
 
 # endregion
 # region functions
@@ -102,10 +107,10 @@ def get_money():
     total_money = data["free"]
 
 # orders
-def send_order(side, quantity, ticker, price, order_type):
+def send_order(side, quantity, ticker, price, order_type, isolated):
     try:
         print("Sending order...")
-        order = client.create_margin_order(symbol=ticker,side=side,type=order_type,timeInForce=TIME_IN_FORCE_IOC,quantity=quantity,price=price)
+        order = client.create_margin_order(symbol=ticker,side=side,type=order_type,timeInForce=TIME_IN_FORCE_IOC,quantity=quantity,price=price,isIsolated=isolated)
         print(order)
     except Exception as e:
         print("an exception occured - {}".format(e))
@@ -251,7 +256,7 @@ def process_m_message(msg):
 
         exc_type, exc_obj, exc_tb = sys.exc_info()
         fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-        file = open(ErrorLogFile,"a")
+        file = open(error_log_file,"a")
         file.write(f'\n{date}\n{hour}\nan error occured: {e}\n{exc_type}\n{fname}\nLine: {exc_tb.tb_lineno}\n')
         file.close()
 

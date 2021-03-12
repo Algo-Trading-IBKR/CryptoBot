@@ -21,7 +21,12 @@ class Ticker:
         self.average_price = 0 
         self.stop_loss = 0
         self.take_profit = 0
-        self.amount = 0
+        self.amount = 0  
+
+        # margin
+        self.margin_ratio = 1      
+        
+
 
     def log_buy(self, buy_price, ticker, amount, money):
         now = datetime.now()

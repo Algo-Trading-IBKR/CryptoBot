@@ -18,17 +18,25 @@ client = Client(API_KEY, SECRET_KEY)
 pairs = ["BTCUSDT", "ETHUSDT", "DOTUSDT", "ADAUSDT", "SFPUSDT","FTMUSDT","XEMUSDT","NPXSUSDT","KSMUSDT","ONTUSDT","RLCUSDT","ONGUSDT","OMGUSDT","MANAUSDT","XRPUSDT","BNBUSDT","CAKEUSDT","REEFUSDT", "TROYUSDT", "DODOUSDT" ,"ENJUSDT", "VTHOUSDT","AXSUSDT","CRVUSDT","UNFIUSDT"]
 
 # make margin accounts (isolated)
-for p in pairs:
-    p = p[:-4]
-    try:
-        account = client.create_isolated_margin_account(base=p, quote='USDT')
-        print(account)
-    except Exception as e:
-        print(e)
+# for p in pairs:
+#     p = p[:-4]
+#     try:
+#         account = client.create_isolated_margin_account(base=p, quote='USDT')
+#         print(account)
+#     except Exception as e:
+#         print(e)
     
     # print(p)
 
 
+
+
+info = client.get_isolated_margin_account(symbols="BTCUSDT")
+# x =  json.loads(info)
+print(info["assets"][0]["baseAsset"])
+print(info["assets"][0]["quoteAsset"])
+print(info["assets"][0]["liquidatePrice"])
+print(info["assets"][0]["marginRatio"])
 
 
 
