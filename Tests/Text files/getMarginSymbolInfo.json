@@ -13,7 +13,7 @@
              "repayEnabled":true,
              "totalAsset":"0.00000019"
           },
-          "quoteAsset":{
+          " ":{
              "asset":"USDT",
              "borrowEnabled":true,
              "borrowed":"0",
