@@ -5,7 +5,7 @@ import os
 class Ticker:
     def __init__(self, ticker,log_file):
         self.ticker = ticker
-        self.money = 100
+        self.money = 100 # not used for live version
         self.highs = []
         self.lows = []
         self.volumes = []
@@ -18,13 +18,14 @@ class Ticker:
         self.log_file.close()
 
         self.has_position = False
-        self.average_price = 0 
-        self.stop_loss = 0
-        self.take_profit = 0
-        self.amount = 0  
+        self.average_price = 0 # need to get data
+        self.stop_loss = 0 # calculate in start
+        self.take_profit = 0 # calculate in start
+        self.amount = 0  # get out of api
 
         # margin
-        self.margin_ratio = 1      
+        self.margin_ratio = 1
+        self.liquidation_price = 0 #get in the start
         
 
 
