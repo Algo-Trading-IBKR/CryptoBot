@@ -22,7 +22,7 @@ def get_history_transfer(**params):
 data = client.get_asset_balance(asset='USDT')
 total_money = data["free"]
 print(f"you have {(float(total_money))} dollar of buying power in your spot wallet.")
-details = client.get_max_margin_transfer(asset='LIT', isolatedSymbol=symbol)
+details = client.get_max_margin_transfer(asset='USDT', isolatedSymbol=symbol)
 amount_margin = details["amount"]
 print("max transfer back?" ,amount_margin)
 
@@ -34,15 +34,12 @@ if float(total_money) != 0:
     print(history['rows'][0]["txId"])
 
 
-
-
-
 # transfer the money back if the money is in the margin wallet
-# if float(amount_margin) != 0:
-#     transaction = client.transfer_isolated_margin_to_spot(asset='USDT',symbol='LITUSDT', amount=amount_margin)
-#     print("transaction2: ",transaction)
-#     history = get_history_transfer(transFrom="ISOLATED_MARGIN" , transTo="SPOT", symbol=symbol, asset="USDT",size=1)
-#     print(history['rows'][0]["txId"])
+if float(amount_margin) != 0:
+    transaction = client.transfer_isolated_margin_to_spot(asset='USDT',symbol='LITUSDT', amount=amount_margin)
+    print("transaction2: ",transaction)
+    history = get_history_transfer(transFrom="ISOLATED_MARGIN" , transTo="SPOT", symbol=symbol, asset="USDT",size=1)
+    print(history['rows'][0]["txId"])
 
 
 data = client.get_asset_balance(asset='USDT')

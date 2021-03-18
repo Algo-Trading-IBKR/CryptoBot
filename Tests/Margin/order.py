@@ -16,27 +16,53 @@ symbol = 'LITUSDT'
 
 # orders
 # side=SIDE_BUY
-def send_order(side, quantity, ticker, price, order_type, isolated):
+def send_order(side, quantity, ticker, price, order_type, isolated,side_effect):
     try:
         print("Sending order...")
         if order_type == ORDER_TYPE_MARKET:
             print("market order")
-            order = client.create_margin_order(symbol=ticker,side=side,type=order_type,quantity=quantity,isIsolated=isolated)
+            order = client.create_margin_order(symbol=ticker,side=side,type=order_type,quantity=quantity,isIsolated=isolated, sideEffectType=side_effect)
             print(order)
 
         if order_type == ORDER_TYPE_LIMIT:
             print("limit order")
-            order = client.create_margin_order(symbol=ticker,side=side,type=order_type,timeInForce=TIME_IN_FORCE_FOK,quantity=quantity,price=price,isIsolated=isolated)
+            # order = client.create_margin_order(symbol=ticker,side=side,type=order_type,timeInForce=TIME_IN_FORCE_FOK,quantity=quantity,price=price,isIsolated=isolated,sideEffectType=side_effect,stopPrice=stopPrice)
+            order = client.create_margin_order(symbol=ticker,side=side,type=order_type,timeInForce=TIME_IN_FORCE_GTC,quantity=quantity,price=price,isIsolated=isolated,sideEffectType=side_effect)
             print(order)
+        
+
+
 
     except Exception as e:
         print("an exception occured - {}".format(e))
         return False
     return True
 
+ 
+# market_buy = send_order(side=SIDE_BUY , quantity=2, ticker=symbol,price=10,order_type=ORDER_TYPE_MARKET,isolated=True,side_effect="MARGIN_BUY")
+# print(market_buy)
+
+# market_sell = send_order(side=SIDE_SELL , quantity=2, ticker=symbol,price=10,order_type=ORDER_TYPE_MARKET,isolated=True,side_effect="AUTO_REPAY") 
+# print(market_sell)
+
+# limit_buy = send_order(side=SIDE_BUY , quantity=2.8, ticker=symbol,price=10,order_type=ORDER_TYPE_LIMIT,isolated=True,side_effect="MARGIN_BUY") 
+# print(limit_buy)
+
+# limit_sell = send_order(side=SIDE_SELL , quantity=1.99, ticker=symbol,price=10.9,order_type=ORDER_TYPE_LIMIT,isolated=True,side_effect="AUTO_REPAY")
+# print(limit_sell)
 
 
 
 
-test = send_order(side=SIDE_SELL , quantity=1.09, ticker=symbol,price=0,order_type=ORDER_TYPE_MARKET,isolated=True)
-# print(test)
+# orders = client.get_all_margin_orders(symbol='LITUSDT',isIsolated=True)
+# print(orders)
+# orders = client.get_open_margin_orders(symbol='LITUSDT',isIsolated=True)
+# print(orders)
+orders = client.get_all_margin_orders(symbol='LITUSDT', limit=4,isIsolated=True)
+
+trades = client.get_margin_trades(symbol='LITUSDT',limit=2,isIsolated=True)
+print(trades)
+
+
+
+# transaction = client.repay_margin_loan(asset='USDT', amount='20.00125')

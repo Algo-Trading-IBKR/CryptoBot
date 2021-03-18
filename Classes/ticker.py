@@ -23,6 +23,8 @@ class Ticker:
         self.take_profit = 0 # calculate in start
         self.amount = 0  # get out of api
 
+        self.precision = 0
+        
         # margin
         self.margin_ratio = 1
         self.liquidation_price = 0 #get in the start

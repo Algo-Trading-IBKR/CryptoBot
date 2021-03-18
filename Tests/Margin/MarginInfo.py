@@ -50,7 +50,7 @@ can_sell = amount - (amount * 0.002)
 
 
 
-symbol_info = client.get_symbol_info('DOGEUSDT')
+symbol_info = client.get_symbol_info('BTCUSDT')
 step_size = 0.0
 for f in symbol_info['filters']:
   if f['filterType'] == 'LOT_SIZE':
@@ -58,8 +58,11 @@ for f in symbol_info['filters']:
 
 
 precision = int(round(-math.log(step_size, 10), 0))
-quantity = float(round(1.0989, 3))
+# quantity = float(round(1.0989, 3))
 print("precision: ",precision)
+
+
+
 # info = client.get_exchange_info() 
 # print(balance)
-print("quantity: ", quantity)
+# print("quantity: ", quantity)

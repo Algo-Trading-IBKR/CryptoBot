@@ -19,6 +19,7 @@ info = client.get_margin_account()
 info = client.get_isolated_margin_account()
 
 
-# info = client.get_exchange_info() 
-print(balance)
-print(info)
+info = client.get_exchange_info() 
+info = client.get_symbol_info('LITUSDT')
+# print(balance)
+print(info["orderTypes"])
