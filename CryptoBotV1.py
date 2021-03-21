@@ -108,17 +108,20 @@ def get_money():
     return total_money
 
 # orders
-def send_order(side, quantity, ticker, price, order_type, isolated,side_effect):
+# side effect: AUTO_REPAY, MARGIN_BUY
+def send_order(side, quantity, ticker, price, order_type, isolated, side_effect):
     try:
         print("Sending order...")
-        order = client.create_margin_order(symbol=ticker,side=side,type=order_type,timeInForce=TIME_IN_FORCE_FOK,quantity=quantity,price=price,isIsolated=isolated,sideEffectType=side_effect)
-        print(order)
+        # print("limit order")
+        order = client.create_margin_order(side=side, quantity=quantity, symbol=ticker, price=price, type=order_type, isIsolated=isolated, sideEffectType=side_effect, timeInForce=TIME_IN_FORCE_FOK)
         if order["status"] == "FILLED":
             return True
-
+        else:
+            return False
     except Exception as e:
         print("an exception occured - {}".format(e))
         return False
+
 
     
 
@@ -228,19 +231,17 @@ def process_m_message(msg):
                             print(f"You already own {name}.")
 
                         else:
-                            symbol.average_price = symbol.closes[-1]
-                            
-                            symbol.amount = (22/2)/symbol.average_price
-                            
-                            symbol.stop_loss = get_low(symbol.ticker)
-                            
-                            if float(symbol.stop_loss) > (symbol.average_price - (symbol.average_price*0.03)):
-                                symbol.stop_loss = symbol.average_price - (symbol.average_price*0.03)
+                            symbol.average_price = symbol.closes[-1] #get the wanted buy price
+                            symbol.amount = (22/2)/symbol.average_price #get amount the bot could buy
 
-                            symbol.take_profit = symbol.average_price * 1.012
+                            # symbol.stop_loss = get_low(symbol.ticker) #get a stop loss
+                            # if float(symbol.stop_loss) > (symbol.average_price - (symbol.average_price*0.03)):
+                            #     symbol.stop_loss = symbol.average_price - (symbol.average_price*0.03)
 
-                            # put real order here later
-                            order_succeeded = True
+                            symbol.take_profit = symbol.average_price * 1.011 #get a take profit amount
+
+                            # limit order: check if filled
+                             
 
                             if order_succeeded:
                                 # log buy 
