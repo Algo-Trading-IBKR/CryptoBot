@@ -14,6 +14,7 @@ from binance.client import Client
 from binance.websockets import BinanceSocketManager
 from binance.enums import *
 # extra
+import math
 import sys,os
 import json
 import datetime as dt
@@ -91,7 +92,16 @@ if str(client.ping()) == '{}': #{} means that it is connected
             globals()[name].highs.append(float(k[2]))
             globals()[name].lows.append(float(k[3]))
             globals()[name].volumes.append(float(k[5]))
-        Database.update_ticker(ticker=name, datetime=dt.datetime.now(),shares=0.0, averagePrice=0.0, realizedpnl=0.0)
+        # get precision
+        symbol_info = client.get_symbol_info(name)
+        for f in symbol_info['filters']:
+            if f['filterType'] == 'LOT_SIZE':
+                step_size = float(f['stepSize'])
+                globals()[name].precision = int(round(-math.log(step_size, 10), 0))
+                # print(name, " precision: ",globals()[name].precision)
+         
+
+        # Database.update_ticker(ticker=name, datetime=dt.datetime.now(),shares=0.0, averagePrice=0.0, realizedpnl=0.0)
     print(f"Data fetched, you have {(float(total_money)):.2f} dollar of buying power in your spot wallet.")
 
 # endregion
@@ -121,9 +131,6 @@ def send_order(side, quantity, ticker, price, order_type, isolated, side_effect)
     except Exception as e:
         print("an exception occured - {}".format(e))
         return False
-
-
-    
 
 def cancel_order(ticker,order_id):
     try:
@@ -241,7 +248,8 @@ def process_m_message(msg):
                             symbol.take_profit = symbol.average_price * 1.011 #get a take profit amount
 
                             # limit order: check if filled
-                             
+                            limit_buy = send_order(side=SIDE_BUY , quantity=symbol.amount, ticker=symbol,price=10,order_type=ORDER_TYPE_LIMIT,isolated=True,side_effect="MARGIN_BUY")
+                            print(limit_buy)
 
                             if order_succeeded:
                                 # log buy 
