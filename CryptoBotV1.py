@@ -92,6 +92,10 @@ if str(client.ping()) == '{}': #{} means that it is connected
             globals()[name].highs.append(float(k[2]))
             globals()[name].lows.append(float(k[3]))
             globals()[name].volumes.append(float(k[5]))
+        # get margin ratio
+        info = client.get_isolated_margin_account(symbols=name)
+        globals()[name].margin_ratio = info["assets"][0]["marginRatio"]
+        # print(name, " ratio: ",globals()[name].margin_ratio)
         # get precision
         symbol_info = client.get_symbol_info(name)
         for f in symbol_info['filters']:
@@ -99,6 +103,8 @@ if str(client.ping()) == '{}': #{} means that it is connected
                 step_size = float(f['stepSize'])
                 globals()[name].precision = int(round(-math.log(step_size, 10), 0))
                 # print(name, " precision: ",globals()[name].precision)
+
+
          
 
         # Database.update_ticker(ticker=name, datetime=dt.datetime.now(),shares=0.0, averagePrice=0.0, realizedpnl=0.0)
@@ -134,6 +140,7 @@ def send_order(side, quantity, ticker, price, order_type, isolated, side_effect)
         print("Sending order...")
         # print("limit order")
         order = client.create_margin_order(side=side, quantity=quantity, symbol=ticker, price=price, type=order_type, isIsolated=isolated, sideEffectType=side_effect, timeInForce=TIME_IN_FORCE_FOK)
+        print(order)
         if order["status"] == "FILLED":
             return True
         else:
@@ -257,20 +264,16 @@ def process_m_message(msg):
                             symbol.take_profit = symbol.average_price * 1.011 #get a take profit amount
 
                             # limit order: check if filled
-                            limit_buy = send_order(side=SIDE_BUY , quantity=symbol.amount, ticker=symbol,price=10,order_type=ORDER_TYPE_LIMIT,isolated=True,side_effect="MARGIN_BUY")
-                            print(limit_buy)
+                            order_succeeded = send_order(side=SIDE_BUY , quantity=symbol.amount*symbol.margin_ratio, ticker=symbol,price=symbol.average_price,order_type=ORDER_TYPE_LIMIT,isolated=True,side_effect="MARGIN_BUY")
+                            print(order_succeeded)
 
                             if order_succeeded:
                                 # log buy 
-                                
                                 symbol.log_buy(amount=symbol.amount ,buy_price=symbol.average_price, ticker=name, money=symbol.money)
                                 print(Fore.GREEN + f"{name} bought for {symbol.average_price} dollar. rsi: {last_rsi} mfi: {last_mfi}. Stop loss at {symbol.stop_loss} and take profit at {symbol.take_profit}")
-                                try:
-                                    response = clickatell.sendMessage(to=phone_numbers, message=f"{name} bought for {symbol.average_price} dollar.")
-                                except Exception as e:
-                                    pass
                                 symbol.has_position = True
                                 order_succeeded = False
+
                 #  total money ophalen elke minuut
                 total_money = get_money()
 
