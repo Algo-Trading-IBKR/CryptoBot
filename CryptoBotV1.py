@@ -117,6 +117,16 @@ def get_money():
     total_money = data["free"]
     return total_money
 
+def get_amount(number:float, decimals:int=2):
+    if not isinstance(decimals, int):
+        raise TypeError("decimal places must be an integer")
+    elif decimals < 0:
+        raise ValueError("decimal places has to be 0 or more")
+    elif decimals == 0:
+        return math.floor(number)
+    factor = 10 ** decimals
+    return math.floor(number * factor) / factor
+
 # orders
 # side effect: AUTO_REPAY, MARGIN_BUY
 def send_order(side, quantity, ticker, price, order_type, isolated, side_effect):
@@ -238,9 +248,8 @@ def process_m_message(msg):
                             print(f"You already own {name}.")
 
                         else:
-                            symbol.average_price = symbol.closes[-1] #get the wanted buy price
-                            symbol.amount = (22/2)/symbol.average_price #get amount the bot could buy
-
+                            symbol.average_price = symbol.closes[-1] #get the wanted buy price 
+                            symbol.amount = get_amount((22/2)/symbol.average_price, symbol.precision) #get amount the bot could buy
                             # symbol.stop_loss = get_low(symbol.ticker) #get a stop loss
                             # if float(symbol.stop_loss) > (symbol.average_price - (symbol.average_price*0.03)):
                             #     symbol.stop_loss = symbol.average_price - (symbol.average_price*0.03)
