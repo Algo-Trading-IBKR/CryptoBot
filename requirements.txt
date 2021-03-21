@@ -1,0 +1,7 @@
+colorama
+clickatell
+pandas
+python-binance
+numpy
+TA-Lib
+tqdm
