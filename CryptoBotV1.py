@@ -141,6 +141,7 @@ def get_amount(number:float, decimals:int=2):
 # orders
 # side effect: AUTO_REPAY, MARGIN_BUY
 def send_order(side, quantity, ticker, price, order_type, isolated, side_effect):
+    global total_money
     try:
         print("Sending order...")
         # print("limit order")
@@ -153,6 +154,7 @@ def send_order(side, quantity, ticker, price, order_type, isolated, side_effect)
     except Exception as e:
         print("an exception occured - {}".format(e))
         return False
+    total_money = get_money()
 
 def cancel_order(ticker,order_id):
     try:
@@ -166,11 +168,15 @@ def cancel_order(ticker,order_id):
 
 # transfer
 def transfer_to_isolated(asset, ticker, amount):
+    global total_money
     t = client.transfer_spot_to_isolated_margin(asset=asset,symbol=ticker, amount=amount)
+    total_money = get_money()
     return t
 
 def transfer_to_spot(asset, symbol, amount):
+    global total_money
     t = client.transfer_isolated_margin_to_spot(asset=asset,symbol=symbol, amount=amount)
+    total_money = get_money()
     return t
 
 
@@ -278,10 +284,8 @@ def process_m_message(msg):
                             # symbol.stop_loss = get_low(symbol.ticker) #get a stop loss
                             # if float(symbol.stop_loss) > (symbol.average_price - (symbol.average_price*0.03)):
                             #     symbol.stop_loss = symbol.average_price - (symbol.average_price*0.03)
-
                             symbol.take_profit = symbol.average_price * 1.011 #get a take profit amount
 
-                            # limit order: check if filled
                             order_succeeded = send_order(side=SIDE_BUY , quantity=symbol.amount*symbol.margin_ratio, ticker=symbol,price=symbol.average_price,order_type=ORDER_TYPE_LIMIT,isolated=True,side_effect="MARGIN_BUY")
                             print(order_succeeded)
 
@@ -291,7 +295,7 @@ def process_m_message(msg):
                                 print(Fore.GREEN + f"{name} bought for {symbol.average_price} dollar. rsi: {last_rsi} mfi: {last_mfi}. Stop loss at {symbol.stop_loss} and take profit at {symbol.take_profit}")
                                 symbol.has_position = True
                                 order_succeeded = False
-                                total_money = get_money()
+                                
                 
                 symbol.closes = symbol.closes[-150:]
                 symbol.highs = symbol.highs[-150:]
@@ -314,7 +318,9 @@ def process_m_message(msg):
 
             
 def callback_isolated_accounts(msg):
+    global total_money
     print(msg)
+    total_money = get_money()
 
 
 # endregion
