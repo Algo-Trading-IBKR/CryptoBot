@@ -65,19 +65,27 @@ client = Client(API_KEY, SECRET_KEY)
 bm = BinanceSocketManager(client, user_timeout=600)
 
 tickers = []
-# x = list for websocket | y = make isolated wallet accounts 
-for p in pairs:
+isolated_accounts_failed = []
+# x = list for websocket | y = make isolated wallet accounts
+print("Creating isolated margin accounts.") 
+for p in tqdm(pairs):
     x = p.lower() + '@kline_1m' # dotusdt@kline_1m
     y = p[:-4]
     try:
         account = client.create_isolated_margin_account(base=y, quote='USDT')
     except Exception as e:
-        print(e)     
+        isolated_accounts_failed.append(p)
     tickers.append(x)
+
+# print list of already existing isolated wallets
+isolated_accounts_failed.append(" -> these isolated wallets already exists.")
+print(*isolated_accounts_failed, sep = ", ")  
+
+
 
 if str(client.ping()) == '{}': #{} means that it is connected
     status = client.get_system_status()
-    print("Connected, server status:", status["msg"])
+    print("Connected to Binance, server status:", status["msg"])
     print("Fetching historical data.")
     data = client.get_asset_balance(asset='USDT')
     total_money = data["free"]
@@ -103,10 +111,6 @@ if str(client.ping()) == '{}': #{} means that it is connected
                 step_size = float(f['stepSize'])
                 globals()[name].precision = int(round(-math.log(step_size, 10), 0))
                 # print(name, " precision: ",globals()[name].precision)
-
-
-         
-
         # Database.update_ticker(ticker=name, datetime=dt.datetime.now(),shares=0.0, averagePrice=0.0, realizedpnl=0.0)
     print(f"Data fetched, you have {(float(total_money)):.2f} dollar of buying power in your spot wallet.")
 
@@ -273,10 +277,8 @@ def process_m_message(msg):
                                 print(Fore.GREEN + f"{name} bought for {symbol.average_price} dollar. rsi: {last_rsi} mfi: {last_mfi}. Stop loss at {symbol.stop_loss} and take profit at {symbol.take_profit}")
                                 symbol.has_position = True
                                 order_succeeded = False
-
-                #  total money ophalen elke minuut
-                total_money = get_money()
-
+                                total_money = get_money()
+                
                 symbol.closes = symbol.closes[-150:]
                 symbol.highs = symbol.highs[-150:]
                 symbol.lows = symbol.lows[-150:]
@@ -297,7 +299,8 @@ def process_m_message(msg):
         raise e
 
             
-
+def callback_isolated_accounts(msg):
+    print(msg)
 
 
 
@@ -307,8 +310,12 @@ def process_m_message(msg):
 
 # initialize the socket when there is a connection
 if str(client.ping()) == '{}':
+    print("Intitialize listeners for isolated accounts.")
+    for i in tqdm(instances):
+        conn_key = bm.start_isolated_margin_socket(symbol=i.ticker, callback=callback_isolated_accounts)
     conn_key = bm.start_multiplex_socket(tickers, process_m_message)
     bm.start() #start the socket manager
+    print("Program is running.")
 
 
 # https://python-binance.readthedocs.io/en/latest/margin.html#orders
