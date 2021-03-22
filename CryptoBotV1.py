@@ -115,6 +115,7 @@ if str(client.ping()) == '{}': #{} means that it is connected
     print(f"Data fetched, you have {(float(total_money)):.2f} dollar of buying power in your spot wallet.")
 
 # endregion
+
 # region functions
 def get_low(ticker):
     data = client.get_ticker(symbol=ticker)
@@ -162,8 +163,20 @@ def cancel_order(ticker,order_id):
         print("an exception occured - {}".format(e))
         return False
     return True
+
+# transfer
+def transfer_to_isolated(asset, ticker, amount):
+    t = client.transfer_spot_to_isolated_margin(asset=asset,symbol=ticker, amount=amount)
+    return t
+
+def transfer_to_spot(asset, symbol, amount):
+    t = client.transfer_isolated_margin_to_spot(asset=asset,symbol=symbol, amount=amount)
+    return t
+
+
 # endregion
 
+# region callbacks
 def process_m_message(msg):
     global total_money
     try:        
@@ -259,6 +272,7 @@ def process_m_message(msg):
                             print(f"You already own {name}.")
 
                         else:
+                            transaction = transfer_to_isolated(asset="USDT", ticker=symbol.ticker, amount=22)
                             symbol.average_price = symbol.closes[-1] #get the wanted buy price 
                             symbol.amount = get_amount((22/2)/symbol.average_price, symbol.precision) #get amount the bot could buy
                             # symbol.stop_loss = get_low(symbol.ticker) #get a stop loss
@@ -303,10 +317,7 @@ def callback_isolated_accounts(msg):
     print(msg)
 
 
-
-
-
-
+# endregion
 
 # initialize the socket when there is a connection
 if str(client.ping()) == '{}':
