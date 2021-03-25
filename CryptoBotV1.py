@@ -210,26 +210,26 @@ def process_m_message(msg):
                     last_rsi = rsi[-1]
                     last_mfi = mfi[-1]
 
-                    # # verkopen
-                    # if symbol.has_position:
-                    #     current_price = symbol.closes[-1]
-                    #     current_high = symbol.highs[-1]
-                    #     order_succeeded = False
+                    # verkopen
+                    if symbol.has_position:
+                        current_price = symbol.closes[-1]
+                        current_high = symbol.highs[-1]
+                        order_succeeded = False
 
-                    #     # sell with a profit
-                    #     if current_high > float(symbol.take_profit):
-                    #         print(Fore.RED + f"{name} sold with a profit.")
-                    #         symbol.money += symbol.amount * symbol.take_profit
-                    #         try:
-                    #             response = clickatell.sendMessage(to=phone_numbers, message=f"{name} sold with a profit. money left: {symbol.money}.")
-                    #         except Exception as e:
-                    #             pass
-                    #         symbol.log_sell(profit=True ,price=symbol.take_profit ,ticker=name ,amount=symbol.amount ,money=symbol.money)
-                    #         order_succeeded = True
-                    #         symbol.amount = 0
-                    #         if order_succeeded:
-                    #             symbol.has_position = False
-                    #             order_succeeded = False
+                        # sell with a profit
+                        if current_high > float(symbol.take_profit):
+                            print(Fore.RED + f"{name} sold with a profit.")
+                            symbol.money += symbol.amount * symbol.take_profit
+                            try:
+                                response = clickatell.sendMessage(to=phone_numbers, message=f"{name} sold with a profit. money left: {symbol.money}.")
+                            except Exception as e:
+                                pass
+                            symbol.log_sell(profit=True ,price=symbol.take_profit ,ticker=name ,amount=symbol.amount ,money=symbol.money)
+                            order_succeeded = True
+                            symbol.amount = 0
+                            if order_succeeded:
+                                symbol.has_position = False
+                                order_succeeded = False
 
                         
                     #     # sell with a loss of initiate piramiding
@@ -318,9 +318,12 @@ def process_m_message(msg):
 
             
 def callback_isolated_accounts(msg):
+    # sell function here https://binance-docs.github.io/apidocs/spot/en/#payload-balance-update
     global total_money
     print(msg)
-    total_money = get_money()
+    name = msg['s']
+    side = msg['S'] #BUY or SELL
+    order_type = msg['o']
 
 
 # endregion
