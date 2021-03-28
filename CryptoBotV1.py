@@ -211,25 +211,21 @@ def process_m_message(msg):
                     last_mfi = mfi[-1]
 
                     # verkopen
-                    if symbol.has_position:
-                        current_price = symbol.closes[-1]
-                        current_high = symbol.highs[-1]
-                        order_succeeded = False
+                    # if symbol.has_position:
+                    #     current_price = symbol.closes[-1]
+                    #     current_high = symbol.highs[-1]
+                        # order_succeeded = False
 
-                        # sell with a profit
-                        if current_high > float(symbol.take_profit):
-                            print(Fore.RED + f"{name} sold with a profit.")
-                            symbol.money += symbol.amount * symbol.take_profit
-                            try:
-                                response = clickatell.sendMessage(to=phone_numbers, message=f"{name} sold with a profit. money left: {symbol.money}.")
-                            except Exception as e:
-                                pass
-                            symbol.log_sell(profit=True ,price=symbol.take_profit ,ticker=name ,amount=symbol.amount ,money=symbol.money)
-                            order_succeeded = True
-                            symbol.amount = 0
-                            if order_succeeded:
-                                symbol.has_position = False
-                                order_succeeded = False
+                    #     # sell with a profit
+                    #     if current_high > float(symbol.take_profit):
+                    #         print(Fore.RED + f"{name} sold with a profit.")
+                    #         symbol.money += symbol.amount * symbol.take_profit
+                    #         symbol.log_sell(profit=True ,price=symbol.take_profit ,ticker=name ,amount=symbol.amount ,money=symbol.money)
+                    #         order_succeeded = True
+                    #         symbol.amount = 0
+                    #         if order_succeeded:
+                    #             symbol.has_position = False
+                    #             order_succeeded = False
 
                         
                     #     # sell with a loss of initiate piramiding
@@ -295,6 +291,11 @@ def process_m_message(msg):
                                 print(Fore.GREEN + f"{name} bought for {symbol.average_price} dollar. rsi: {last_rsi} mfi: {last_mfi}. Stop loss at {symbol.stop_loss} and take profit at {symbol.take_profit}")
                                 symbol.has_position = True
                                 order_succeeded = False
+
+                                # get amount in wallet
+                                asset = client.get_isolated_margin_account(symbols=name)
+                                symbol.amount = get_amount(float(asset["assets"][0]["baseAsset"]["free"]), symbol.precision)
+                                take_profit_order = send_order(side=SIDE_SELL , quantity=symbol.amount, ticker=symbol,price=symbol.take_profit,order_type=ORDER_TYPE_LIMIT,isolated=True,side_effect="AUTO_REPAY")
                                 
                 
                 symbol.closes = symbol.closes[-150:]
@@ -324,6 +325,8 @@ def callback_isolated_accounts(msg):
     name = msg['s']
     side = msg['S'] #BUY or SELL
     order_type = msg['o']
+    execution_type = msg['x'] # is TRADE when order has been filled
+    error = msg['r'] #is NONE when no issues
 
 
 # endregion
