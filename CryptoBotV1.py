@@ -322,11 +322,16 @@ def callback_isolated_accounts(msg):
     # sell function here https://binance-docs.github.io/apidocs/spot/en/#payload-balance-update
     global total_money
     print(msg)
-    name = msg['s']
-    side = msg['S'] #BUY or SELL
-    order_type = msg['o']
-    execution_type = msg['x'] # is TRADE when order has been filled
-    error = msg['r'] #is NONE when no issues
+    event = msg['e']
+    if event == "executionReport":
+        name = msg['s']
+        side = msg['S'] #BUY or SELL
+        order_type = msg['o']
+        execution_type = msg['x'] # is TRADE when order has been filled
+        error = msg['r'] #is NONE when no issues
+        if side == "SELL":
+            # put transaction here
+
 
 
 # endregion
