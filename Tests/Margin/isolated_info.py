@@ -23,6 +23,9 @@ for f in symbol_info['filters']:
         print(precision)
 
 
+def transfer_to_spot(asset, ticker, amount):
+    t = client.transfer_isolated_margin_to_spot(asset=asset,symbol=ticker, amount=amount)
+
 
 def get_amount(number:float, decimals:int=2):
     if not isinstance(decimals, int):
@@ -40,3 +43,12 @@ tradeable_amount = get_amount(float(asset["assets"][0]["baseAsset"]["free"]), pr
 print(tradeable_amount)
 
 print(asset["assets"][0]["baseAsset"]["free"])
+print(asset["assets"][0]["quoteAsset"]["free"])
+amount = asset["assets"][0]["baseAsset"]["free"]
+# transaction = transfer_to_spot(asset="USDT", ticker="LITUSDT", amount=usd)
+transaction = transfer_to_spot(asset="LIT", ticker="LITUSDT", amount=amount)
+
+
+asset = client.get_isolated_margin_account(symbols="LITUSDT")
+print(asset["assets"][0]["baseAsset"]["free"])
+print(asset["assets"][0]["quoteAsset"]["free"])
