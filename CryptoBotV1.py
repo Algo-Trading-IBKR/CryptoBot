@@ -173,9 +173,9 @@ def transfer_to_isolated(asset, ticker, amount):
     total_money = get_money()
     return t
 
-def transfer_to_spot(asset, symbol, amount):
+def transfer_to_spot(asset, ticker, amount):
     global total_money
-    t = client.transfer_isolated_margin_to_spot(asset=asset,symbol=symbol, amount=amount)
+    t = client.transfer_isolated_margin_to_spot(asset=asset,symbol=ticker, amount=amount)
     total_money = get_money()
     return t
 
@@ -320,6 +320,7 @@ def process_m_message(msg):
             
 def callback_isolated_accounts(msg):
     # sell function here https://binance-docs.github.io/apidocs/spot/en/#payload-balance-update
+    # check if any are still borrowed 
     global total_money
     print(msg)
     event = msg['e']
@@ -329,8 +330,15 @@ def callback_isolated_accounts(msg):
         order_type = msg['o']
         execution_type = msg['x'] # is TRADE when order has been filled
         error = msg['r'] #is NONE when no issues
-        if side == "SELL":
+        # when the take profit order is reached
+        if side == "SELL" and execution_type == "TRADE":
+            asset = client.get_isolated_margin_account(symbols=name)
+            free_asset = asset["assets"][0]["baseAsset"]["free"]
+            free_quote = asset["assets"][0]["quoteAsset"]["free"]
             # put transaction here
+            transaction_asset = transfer_to_spot(asset=name[:-4], ticker=symbol.ticker, amount=free_asset)
+            transaction_quote = transfer_to_spot(asset="USDT", ticker=symbol.ticker, amount=free_quote)
+            
 
 
 
