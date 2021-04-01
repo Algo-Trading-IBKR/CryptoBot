@@ -236,7 +236,7 @@ def process_m_message(msg):
                             free_quote, borrowed_quote = asset["assets"][0]["quoteAsset"]["free"], asset["assets"][0]["quoteAsset"]["borrowed"]
                             if free_quote >= 11:
                                 print(Fore.RED  +f"{name} price dropped under the stop loss, buy a second time.")
-
+                                piramidding_amount = get_amount((22/2)/current_price, symbol.precision)
 
 
 
