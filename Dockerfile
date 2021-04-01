@@ -1,9 +1,11 @@
-FROM python:3.7-buster
+FROM yimura/pytalib
 
 WORKDIR /app
 
+COPY requirements.txt requirements.txt
+
+RUN pip install -r requirements.txt
+
 COPY . .
 
-RUN ./install.sh
-
-ENTRYPOINT [ "python", "NoStopLossV4.py" ]
+ENTRYPOINT [ "python", "CryptoBotV1.py" ]
