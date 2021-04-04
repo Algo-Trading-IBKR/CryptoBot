@@ -218,18 +218,6 @@ def process_m_message(msg):
                         current_price = symbol.closes[-1]
                         current_high = symbol.highs[-1]
                         order_succeeded = False
-
-                        # # sell with a profit
-                        # if current_high > float(symbol.take_profit):
-                        #     print(Fore.RED + f"{name} sold with a profit.")
-                        #     symbol.money += symbol.amount * symbol.take_profit
-                        #     symbol.log_sell(profit=True ,price=symbol.take_profit ,ticker=name ,amount=symbol.amount ,money=symbol.money)
-                        #     order_succeeded = True
-                        #     symbol.amount = 0
-                        #     if order_succeeded:
-                        #         symbol.has_position = False
-                        #         order_succeeded = False
-
                         
                         # sell with a loss of initiate piramiding
                         if current_price < float(symbol.stop_loss):
@@ -241,54 +229,21 @@ def process_m_message(msg):
                             if free_quote >= 11:
                                 print(Fore.RED  +f"{name} price dropped under the stop loss, buy a second time.")
                                 piramidding_amount = get_amount((22/2)/current_price, symbol.precision)
-                                # calculate average price after buy to send new TP order
-                                
-
-
-
-
-
-
-
-
-
-
-                            if float(symbol.money) > 20:
-                                
-                                piramidding_amount = symbol.money/current_price
-                                symbol.average_price = (symbol.amount*symbol.average_price + piramidding_amount*current_price) / (symbol.amount+piramidding_amount)
-                                symbol.log_buy(amount=piramidding_amount ,buy_price=current_price, ticker=name, money=symbol.money)
-                                symbol.amount += piramidding_amount
-                                symbol.stop_loss = get_low(symbol.ticker)
-                                if float(symbol.stop_loss) > (symbol.average_price - (symbol.average_price*0.05)):
-                                    symbol.stop_loss = symbol.average_price - (symbol.average_price*0.05)
-                                symbol.take_profit = symbol.average_price * 1.012
-                                symbol.money -= current_price * piramidding_amount
-                                order_succeeded = True
-
+                                symbol.stop_loss = 0
+                                # take profit after average price
+                                order_succeeded = send_order(side=SIDE_BUY , quantity=piramidding_amount*symbol.margin_ratio, ticker=symbol.ticker,price=current_price,order_type=ORDER_TYPE_LIMIT,isolated=True,side_effect="MARGIN_BUY")
                                 if order_succeeded:
-                                    print(Fore.GREEN + f"SECOND BUY: {name} bought for {current_price} dollar. Stop loss at {symbol.stop_loss} and take profit at {symbol.take_profit}")
-                                    try:
-                                        response = clickatell.sendMessage(to=phone_numbers, message=f"SECOND BUY: {name} bought for {current_price} dollar.")
-                                    except Exception as e:
-                                        pass
+                                    symbol.log_buy(amount=piramidding_amount ,buy_price=current_price, ticker=name, money=symbol.money)
+                                    symbol.average_price = (symbol.amount*symbol.average_price + piramidding_amount*current_price) / (symbol.amount+piramidding_amount)
+                                    symbol.take_profit = symbol.average_price * 1.012
+                                    # get amount for limit sell order
+                                    asset = client.get_isolated_margin_account(symbols=name)
+                                    symbol.amount = get_amount(float(asset["assets"][0]["baseAsset"]["free"]), symbol.precision)
+                                    take_profit_order = send_order(side=SIDE_SELL , quantity=symbol.amount, ticker=symbol.ticker,price=symbol.take_profit,order_type=ORDER_TYPE_LIMIT,isolated=True,side_effect="AUTO_REPAY")
                                     symbol.has_position = True
                                     order_succeeded = False
+                                    print(Fore.GREEN + f"SECOND BUY: {name} bought for {current_price} dollar. Stop loss at {symbol.stop_loss} and take profit at {symbol.take_profit}")
 
-                    #         # loss
-                    #         else:
-                    #             print(Fore.RED  +f"{name} sold with a loss.")
-                    #             symbol.money += symbol.amount * current_price
-                    #             try:
-                    #                 response = clickatell.sendMessage(to=phone_numbers, message=f"{name} sold with a loss. money left: {symbol.money}.")
-                    #             except Exception as e:
-                    #                 pass
-                    #             symbol.log_sell(profit=False ,price=current_price ,ticker=name ,amount=symbol.amount ,money=symbol.money)
-                    #             order_succeeded = True
-                    #             symbol.amount = 0
-                    #             if order_succeeded:
-                    #                 symbol.has_position = False
-                    #                 order_succeeded = False
  
                     # kopen
                     if last_rsi < rsi_oversold and last_mfi < mfi_oversold and total_money >= 22:
