@@ -141,6 +141,7 @@ def get_amount(number:float, decimals:int=2):
 # orders
 # side effect: AUTO_REPAY, MARGIN_BUY
 def send_order(side, quantity, ticker, price, order_type, isolated, side_effect):
+    symbol = globals()[ticker]
     global total_money
     try:
         print("Sending order...")
@@ -148,6 +149,8 @@ def send_order(side, quantity, ticker, price, order_type, isolated, side_effect)
         order = client.create_margin_order(side=side, quantity=quantity, symbol=ticker, price=price, type=order_type, isIsolated=isolated, sideEffectType=side_effect, timeInForce=TIME_IN_FORCE_FOK)
         print(order)
         if order["status"] == "FILLED":
+            if order["side"] == "SELL":
+                symbol.TP_order_ID = order['orderId'] #instantie
             return True
         else:
             return False
@@ -159,7 +162,7 @@ def send_order(side, quantity, ticker, price, order_type, isolated, side_effect)
 def cancel_order(ticker,order_id):
     try:
         print("Cancelling order...")
-        result = client.cancel_margin_order(symbol=ticker,orderId=order_id)        
+        result = client.cancel_margin_order(symbol=ticker,orderId=order_id,isIsolated="TRUE")        
         print(result)
     except Exception as e:
         print("an exception occured - {}".format(e))
@@ -233,11 +236,13 @@ def process_m_message(msg):
                             # piramidding
                             asset = client.get_isolated_margin_account(symbols=name)
                             free_asset, borrowed_asset = asset["assets"][0]["baseAsset"]["free"], asset["assets"][0]["baseAsset"]["borrowed"]
-                            free_quote, borrowed_quote = asset["assets"][0]["quoteAsset"]["free"], asset["assets"][0]["quoteAsset"]["borrowed"]
+                            free_quote, borrowed_quote = asset["assets"][0]["quoteAsset"]["free"], asset["assets"][0]["quoteAsset"]["borrowed"]  
+                            # 11 -> half of buy amount (add in config)
                             if free_quote >= 11:
                                 print(Fore.RED  +f"{name} price dropped under the stop loss, buy a second time.")
                                 piramidding_amount = get_amount((22/2)/current_price, symbol.precision)
-
+                                # calculate average price after buy to send new TP order
+                                
 
 
 
@@ -299,7 +304,7 @@ def process_m_message(msg):
                                 symbol.stop_loss = symbol.average_price - (symbol.average_price*0.03)
                             symbol.take_profit = symbol.average_price * 1.011 #get a take profit amount
 
-                            order_succeeded = send_order(side=SIDE_BUY , quantity=symbol.amount*symbol.margin_ratio, ticker=symbol,price=symbol.average_price,order_type=ORDER_TYPE_LIMIT,isolated=True,side_effect="MARGIN_BUY")
+                            order_succeeded = send_order(side=SIDE_BUY , quantity=symbol.amount*symbol.margin_ratio, ticker=symbol.ticker,price=symbol.average_price,order_type=ORDER_TYPE_LIMIT,isolated=True,side_effect="MARGIN_BUY")
                             print(order_succeeded)
 
                             if order_succeeded:
@@ -312,7 +317,7 @@ def process_m_message(msg):
                                 # get amount in wallet
                                 asset = client.get_isolated_margin_account(symbols=name)
                                 symbol.amount = get_amount(float(asset["assets"][0]["baseAsset"]["free"]), symbol.precision)
-                                take_profit_order = send_order(side=SIDE_SELL , quantity=symbol.amount, ticker=symbol,price=symbol.take_profit,order_type=ORDER_TYPE_LIMIT,isolated=True,side_effect="AUTO_REPAY")
+                                take_profit_order = send_order(side=SIDE_SELL , quantity=symbol.amount, ticker=symbol.ticker,price=symbol.take_profit,order_type=ORDER_TYPE_LIMIT,isolated=True,side_effect="AUTO_REPAY")
                                 
                 
                 symbol.closes = symbol.closes[-150:]
@@ -343,19 +348,22 @@ def callback_isolated_accounts(msg):
     event = msg['e']
     if event == "executionReport":
         name = msg['s']
+        symbol = globals()[name]
         side = msg['S'] #BUY or SELL
         order_type = msg['o']
         execution_type = msg['x'] # is TRADE when order has been filled
+        execution_status = msg['X']
         error = msg['r'] #is NONE when no issues
+        TP_orderID = msg['i']
         # when the take profit order is reached
-        if side == "SELL" and execution_type == "TRADE":
+        if side == "SELL" and execution_type == "TRADE" and execution_status == "FILLED" and TP_orderID == symbol.TP_order_ID: 
             asset = client.get_isolated_margin_account(symbols=name)
             free_asset, borrowed_asset = asset["assets"][0]["baseAsset"]["free"], asset["assets"][0]["baseAsset"]["borrowed"]
             free_quote, borrowed_quote = asset["assets"][0]["quoteAsset"]["free"], asset["assets"][0]["quoteAsset"]["borrowed"]
             if borrowed_asset == 0 and borrowed_quote == 0: 
                 #transaction to spot
-                transaction_asset = transfer_to_spot(asset=name[:-4], ticker=symbol.ticker, amount=free_asset)
-                transaction_quote = transfer_to_spot(asset="USDT", ticker=symbol.ticker, amount=free_quote)
+                transaction_asset = transfer_to_spot(asset=name[:-4], ticker=symbol.ticker, amount=free_asset) 
+                transaction_quote = transfer_to_spot(asset="USDT", ticker=symbol.ticker, amount=free_quote) 
             
 
 
