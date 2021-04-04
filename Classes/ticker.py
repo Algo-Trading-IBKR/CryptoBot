@@ -28,6 +28,8 @@ class Ticker:
         # margin
         self.margin_ratio = 1
         self.liquidation_price = 0 #get in the start
+
+        self.TP_order_ID = 0
         
 
 
