@@ -17,11 +17,11 @@ class Ticker:
         self.log_file = open(f"{log_file}/{ticker}.txt","w+")
         self.log_file.close()
 
-        self.has_position = False
-        self.average_price = 0 # need to get data
-        self.stop_loss = 0 # calculate in start
-        self.take_profit = 0 # calculate in start
-        self.amount = 0  # get out of api
+        self.has_position = False # get when reboot
+        self.average_price = 0 # get when reboot
+        self.stop_loss = 0 # get when reboot
+        self.take_profit = 0 
+        self.amount = 0 # get out of api , get when reboot
 
         self.precision = 0
         
@@ -29,7 +29,7 @@ class Ticker:
         self.margin_ratio = 1
         self.liquidation_price = 0 #get in the start
 
-        self.TP_order_ID = 0
+        self.TP_order_ID = 0 #get when reboot
         
 
 
