@@ -180,3 +180,17 @@ an error occured: APIError(code=-11004): Isolated margin account exists.
 <class 'binance.exceptions.BinanceAPIException'>
 CryptoBotV1.py
 Line: 72
+
+05/04/2021
+19:45:00
+an error occured: name 'verkopen' is not defined
+<class 'NameError'>
+CryptoBotV1.py
+Line: 216
+
+05/04/2021
+19:45:08
+an error occured: name 'verkopen' is not defined
+<class 'NameError'>
+CryptoBotV1.py
+Line: 216

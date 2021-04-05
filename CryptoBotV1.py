@@ -53,7 +53,7 @@ mfi_overbought = int(MFI['mfi_overbought'])
 mfi_oversold = int(MFI['mfi_oversold'])
 
 # tickers
-pairs = json.loads(config.get("TICKERS","pairs"))
+pairs = json.loads(config.get("TICKERS","pairs_live"))
 
 # logging
 log_file = str(LOGGING['log_file'])
@@ -213,7 +213,7 @@ def process_m_message(msg):
                     last_rsi = rsi[-1]
                     last_mfi = mfi[-1]
 
-                    verkopen
+                    # verkopen
                     if symbol.has_position:
                         current_price = symbol.closes[-1]
                         current_high = symbol.highs[-1]
@@ -251,6 +251,7 @@ def process_m_message(msg):
                             print(f"You already own {name}.")
 
                         else:
+                            print("in the buy")
                             transaction = transfer_to_isolated(asset="USDT", ticker=symbol.ticker, amount=22)
                             symbol.average_price = symbol.closes[-1] #get the wanted buy price 
                             symbol.amount = get_amount((22/2)/symbol.average_price, symbol.precision) #get amount the bot could buy
@@ -260,7 +261,7 @@ def process_m_message(msg):
                             symbol.take_profit = symbol.average_price * 1.011 #get a take profit amount
 
                             order_succeeded = send_order(side=SIDE_BUY , quantity=symbol.amount*symbol.margin_ratio, ticker=symbol.ticker,price=symbol.average_price,order_type=ORDER_TYPE_LIMIT,isolated=True,side_effect="MARGIN_BUY")
-                            print(order_succeeded)
+                            print("order succeeded",order_succeeded)
 
                             if order_succeeded:
                                 # log buy 
