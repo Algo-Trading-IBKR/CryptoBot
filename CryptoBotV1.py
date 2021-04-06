@@ -81,40 +81,6 @@ for p in tqdm(pairs):
 isolated_accounts_failed.append(" -> these isolated wallets already exists.")
 print(*isolated_accounts_failed, sep = ", ")  
 
-
-
-if str(client.ping()) == '{}': #{} means that it is connected
-    status = client.get_system_status()
-    print("Connected to Binance, server status:", status["msg"])
-    print("Fetching historical data.")
-    # data = client.get_asset_balance(asset='USDT')
-    # total_money = data["free"]
-    get_money()
-    instances = []
-    for x in tqdm(range(len(tickers))):
-        name = tickers[x][:-9].upper()
-        globals()[name] = Ticker(name, log_file)
-        instances.append(globals()[name]) 
-        klines = client.get_historical_klines(name.upper(), interval=Client.KLINE_INTERVAL_1MINUTE, start_str="150 minutes ago CET", end_str='1 minutes ago CET')
-        for k in klines:
-            globals()[name].closes.append(float(k[4]))
-            globals()[name].highs.append(float(k[2]))
-            globals()[name].lows.append(float(k[3]))
-            globals()[name].volumes.append(float(k[5]))
-        # get margin ratio
-        info = client.get_isolated_margin_account(symbols=name)
-        globals()[name].margin_ratio = info["assets"][0]["marginRatio"]
-        # print(name, " ratio: ",globals()[name].margin_ratio)
-        # get precision
-        symbol_info = client.get_symbol_info(name)
-        for f in symbol_info['filters']:
-            if f['filterType'] == 'LOT_SIZE':
-                step_size = float(f['stepSize'])
-                globals()[name].precision = int(round(-math.log(step_size, 10), 0))
-                # print(name, " precision: ",globals()[name].precision)
-        # Database.update_ticker(ticker=name, datetime=dt.datetime.now(),shares=0.0, averagePrice=0.0, realizedpnl=0.0)
-    print(f"Data fetched, you have {(float(total_money)):.2f} dollar of buying power in your spot wallet.")
-
 # endregion
 
 # region functions
@@ -319,11 +285,40 @@ def callback_isolated_accounts(msg):
                 #transaction to spot
                 transaction_asset = transfer_to_spot(asset=name[:-4], ticker=symbol.ticker, amount=free_asset) 
                 transaction_quote = transfer_to_spot(asset="USDT", ticker=symbol.ticker, amount=free_quote) 
-            
-
-
 
 # endregion
+
+if str(client.ping()) == '{}': #{} means that it is connected
+    status = client.get_system_status()
+    print("Connected to Binance, server status:", status["msg"])
+    print("Fetching historical data.")
+    # data = client.get_asset_balance(asset='USDT')
+    # total_money = data["free"]
+    get_money()
+    instances = []
+    for x in tqdm(range(len(tickers))):
+        name = tickers[x][:-9].upper()
+        globals()[name] = Ticker(name, log_file)
+        instances.append(globals()[name]) 
+        klines = client.get_historical_klines(name.upper(), interval=Client.KLINE_INTERVAL_1MINUTE, start_str="150 minutes ago CET", end_str='1 minutes ago CET')
+        for k in klines:
+            globals()[name].closes.append(float(k[4]))
+            globals()[name].highs.append(float(k[2]))
+            globals()[name].lows.append(float(k[3]))
+            globals()[name].volumes.append(float(k[5]))
+        # get margin ratio
+        info = client.get_isolated_margin_account(symbols=name)
+        globals()[name].margin_ratio = info["assets"][0]["marginRatio"]
+        # print(name, " ratio: ",globals()[name].margin_ratio)
+        # get precision
+        symbol_info = client.get_symbol_info(name)
+        for f in symbol_info['filters']:
+            if f['filterType'] == 'LOT_SIZE':
+                step_size = float(f['stepSize'])
+                globals()[name].precision = int(round(-math.log(step_size, 10), 0))
+                # print(name, " precision: ",globals()[name].precision)
+        # Database.update_ticker(ticker=name, datetime=dt.datetime.now(),shares=0.0, averagePrice=0.0, realizedpnl=0.0)
+    print(f"Data fetched, you have {(float(total_money)):.2f} dollar of buying power in your spot wallet.")
 
 # initialize the socket when there is a connection
 if str(client.ping()) == '{}':
