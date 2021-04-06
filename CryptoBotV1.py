@@ -314,7 +314,7 @@ if str(client.ping()) == '{}': #{} means that it is connected
             symbol.volumes.append(float(k[5]))
         # get margin ratio
         info = client.get_isolated_margin_account(symbols=name)
-        symbol.margin_ratio = info["assets"][0]["marginRatio"]
+        symbol.margin_ratio = float(info["assets"][0]["marginRatio"])
         # print(name, " ratio: ",globals()[name].margin_ratio)
         # get precision
         symbol_info = client.get_symbol_info(name)

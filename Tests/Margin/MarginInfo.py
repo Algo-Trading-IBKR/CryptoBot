@@ -1,7 +1,6 @@
 
-import time, talib
+import time
 import pandas as pd
-import config
 from binance.client import Client
 from binance.websockets import BinanceSocketManager
 from binance.enums import *
@@ -43,47 +42,48 @@ info = client.get_isolated_margin_account(symbols="LITUSDT")
 
 
 balance = client.get_asset_balance(asset='USDT')
-# info = client.get_margin_account()
-# info = client.get_isolated_margin_account()
+info = client.get_margin_account()
+info = client.get_isolated_margin_account()
 
-amount = 1.2879
-can_sell = amount - (amount * 0.002) 
+# amount = 1.2879
+# can_sell = amount - (amount * 0.002) 
 
 
 
 
 # print(symbol_info)
-# step_size = 0.0
-# for p in pairs:
-#   symbol_info = client.get_symbol_info(p)
-#   for f in symbol_info['filters']:
-#     if f['filterType'] == 'LOT_SIZE':
-#       step_size = float(f['stepSize'])
-#       precision = int(round(-math.log(step_size, 10), 0))
+step_size = 0.0
+pairs = ["LITUSDT"]
+for p in pairs:
+  symbol_info = client.get_symbol_info(p)
+  for f in symbol_info['filters']:
+    if f['filterType'] == 'LOT_SIZE':
+      step_size = float(f['stepSize'])
+      precision = int(round(-math.log(step_size, 10), 0))
       
-#       print(p, " precision: ",precision)
+      print(p, " precision: ",precision, type(precision))
 
-precision = 2
-quantity = float(round(amount, precision))
+# precision = 2
+# quantity = float(round(amount, precision))
 
-print(quantity)
+# print(quantity)
 
 
 
-def get_amount(number:float, decimals:int=2):
-# https://kodify.net/python/math/round-decimals/#round-decimal-places-down-in-python
-    if not isinstance(decimals, int):
-        raise TypeError("decimal places must be an integer")
-    elif decimals < 0:
-        raise ValueError("decimal places has to be 0 or more")
-    elif decimals == 0:
-        return math.floor(number)
+# def get_amount(number:float, decimals:int=2):
+# # https://kodify.net/python/math/round-decimals/#round-decimal-places-down-in-python
+#     if not isinstance(decimals, int):
+#         raise TypeError("decimal places must be an integer")
+#     elif decimals < 0:
+#         raise ValueError("decimal places has to be 0 or more")
+#     elif decimals == 0:
+#         return math.floor(number)
 
-    factor = 10 ** decimals
-    return math.floor(number * factor) / factor
+#     factor = 10 ** decimals
+#     return math.floor(number * factor) / factor
 
-test = get_amount(number=amount*10, decimals=precision)
-print(test)
+# test = get_amount(number=amount*10, decimals=precision)
+# print(test)
 # info = client.get_exchange_info() 
 # print(balance)
 # print("quantity: ", quantity)
