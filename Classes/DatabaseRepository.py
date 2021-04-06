@@ -325,4 +325,4 @@ class Database():
     
     #endregion
 
-Database.insert_error_log(dt.datetime.now(), "test", "test", 69)
+# Database.insert_error_log(dt.datetime.now(), "test", "test", 69)

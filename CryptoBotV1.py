@@ -212,13 +212,13 @@ def process_m_message(msg):
 
  
                     # kopen
-                    if last_rsi < rsi_oversold and last_mfi < mfi_oversold and total_money >= 22:
+                    if last_rsi < rsi_oversold and last_mfi < mfi_oversold and total_money >= 23:
                         if symbol.has_position:
                             print(f"You already own {name}.")
 
                         else:
                             print("in the buy")
-                            transaction = transfer_to_isolated(asset="USDT", ticker=symbol.ticker, amount=22)
+                            transaction = transfer_to_isolated(asset="USDT", ticker=symbol.ticker, amount=23)
                             symbol.average_price = symbol.closes[-1] #get the wanted buy price 
                             symbol.amount = get_amount((22/2)/symbol.average_price, symbol.precision) #get amount the bot could buy
                             symbol.stop_loss = get_low(symbol.ticker) #get a stop loss
