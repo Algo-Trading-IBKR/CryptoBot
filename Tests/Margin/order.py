@@ -12,7 +12,7 @@ import logging
 API_KEY = "SZLgVpzpnAoroc2YTSJ3hVJmBIH4tANSBO5I0dobNw4ORbFdysAoJVP0tR9pE9CF" 
 SECRET_KEY = "YHyoGrthBZoqg0gEcVuvwkuRul7L4NxcqjaxHXDM0cbVjRPkN6S7eQCzyeywfVgu"
 client = Client(API_KEY, SECRET_KEY)
-symbol = 'LITUSDT'
+symbol = 'FTMUSDT'
 
 # orders
 # side=SIDE_BUY
@@ -39,8 +39,8 @@ def send_order(side, quantity, ticker, price, order_type, isolated,side_effect):
     return True
 
  
-# market_buy = send_order(side=SIDE_BUY , quantity=2, ticker=symbol,price=10,order_type=ORDER_TYPE_MARKET,isolated=True,side_effect="MARGIN_BUY")
-# print(market_buy)
+market_buy = send_order(side=SIDE_BUY , quantity=2, ticker=symbol,price=10,order_type=ORDER_TYPE_MARKET,isolated=True,side_effect="MARGIN_BUY")
+print(market_buy)
 
 # market_sell = send_order(side=SIDE_SELL , quantity=2, ticker=symbol,price=10,order_type=ORDER_TYPE_MARKET,isolated=True,side_effect="AUTO_REPAY") 
 # print(market_sell)
@@ -48,7 +48,7 @@ def send_order(side, quantity, ticker, price, order_type, isolated,side_effect):
 # limit_buy = send_order(side=SIDE_BUY , quantity=2.8, ticker=symbol,price=10,order_type=ORDER_TYPE_LIMIT,isolated=True,side_effect="MARGIN_BUY") 
 # print(limit_buy)
 
-# limit_sell = send_order(side=SIDE_SELL , quantity=1.99, ticker=symbol,price=10.9,order_type=ORDER_TYPE_LIMIT,isolated=True,side_effect="AUTO_REPAY")
+# limit_sell = send_order(side=SIDE_SELL , quantity=120.8, ticker=symbol,price=0.45959,order_type=ORDER_TYPE_LIMIT,isolated=True,side_effect="AUTO_REPAY")
 # print(limit_sell)
 
 
@@ -58,10 +58,10 @@ def send_order(side, quantity, ticker, price, order_type, isolated,side_effect):
 # print(orders)
 # orders = client.get_open_margin_orders(symbol='LITUSDT',isIsolated=True)
 # print(orders)
-orders = client.get_all_margin_orders(symbol='LITUSDT', limit=4,isIsolated=True)
+# orders = client.get_all_margin_orders(symbol='LITUSDT', limit=4,isIsolated=True)
 
-trades = client.get_margin_trades(symbol='LITUSDT',limit=2,isIsolated=True)
-print(trades)
+# trades = client.get_margin_trades(symbol='LITUSDT',limit=2,isIsolated=True)
+# print(trades)
 
 
 

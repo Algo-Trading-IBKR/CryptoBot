@@ -51,17 +51,22 @@ info = client.get_isolated_margin_account()
 
 
 
-# print(symbol_info)
-step_size = 0.0
-pairs = ["LITUSDT"]
-for p in pairs:
-  symbol_info = client.get_symbol_info(p)
-  for f in symbol_info['filters']:
-    if f['filterType'] == 'LOT_SIZE':
-      step_size = float(f['stepSize'])
-      precision = int(round(-math.log(step_size, 10), 0))
+# step_size = 0.0
+# pairs = ["FTMUSDT"]
+# for p in pairs:
+#   symbol_info = client.get_symbol_info(p)
+#   print(symbol_info)
+#   for f in symbol_info['filters']:
+#     if f['filterType'] == 'LOT_SIZE':
+#       step_size = float(f['stepSize'])
+#       precision = int(round(-math.log(step_size, 10), 0))
       
-      print(p, " precision: ",precision, type(precision))
+#       print(p, " precision: ",precision, type(precision))
+#     elif f['filterType'] == "PRICE_FILTER":
+#       minPrice = float(f['minPrice'])
+#       precision = int(round(-math.log(minPrice, 10), 0))
+      
+#       print(p, " precision price: ",precision, type(precision))
 
 # precision = 2
 # quantity = float(round(amount, precision))
@@ -70,18 +75,26 @@ for p in pairs:
 
 
 
-# def get_amount(number:float, decimals:int=2):
-# # https://kodify.net/python/math/round-decimals/#round-decimal-places-down-in-python
-#     if not isinstance(decimals, int):
-#         raise TypeError("decimal places must be an integer")
-#     elif decimals < 0:
-#         raise ValueError("decimal places has to be 0 or more")
-#     elif decimals == 0:
-#         return math.floor(number)
+def get_amount(number:float, decimals:int=2, floor:bool=True):
+# https://kodify.net/python/math/round-decimals/#round-decimal-places-down-in-python
+    if not isinstance(decimals, int):
+        raise TypeError("decimal places must be an integer")
+    elif decimals < 0:
+        raise ValueError("decimal places has to be 0 or more")
+    elif decimals == 0:
+        return math.floor(number)
 
-#     factor = 10 ** decimals
-#     return math.floor(number * factor) / factor
+    factor = 10 ** decimals
+    if floor:
+          return math.floor(number * factor) / factor
+    elif floor == False:
+        return math.ceil(number * factor) / factor
+          
+      
 
+
+test = get_amount(0.45854*1.011, 5)
+print(test)
 # test = get_amount(number=amount*10, decimals=precision)
 # print(test)
 # info = client.get_exchange_info() 
