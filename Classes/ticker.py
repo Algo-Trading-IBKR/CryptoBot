@@ -24,6 +24,7 @@ class Ticker:
         self.amount = 0 # get out of api , get when reboot
 
         self.precision = 0
+        self.precision_minPrice = 0
         
         # margin
         self.margin_ratio = 1
