@@ -86,7 +86,7 @@ print(*isolated_accounts_failed, sep = ", ")
 # region functions
 def get_low(ticker):
     data = client.get_ticker(symbol=ticker)
-    low = data["lowPrice"]
+    low = float(data["lowPrice"])
     return low
 
 def get_money():
@@ -163,16 +163,16 @@ def process_m_message(msg):
 
             candle = msg['data']['k']
             candle_closed = candle['x']
-            close = candle['c']
-            high = candle['h']
-            low = candle['l']
-            volume = candle['v']
+            close = float(candle['c'])
+            high = float(candle['h'])
+            low = float(candle['l'])
+            volume = float(candle['v'])
 
             if candle_closed:
-                symbol.closes.append(float(close))
-                symbol.highs.append(float(high))
-                symbol.lows.append(float(low))
-                symbol.volumes.append(float(volume))
+                symbol.closes.append(close)
+                symbol.highs.append(high)
+                symbol.lows.append(low)
+                symbol.volumes.append(volume)
                 if len(symbol.closes) > 149:
                     rsi = talib.RSI(np.array(symbol.closes), timeperiod=rsi_period)
                     mfi = talib.MFI(np.array(symbol.highs), np.array(symbol.lows), np.array(symbol.closes), np.array(symbol.volumes), timeperiod=mfi_period)
@@ -186,7 +186,7 @@ def process_m_message(msg):
                         order_succeeded = False
                         
                         # sell with a loss of initiate piramiding
-                        if current_price < float(symbol.stop_loss):
+                        if current_price < symbol.stop_loss:
                             # piramidding
                             asset = client.get_isolated_margin_account(symbols=name)
                             free_asset, borrowed_asset = asset["assets"][0]["baseAsset"]["free"], asset["assets"][0]["baseAsset"]["borrowed"]
@@ -222,7 +222,7 @@ def process_m_message(msg):
                             symbol.average_price = symbol.closes[-1] #get the wanted buy price 
                             symbol.amount = get_amount((22/2)/symbol.average_price, symbol.precision) #get amount the bot could buy
                             symbol.stop_loss = get_low(symbol.ticker) #get a stop loss
-                            if float(symbol.stop_loss) > (symbol.average_price - (symbol.average_price*0.03)):
+                            if symbol.stop_loss > (symbol.average_price - (symbol.average_price*0.03)):
                                 symbol.stop_loss = symbol.average_price - (symbol.average_price*0.03)
                             symbol.take_profit = symbol.average_price * 1.011 #get a take profit amount
 
@@ -299,26 +299,27 @@ if str(client.ping()) == '{}': #{} means that it is connected
     for x in tqdm(range(len(tickers))):
         name = tickers[x][:-9].upper()
         globals()[name] = Ticker(name, log_file)
+        symbol = globals()[name]
         instances.append(globals()[name]) 
         klines = client.get_historical_klines(name.upper(), interval=Client.KLINE_INTERVAL_1MINUTE, start_str="150 minutes ago CET", end_str='1 minutes ago CET')
         for k in klines:
-            globals()[name].closes.append(float(k[4]))
-            globals()[name].highs.append(float(k[2]))
-            globals()[name].lows.append(float(k[3]))
-            globals()[name].volumes.append(float(k[5]))
+            symbol.closes.append(float(k[4]))
+            symbol.highs.append(float(k[2]))
+            symbol.lows.append(float(k[3]))
+            symbol.volumes.append(float(k[5]))
         # get margin ratio
         info = client.get_isolated_margin_account(symbols=name)
-        globals()[name].margin_ratio = info["assets"][0]["marginRatio"]
+        symbol.margin_ratio = info["assets"][0]["marginRatio"]
         # print(name, " ratio: ",globals()[name].margin_ratio)
         # get precision
         symbol_info = client.get_symbol_info(name)
         for f in symbol_info['filters']:
             if f['filterType'] == 'LOT_SIZE':
                 step_size = float(f['stepSize'])
-                globals()[name].precision = int(round(-math.log(step_size, 10), 0))
+                symbol.precision = int(round(-math.log(step_size, 10), 0))
                 # print(name, " precision: ",globals()[name].precision)
         # Database.update_ticker(ticker=name, datetime=dt.datetime.now(),shares=0.0, averagePrice=0.0, realizedpnl=0.0)
-    print(f"Data fetched, you have {(float(total_money)):.2f} dollar of buying power in your spot wallet.")
+    print(f"Data fetched, you have {(total_money):.2f} dollar of buying power in your spot wallet.")
 
 # initialize the socket when there is a connection
 if str(client.ping()) == '{}':
