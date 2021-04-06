@@ -94,7 +94,7 @@ def get_money():
     data = client.get_asset_balance(asset='USDT')
     total_money = float(data["free"])
 
-def get_amount(number:float, decimals:int=2):
+def get_amount(number:float, decimals:int=2, floor:bool=True):
     if not isinstance(decimals, int):
         raise TypeError("decimal places must be an integer")
     elif decimals < 0:
@@ -102,7 +102,11 @@ def get_amount(number:float, decimals:int=2):
     elif decimals == 0:
         return math.floor(number)
     factor = 10 ** decimals
-    return math.floor(number * factor) / factor
+    if floor:
+        return math.floor(number * factor) / factor
+    elif floor == False:
+        return math.ceil(number * factor) / factor
+    
 
 # orders
 # side effect: AUTO_REPAY, MARGIN_BUY
@@ -201,7 +205,7 @@ def process_m_message(msg):
                                 if order_succeeded:
                                     symbol.log_buy(amount=piramidding_amount ,buy_price=current_price, ticker=name, money=symbol.money)
                                     symbol.average_price = (symbol.amount*symbol.average_price + piramidding_amount*current_price) / (symbol.amount+piramidding_amount)
-                                    symbol.take_profit = symbol.average_price * 1.012
+                                    symbol.take_profit = get_amount(symbol.average_price * 1.011,symbol.precision_minPrice, False)
                                     # get amount for limit sell order
                                     asset = client.get_isolated_margin_account(symbols=name)
                                     symbol.amount = get_amount(float(asset["assets"][0]["baseAsset"]["free"]), symbol.precision)
@@ -224,7 +228,7 @@ def process_m_message(msg):
                             symbol.stop_loss = get_low(symbol.ticker) #get a stop loss
                             if symbol.stop_loss > (symbol.average_price - (symbol.average_price*0.03)):
                                 symbol.stop_loss = symbol.average_price - (symbol.average_price*0.03)
-                            symbol.take_profit = symbol.average_price * 1.011 #get a take profit amount
+                            symbol.take_profit = get_amount(symbol.average_price * 1.011,symbol.precision_minPrice, False) #get a take profit amount
                             print(f"symbol.amount: {symbol.amount}")
                             print(f"symbol.margin_ratio: {symbol.margin_ratio}")
 
@@ -244,7 +248,6 @@ def process_m_message(msg):
                                 # get amount in wallet
                                 asset = client.get_isolated_margin_account(symbols=name)
                                 symbol.amount = get_amount(float(asset["assets"][0]["baseAsset"]["free"]), symbol.precision)
-                                print("amount: ",symbol.amount, " |Precision ->", symbol.precision)
                                 take_profit_order = send_order(side=SIDE_SELL , quantity=symbol.amount, ticker=symbol.ticker,price=symbol.take_profit,order_type=ORDER_TYPE_LIMIT,isolated=True,side_effect="AUTO_REPAY")
                                 
                 
@@ -323,6 +326,9 @@ if str(client.ping()) == '{}': #{} means that it is connected
             if f['filterType'] == 'LOT_SIZE':
                 step_size = float(f['stepSize'])
                 symbol.precision = int(round(-math.log(step_size, 10), 0))
+            elif f['filterType'] == "PRICE_FILTER":
+                minPrice = float(f['minPrice'])
+                symbol.precision_minPrice = int(round(-math.log(minPrice, 10), 0))
                 # print(name, " precision: ",globals()[name].precision)
         # Database.update_ticker(ticker=name, datetime=dt.datetime.now(),shares=0.0, averagePrice=0.0, realizedpnl=0.0)
     print(f"Data fetched, you have {(total_money):.2f} dollar of buying power in your spot wallet.")
