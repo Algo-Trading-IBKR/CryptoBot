@@ -189,8 +189,8 @@ def process_m_message(msg):
                         if current_price < symbol.stop_loss:
                             # piramidding
                             asset = client.get_isolated_margin_account(symbols=name)
-                            free_asset, borrowed_asset = asset["assets"][0]["baseAsset"]["free"], asset["assets"][0]["baseAsset"]["borrowed"]
-                            free_quote, borrowed_quote = asset["assets"][0]["quoteAsset"]["free"], asset["assets"][0]["quoteAsset"]["borrowed"]  
+                            free_asset, borrowed_asset = float(asset["assets"][0]["baseAsset"]["free"]), float(asset["assets"][0]["baseAsset"]["borrowed"])
+                            free_quote, borrowed_quote = float(asset["assets"][0]["quoteAsset"]["free"]), float(asset["assets"][0]["quoteAsset"]["borrowed"])  
                             # 11 -> half of buy amount (add in config)
                             if free_quote >= 11:
                                 print(Fore.RED  +f"{name} price dropped under the stop loss, buy a second time.")
@@ -244,6 +244,7 @@ def process_m_message(msg):
                                 # get amount in wallet
                                 asset = client.get_isolated_margin_account(symbols=name)
                                 symbol.amount = get_amount(float(asset["assets"][0]["baseAsset"]["free"]), symbol.precision)
+                                print("amount: ",symbol.amount, " |Precision ->", symbol.precision)
                                 take_profit_order = send_order(side=SIDE_SELL , quantity=symbol.amount, ticker=symbol.ticker,price=symbol.take_profit,order_type=ORDER_TYPE_LIMIT,isolated=True,side_effect="AUTO_REPAY")
                                 
                 
