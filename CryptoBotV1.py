@@ -228,6 +228,9 @@ def process_m_message(msg):
                             print(f"symbol.amount: {symbol.amount}")
                             print(f"symbol.margin_ratio: {symbol.margin_ratio}")
 
+                            print(f"symbol.amount: {type(symbol.amount)}")
+                            print(f"symbol.margin_ratio: {type(symbol.margin_ratio)}")
+
                             order_succeeded = send_order(side=SIDE_BUY , quantity=symbol.amount*symbol.margin_ratio, ticker=symbol.ticker,price=symbol.average_price,order_type=ORDER_TYPE_LIMIT,isolated=True,side_effect="MARGIN_BUY")
                             print("order succeeded",order_succeeded)
 
