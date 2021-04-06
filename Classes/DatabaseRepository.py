@@ -4,7 +4,7 @@ import datetime as dt
 class Database():
     # client = pymongo.MongoClient("mongodb://TradingBot:mT8qdJ5NGt!qGrqOzchKH8w9Zw!U4HDzg94RgYt1SWlfàDU7@localhost:27017/?readPreference=primary&appname=MongoDB%20Compass&ssl=false&authSource=admin")
     # client = pymongo.MongoClient("mongodb://Joren:JorenvanGoethem@localhost:27017/?readPreference=primary&appname=MongoDB%20Compass&ssl=false&authSource=admin")
-    client = pymongo.MongoClient("mongodb://localhost:27017/?readPreference=primary&appname=MongoDB%20Compass&ssl=false")
+    client = pymongo.MongoClient("mongodb://localhost:27017/?readPreference=primary&ssl=false")
 
     db = client["CryptoBot"]
 
@@ -324,3 +324,5 @@ class Database():
 
     
     #endregion
+
+Database.insert_error_log(dt.datetime.now(), "test", "test", 69)
