@@ -125,8 +125,7 @@ def get_low(ticker):
 def get_money():
     global total_money
     data = client.get_asset_balance(asset='USDT')
-    total_money = data["free"]
-    return total_money
+    total_money = float(data["free"])
 
 def get_amount(number:float, decimals:int=2):
     if not isinstance(decimals, int):
@@ -157,7 +156,7 @@ def send_order(side, quantity, ticker, price, order_type, isolated, side_effect)
     except Exception as e:
         print("an exception occured - {}".format(e))
         return False
-    total_money = get_money()
+    get_money()
 
 def cancel_order(ticker,order_id):
     try:
@@ -173,13 +172,13 @@ def cancel_order(ticker,order_id):
 def transfer_to_isolated(asset, ticker, amount):
     global total_money
     t = client.transfer_spot_to_isolated_margin(asset=asset,symbol=ticker, amount=amount)
-    total_money = get_money()
+    get_money()
     return t
 
 def transfer_to_spot(asset, ticker, amount):
     global total_money
     t = client.transfer_isolated_margin_to_spot(asset=asset,symbol=ticker, amount=amount)
-    total_money = get_money()
+    get_money()
     return t
 
 
@@ -292,14 +291,13 @@ def process_m_message(msg):
         file.write(f'\n{date}\n{hour}\nan error occured: {e}\n{exc_type}\n{fname}\nLine: {exc_tb.tb_lineno}\n')
         file.close()
 
-        Database.insert_error_log(now, f"{e}\n{exc_type}", fname, f"{exc_tb.tb_lineno}")
+        #Database.insert_error_log(now, f"{e}\n{exc_type}", fname, f"{exc_tb.tb_lineno}")
         raise e
 
             
 def callback_isolated_accounts(msg):
     # sell function here https://binance-docs.github.io/apidocs/spot/en/#payload-balance-update
-    # check if any are still borrowed 
-    global total_money
+    # check if any are still borrowed
     print(msg)
     event = msg['e']
     if event == "executionReport":
