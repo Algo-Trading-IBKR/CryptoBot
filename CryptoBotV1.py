@@ -1,7 +1,7 @@
 #region imports
 # own classes
 from Classes.ticker import Ticker
-from Classes.DatabaseRepository import Database 
+from Classes.DatabaseRepository import Database
 # sms
 from clickatell.rest import Rest
 # strategy
@@ -87,8 +87,9 @@ if str(client.ping()) == '{}': #{} means that it is connected
     status = client.get_system_status()
     print("Connected to Binance, server status:", status["msg"])
     print("Fetching historical data.")
-    data = client.get_asset_balance(asset='USDT')
-    total_money = data["free"]
+    # data = client.get_asset_balance(asset='USDT')
+    # total_money = data["free"]
+    get_money()
     instances = []
     for x in tqdm(range(len(tickers))):
         name = tickers[x][:-9].upper()
