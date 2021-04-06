@@ -2,5 +2,7 @@ wat moet er worden opgehaald als de bot uitvalt?
 - has_position (check if borrowed in isolated wallet)
 - average_price (database)
 - amount (ophalen met de api -> client.get_isolated_margin_account(symbols=name))
-- stop_loss (database)
+- pyramidding (database)
 - TP_order_ID (database, or get all open limit orders)
+- Errors
+- Config
