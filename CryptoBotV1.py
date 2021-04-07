@@ -110,13 +110,13 @@ def get_amount(number:float, decimals:int=2, floor:bool=True):
 
 # orders
 # side effect: AUTO_REPAY, MARGIN_BUY
-def send_order(side, quantity, ticker, price, order_type, isolated, side_effect):
+def send_order(side, quantity, ticker, price, order_type, isolated, side_effect,timeInForce):
     symbol = globals()[ticker]
     global total_money
     try:
         print("Sending order...")
         # print("limit order")
-        order = client.create_margin_order(side=side, quantity=quantity, symbol=ticker, price=price, type=order_type, isIsolated=isolated, sideEffectType=side_effect, timeInForce=TIME_IN_FORCE_FOK)
+        order = client.create_margin_order(side=side, quantity=quantity, symbol=ticker, price=price, type=order_type, isIsolated=isolated, sideEffectType=side_effect, timeInForce=timeInForce)
         print(order)
         if order["status"] == "FILLED":
             if order["side"] == "SELL":
@@ -201,7 +201,7 @@ def process_m_message(msg):
                                 piramidding_amount = get_amount((22/2)/current_price, symbol.precision)
                                 symbol.stop_loss = 0
                                 # take profit after average price
-                                order_succeeded = send_order(side=SIDE_BUY , quantity=piramidding_amount*symbol.margin_ratio, ticker=symbol.ticker,price=current_price,order_type=ORDER_TYPE_LIMIT,isolated=True,side_effect="MARGIN_BUY")
+                                order_succeeded = send_order(side=SIDE_BUY , quantity=piramidding_amount*symbol.margin_ratio, ticker=symbol.ticker,price=current_price,order_type=ORDER_TYPE_LIMIT,isolated=True,side_effect="MARGIN_BUY",timeInForce=TIME_IN_FORCE_FOK)
                                 if order_succeeded:
                                     symbol.log_buy(amount=piramidding_amount ,buy_price=current_price, ticker=name, money=symbol.money)
                                     symbol.average_price = (symbol.amount*symbol.average_price + piramidding_amount*current_price) / (symbol.amount+piramidding_amount)
@@ -209,7 +209,7 @@ def process_m_message(msg):
                                     # get amount for limit sell order
                                     asset = client.get_isolated_margin_account(symbols=name)
                                     symbol.amount = get_amount(float(asset["assets"][0]["baseAsset"]["free"]), symbol.precision)
-                                    take_profit_order = send_order(side=SIDE_SELL , quantity=symbol.amount, ticker=symbol.ticker,price=symbol.take_profit,order_type=ORDER_TYPE_LIMIT,isolated=True,side_effect="AUTO_REPAY")
+                                    take_profit_order = send_order(side=SIDE_SELL , quantity=symbol.amount, ticker=symbol.ticker,price=symbol.take_profit,order_type=ORDER_TYPE_LIMIT,isolated=True,side_effect="AUTO_REPAY",timeInForce=TIME_IN_FORCE_GTC)
                                     symbol.has_position = True
                                     order_succeeded = False
                                     print(Fore.GREEN + f"SECOND BUY: {name} bought for {current_price} dollar. Stop loss at {symbol.stop_loss} and take profit at {symbol.take_profit}")
@@ -235,7 +235,7 @@ def process_m_message(msg):
                             print(f"symbol.amount: {type(symbol.amount)}")
                             print(f"symbol.margin_ratio: {type(symbol.margin_ratio)}")
 
-                            order_succeeded = send_order(side=SIDE_BUY , quantity=symbol.amount*symbol.margin_ratio, ticker=symbol.ticker,price=symbol.average_price,order_type=ORDER_TYPE_LIMIT,isolated=True,side_effect="MARGIN_BUY")
+                            order_succeeded = send_order(side=SIDE_BUY , quantity=symbol.amount*symbol.margin_ratio, ticker=symbol.ticker,price=symbol.average_price,order_type=ORDER_TYPE_LIMIT,isolated=True,side_effect="MARGIN_BUY",timeInForce=TIME_IN_FORCE_FOK)
                             print("order succeeded",order_succeeded)
 
                             if order_succeeded:
@@ -248,7 +248,7 @@ def process_m_message(msg):
                                 # get amount in wallet
                                 asset = client.get_isolated_margin_account(symbols=name)
                                 symbol.amount = get_amount(float(asset["assets"][0]["baseAsset"]["free"]), symbol.precision)
-                                take_profit_order = send_order(side=SIDE_SELL , quantity=symbol.amount, ticker=symbol.ticker,price=symbol.take_profit,order_type=ORDER_TYPE_LIMIT,isolated=True,side_effect="AUTO_REPAY")
+                                take_profit_order = send_order(side=SIDE_SELL , quantity=symbol.amount, ticker=symbol.ticker,price=symbol.take_profit,order_type=ORDER_TYPE_LIMIT,isolated=True,side_effect="AUTO_REPAY",timeInForce=TIME_IN_FORCE_GTC)
                                 
                 
                 symbol.closes = symbol.closes[-150:]
