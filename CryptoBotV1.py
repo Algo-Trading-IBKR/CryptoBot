@@ -123,7 +123,8 @@ def send_order(side, quantity, ticker, price, order_type, isolated, side_effect,
             return False
         if order["status"] == "FILLED" and order["side"] == "BUY":
             return True
-        else:
+        elif order["side"] == "BUY":
+            symbol.BUY_order_ID = order['orderId']
             symbol.open_order = True
             return False
     except Exception as e:
@@ -187,7 +188,9 @@ def process_m_message(msg):
 
                     if symbol.open_order:
                         # plaats hier de cancel order
-                        pass
+                        cancel_order = cancel_order(ticker=symbol.ticker,order_id=symbol.BUY_order_ID)
+                        print("HIER: ",cancel_order)
+                        symbol.open_order = False
 
 
                     # verkopen
@@ -201,18 +204,21 @@ def process_m_message(msg):
                             # piramidding
                             asset = client.get_isolated_margin_account(symbols=name)
                             free_asset, borrowed_asset = float(asset["assets"][0]["baseAsset"]["free"]), float(asset["assets"][0]["baseAsset"]["borrowed"])
-                            free_quote, borrowed_quote = float(asset["assets"][0]["quoteAsset"]["free"]), float(asset["assets"][0]["quoteAsset"]["borrowed"])  
+                            free_quote, borrowed_quote = float(asset["assets"][0]["quoteAsset"]["free"]), float(asset["assets"][0]["quoteAsset"]["borrowed"])
+                            print("PIRAMMIDING: ","free_asset ",free_asset, "borrowed_asset ",borrowed_asset, "free_quote ",free_quote, "borrowed_quote ",borrowed_quote)  
                             # 11 -> half of buy amount (add in config)
                             if free_quote >= 11:
                                 print(Fore.RED  +f"{name} price dropped under the stop loss, buy a second time.")
-                                piramidding_amount = get_amount((22/2)/current_price, symbol.precision)
+                                cancel_order = cancel_order(ticker=symbol.ticker,order_id=symbol.TP_order_ID)
+                                symbol.piramidding_amount = get_amount((22/2)/current_price, symbol.precision)
                                 symbol.stop_loss = 0
+                                symbol.buy_price= current_price
                                 # take profit after average price
-                                order_succeeded = send_order(side=SIDE_BUY , quantity=piramidding_amount*symbol.margin_ratio, ticker=symbol.ticker,price=current_price,order_type=ORDER_TYPE_LIMIT,isolated=True,side_effect="MARGIN_BUY",timeInForce=TIME_IN_FORCE_GTC)
+                                order_succeeded = send_order(side=SIDE_BUY , quantity=symbol.piramidding_amount*symbol.margin_ratio, ticker=symbol.ticker,price=current_price,order_type=ORDER_TYPE_LIMIT,isolated=True,side_effect="MARGIN_BUY",timeInForce=TIME_IN_FORCE_GTC)
+                                symbol.average_price = (symbol.amount*symbol.average_price + symbol.piramidding_amount*current_price) / (symbol.amount+symbol.piramidding_amount)
+                                symbol.take_profit = get_amount(symbol.average_price * 1.011,symbol.precision_minPrice, False)
                                 if order_succeeded:
-                                    symbol.log_buy(amount=piramidding_amount ,buy_price=current_price, ticker=name, money=symbol.money)
-                                    symbol.average_price = (symbol.amount*symbol.average_price + piramidding_amount*current_price) / (symbol.amount+piramidding_amount)
-                                    symbol.take_profit = get_amount(symbol.average_price * 1.011,symbol.precision_minPrice, False)
+                                    symbol.log_buy(amount=symbol.piramidding_amount ,buy_price=current_price, ticker=name, money=symbol.money)
                                     # get amount for limit sell order
                                     asset = client.get_isolated_margin_account(symbols=name)
                                     symbol.amount = get_amount(float(asset["assets"][0]["baseAsset"]["free"]), symbol.precision)
@@ -241,7 +247,7 @@ def process_m_message(msg):
 
                             print(f"symbol.amount: {type(symbol.amount)}")
                             print(f"symbol.margin_ratio: {type(symbol.margin_ratio)}")
-
+                            symbol.buy_price= symbol.average_price
                             order_succeeded = send_order(side=SIDE_BUY , quantity=symbol.amount*symbol.margin_ratio, ticker=symbol.ticker,price=symbol.average_price,order_type=ORDER_TYPE_LIMIT,isolated=True,side_effect="MARGIN_BUY",timeInForce=TIME_IN_FORCE_FOK)
                             print("order succeeded",order_succeeded)
 
@@ -297,13 +303,23 @@ def callback_isolated_accounts(msg):
             asset = client.get_isolated_margin_account(symbols=name)
             free_asset, borrowed_asset = asset["assets"][0]["baseAsset"]["free"], asset["assets"][0]["baseAsset"]["borrowed"]
             free_quote, borrowed_quote = asset["assets"][0]["quoteAsset"]["free"], asset["assets"][0]["quoteAsset"]["borrowed"]
+            print("test bij sell oder filled -> volgende print -moet nothing borrowed- zijn")
             if borrowed_asset == 0 and borrowed_quote == 0: 
                 #transaction to spot
                 transaction_asset = transfer_to_spot(asset=name[:-4], ticker=symbol.ticker, amount=free_asset) 
-                transaction_quote = transfer_to_spot(asset="USDT", ticker=symbol.ticker, amount=free_quote) 
+                transaction_quote = transfer_to_spot(asset="USDT", ticker=symbol.ticker, amount=free_quote)
+                symbol.has_position = False 
+                print("nothing borrowed")
 
-        elif : #check if order is filled 
-            pass
+        elif side=="BUY" and execution_type=="TRADE" and execution_status=="FILLED": #check if order is filled 
+            symbol.open_order = False
+            symbol.log_buy(amount=symbol.piramidding_amount ,buy_price=symbol.buy_price, ticker=name, money=symbol.money)
+            print(Fore.GREEN + f"{name} bought for {symbol.average_price} dollar. pirammiding at {symbol.stop_loss} and take profit at {symbol.take_profit}")
+            symbol.has_position = True
+
+            asset = client.get_isolated_margin_account(symbols=name)
+            symbol.amount = get_amount(float(asset["assets"][0]["baseAsset"]["free"]), symbol.precision)
+            take_profit_order = send_order(side=SIDE_SELL , quantity=symbol.amount, ticker=symbol.ticker,price=symbol.take_profit,order_type=ORDER_TYPE_LIMIT,isolated=True,side_effect="AUTO_REPAY",timeInForce=TIME_IN_FORCE_GTC)
 
 # endregion
 
