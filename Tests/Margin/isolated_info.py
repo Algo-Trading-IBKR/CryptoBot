@@ -37,13 +37,22 @@ client = Client(API_KEY, SECRET_KEY)
 #     factor = 10 ** decimals
 #     return math.floor(number * factor) / factor
 
-print("now")
-asset = client.get_isolated_margin_account(symbols="LITUSDT")
-# tradeable_amount = get_amount(float(asset["assets"][0]["baseAsset"]["free"]), precision)
-# print(tradeable_amount)
+# print("now")
+asset = client.get_isolated_margin_account(symbols="CAKEUSDT")
 print(asset)
+# asset = client.get_isolated_margin_account(symbols=name)
+free_asset, borrowed_asset = float(asset["assets"][0]["baseAsset"]["free"]), float(asset["assets"][0]["baseAsset"]["borrowed"])
+free_quote, borrowed_quote = float(asset["assets"][0]["quoteAsset"]["free"]), float(asset["assets"][0]["quoteAsset"]["borrowed"])
+print("Sell: ","free_asset ",free_asset, "borrowed_asset ",borrowed_asset, "free_quote ",free_quote, "borrowed_quote ",borrowed_quote)  
 
-print(asset["assets"][0]["baseAsset"]["free"])
+if borrowed_asset == 0 and borrowed_quote == 0: 
+    #transaction to spot
+    print("nothing borrowed")
+# # tradeable_amount = get_amount(float(asset["assets"][0]["baseAsset"]["free"]), precision)
+# # print(tradeable_amount)
+# print(asset)
+
+# print(asset["assets"][0]["baseAsset"]["free"])
 # print(asset["assets"][0]["quoteAsset"]["free"])
 # print(asset["assets"][0]["baseAsset"]["borrowed"])
 # print(asset["assets"][0]["quoteAsset"]["borrowed"])
