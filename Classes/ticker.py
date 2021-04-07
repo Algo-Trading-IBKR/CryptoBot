@@ -23,6 +23,8 @@ class Ticker:
         self.stop_loss = 0 # get when reboot
         self.take_profit = 0 
         self.amount = 0 # get out of api , get when reboot
+        self.piramidding_amount = 0
+        self.buy_price= 0
 
         self.precision = 0
         self.precision_minPrice = 0
@@ -32,6 +34,7 @@ class Ticker:
         self.liquidation_price = 0 #get in the start
 
         self.TP_order_ID = 0 #get when reboot
+        self.BUY_order_ID = 0
         
 
 
