@@ -120,9 +120,11 @@ def send_order(side, quantity, ticker, price, order_type, isolated, side_effect,
         print(order)
         if order["side"] == "SELL":
             symbol.TP_order_ID = order['orderId'] #instantie
-        if order["status"] == "FILLED":
+            return False
+        if order["status"] == "FILLED" and order["side"] == "BUY":
             return True
         else:
+            symbol.open_order = True
             return False
     except Exception as e:
         print("an exception occured - {}".format(e))
@@ -208,7 +210,6 @@ def process_m_message(msg):
                                 # take profit after average price
                                 order_succeeded = send_order(side=SIDE_BUY , quantity=piramidding_amount*symbol.margin_ratio, ticker=symbol.ticker,price=current_price,order_type=ORDER_TYPE_LIMIT,isolated=True,side_effect="MARGIN_BUY",timeInForce=TIME_IN_FORCE_GTC)
                                 if order_succeeded:
-                                    symbol.open_order = True
                                     symbol.log_buy(amount=piramidding_amount ,buy_price=current_price, ticker=name, money=symbol.money)
                                     symbol.average_price = (symbol.amount*symbol.average_price + piramidding_amount*current_price) / (symbol.amount+piramidding_amount)
                                     symbol.take_profit = get_amount(symbol.average_price * 1.011,symbol.precision_minPrice, False)
@@ -300,6 +301,9 @@ def callback_isolated_accounts(msg):
                 #transaction to spot
                 transaction_asset = transfer_to_spot(asset=name[:-4], ticker=symbol.ticker, amount=free_asset) 
                 transaction_quote = transfer_to_spot(asset="USDT", ticker=symbol.ticker, amount=free_quote) 
+
+        elif : #check if order is filled 
+            pass
 
 # endregion
 
