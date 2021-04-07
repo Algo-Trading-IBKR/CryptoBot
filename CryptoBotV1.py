@@ -253,6 +253,7 @@ def process_m_message(msg):
 
                             if order_succeeded:
                                 # log buy 
+                                print('gekocht via direct FILL')
                                 symbol.log_buy(amount=symbol.amount ,buy_price=symbol.average_price, ticker=name, money=symbol.money)
                                 print(Fore.GREEN + f"{name} bought for {symbol.average_price} dollar. rsi: {last_rsi} mfi: {last_mfi}. pirammiding at {symbol.stop_loss} and take profit at {symbol.take_profit}")
                                 symbol.has_position = True
@@ -301,17 +302,24 @@ def callback_isolated_accounts(msg):
         # when the take profit order is reached
         if side == "SELL" and execution_type == "TRADE" and execution_status == "FILLED" and TP_orderID == symbol.TP_order_ID: 
             asset = client.get_isolated_margin_account(symbols=name)
-            free_asset, borrowed_asset = asset["assets"][0]["baseAsset"]["free"], asset["assets"][0]["baseAsset"]["borrowed"]
-            free_quote, borrowed_quote = asset["assets"][0]["quoteAsset"]["free"], asset["assets"][0]["quoteAsset"]["borrowed"]
+            free_asset, borrowed_asset = float(asset["assets"][0]["baseAsset"]["free"]), float(asset["assets"][0]["baseAsset"]["borrowed"])
+            free_quote, borrowed_quote = float(asset["assets"][0]["quoteAsset"]["free"]), float(asset["assets"][0]["quoteAsset"]["borrowed"])
+            print("Sell: ","free_asset ",free_asset, "borrowed_asset ",borrowed_asset, "free_quote ",free_quote, "borrowed_quote ",borrowed_quote)  
+
             print("test bij sell oder filled -> volgende print -moet nothing borrowed- zijn")
             if borrowed_asset == 0 and borrowed_quote == 0: 
                 #transaction to spot
-                transaction_asset = transfer_to_spot(asset=name[:-4], ticker=symbol.ticker, amount=free_asset) 
-                transaction_quote = transfer_to_spot(asset="USDT", ticker=symbol.ticker, amount=free_quote)
-                symbol.has_position = False 
                 print("nothing borrowed")
+                transaction_asset = transfer_to_spot(asset=name[:-4], ticker=symbol.ticker, amount=free_asset) 
+                print(transaction_asset)
+                print("______________________________________________________________________________________")
+                transaction_quote = transfer_to_spot(asset="USDT", ticker=symbol.ticker, amount=free_quote)
+                print(transaction_quote)
+                symbol.has_position = False 
+                
 
         elif side=="BUY" and execution_type=="TRADE" and execution_status=="FILLED": #check if order is filled 
+            print('gekocht via de isolated socket')
             symbol.open_order = False
             symbol.log_buy(amount=symbol.piramidding_amount ,buy_price=symbol.buy_price, ticker=name, money=symbol.money)
             print(Fore.GREEN + f"{name} bought for {symbol.average_price} dollar. pirammiding at {symbol.stop_loss} and take profit at {symbol.take_profit}")
