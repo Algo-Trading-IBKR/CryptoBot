@@ -373,4 +373,4 @@ if str(client.ping()) == '{}':
 # when buy order is received -> send money to margin (Isolated if cross is not available)
 # when sold -> transfer isolated margin back to spot wallet
 
-# make sure time is synced in the beginning (look how to on pi)
+# make sure time is synced in the beginning (look how to on pi) 
