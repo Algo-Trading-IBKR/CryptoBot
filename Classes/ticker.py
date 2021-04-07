@@ -18,6 +18,7 @@ class Ticker:
         self.log_file.close()
 
         self.has_position = False # get when reboot
+        self.open_order = False #get when reboot
         self.average_price = 0 # get when reboot
         self.stop_loss = 0 # get when reboot
         self.take_profit = 0 
