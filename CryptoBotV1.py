@@ -118,9 +118,9 @@ def send_order(side, quantity, ticker, price, order_type, isolated, side_effect,
         # print("limit order")
         order = client.create_margin_order(side=side, quantity=quantity, symbol=ticker, price=price, type=order_type, isIsolated=isolated, sideEffectType=side_effect, timeInForce=timeInForce)
         print(order)
+        if order["side"] == "SELL":
+            symbol.TP_order_ID = order['orderId'] #instantie
         if order["status"] == "FILLED":
-            if order["side"] == "SELL":
-                symbol.TP_order_ID = order['orderId'] #instantie
             return True
         else:
             return False
@@ -183,6 +183,11 @@ def process_m_message(msg):
                     last_rsi = rsi[-1]
                     last_mfi = mfi[-1]
 
+                    if symbol.open_order:
+                        # plaats hier de cancel order
+                        pass
+
+
                     # verkopen
                     if symbol.has_position:
                         current_price = symbol.closes[-1]
@@ -201,8 +206,9 @@ def process_m_message(msg):
                                 piramidding_amount = get_amount((22/2)/current_price, symbol.precision)
                                 symbol.stop_loss = 0
                                 # take profit after average price
-                                order_succeeded = send_order(side=SIDE_BUY , quantity=piramidding_amount*symbol.margin_ratio, ticker=symbol.ticker,price=current_price,order_type=ORDER_TYPE_LIMIT,isolated=True,side_effect="MARGIN_BUY",timeInForce=TIME_IN_FORCE_FOK)
+                                order_succeeded = send_order(side=SIDE_BUY , quantity=piramidding_amount*symbol.margin_ratio, ticker=symbol.ticker,price=current_price,order_type=ORDER_TYPE_LIMIT,isolated=True,side_effect="MARGIN_BUY",timeInForce=TIME_IN_FORCE_GTC)
                                 if order_succeeded:
+                                    symbol.open_order = True
                                     symbol.log_buy(amount=piramidding_amount ,buy_price=current_price, ticker=name, money=symbol.money)
                                     symbol.average_price = (symbol.amount*symbol.average_price + piramidding_amount*current_price) / (symbol.amount+piramidding_amount)
                                     symbol.take_profit = get_amount(symbol.average_price * 1.011,symbol.precision_minPrice, False)
