@@ -189,7 +189,7 @@ def process_m_message(msg):
 
                     if symbol.open_order:
                         # plaats hier de cancel order
-                        cancel= cancel_order(ticker=symbol.ticker,order_id=symbol.BUY_order_ID)
+                        cancel = cancel_order(ticker=symbol.ticker,order_id=symbol.BUY_order_ID)
                         print("HIER: ",cancel)
                         symbol.open_order = False
 
@@ -210,7 +210,7 @@ def process_m_message(msg):
                             # 11 -> half of buy amount (add in config)
                             if free_quote >= 11:
                                 print(Fore.RED  +f"{name} price dropped under the stop loss, buy a second time.")
-                                cancel_order = cancel_order(ticker=symbol.ticker,order_id=symbol.TP_order_ID)
+                                cancel = cancel_order(ticker=symbol.ticker,order_id=symbol.TP_order_ID)
                                 symbol.piramidding_amount = get_amount((22/2)/current_price, symbol.precision)
                                 symbol.stop_loss = 0
                                 symbol.buy_price= current_price
