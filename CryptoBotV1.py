@@ -122,6 +122,7 @@ def send_order(side, quantity, ticker, price, order_type, isolated, side_effect,
             symbol.TP_order_ID = order['orderId'] #instantie
             return False
         if order["status"] == "FILLED" and order["side"] == "BUY":
+            symbol.open_order = False
             return True
         elif order["side"] == "BUY":
             symbol.BUY_order_ID = order['orderId']
