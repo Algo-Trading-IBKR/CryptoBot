@@ -307,7 +307,7 @@ def callback_isolated_accounts(msg):
             free_quote, borrowed_quote = float(asset["assets"][0]["quoteAsset"]["free"]), float(asset["assets"][0]["quoteAsset"]["borrowed"])
             print("Sell: ","free_asset ",free_asset, "borrowed_asset ",borrowed_asset, "free_quote ",free_quote, "borrowed_quote ",borrowed_quote)  
 
-            print("test bij sell oder filled -> volgende print -moet nothing borrowed- zijn")
+            print("test bij sell order filled -> volgende print -moet nothing borrowed- zijn")
             if borrowed_asset == 0 and borrowed_quote == 0: 
                 #transaction to spot
                 print("nothing borrowed")
