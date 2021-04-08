@@ -126,6 +126,7 @@ def send_order(side, quantity, ticker, price, order_type, isolated, side_effect,
         elif order["side"] == "BUY":
             symbol.BUY_order_ID = order['orderId']
             symbol.open_order = True
+            print("buyOrderID: ",symbol.BUY_order_ID)
             return False
     except Exception as e:
         print("an exception occured - {}".format(e))
@@ -188,8 +189,8 @@ def process_m_message(msg):
 
                     if symbol.open_order:
                         # plaats hier de cancel order
-                        cancel_order = cancel_order(ticker=symbol.ticker,order_id=symbol.BUY_order_ID)
-                        print("HIER: ",cancel_order)
+                        cancel= cancel_order(ticker=symbol.ticker,order_id=symbol.BUY_order_ID)
+                        print("HIER: ",cancel)
                         symbol.open_order = False
 
 
