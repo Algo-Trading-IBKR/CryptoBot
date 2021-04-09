@@ -14,7 +14,7 @@ SECRET_KEY = "YHyoGrthBZoqg0gEcVuvwkuRul7L4NxcqjaxHXDM0cbVjRPkN6S7eQCzyeywfVgu"
 client = Client(API_KEY, SECRET_KEY)
 # symbol = 'LITUSDT'
 pairs = ["ALICEUSDT", "LITUSDT","DOTUSDT", "SFPUSDT","FTMUSDT","XEMUSDT","NPXSUSDT","KSMUSDT","ONTUSDT","RLCUSDT","ONGUSDT","OMGUSDT","MANAUSDT","XRPUSDT","CAKEUSDT","REEFUSDT", "TROYUSDT", "DODOUSDT" ,"ENJUSDT", "VTHOUSDT","AXSUSDT","CRVUSDT","UNFIUSDT"]
-
+pairs = ['UNFIUSDT']
 client = Client(API_KEY, SECRET_KEY)
 bm = BinanceSocketManager(client, user_timeout=600)
 
@@ -30,10 +30,9 @@ bm = BinanceSocketManager(client, user_timeout=600)
 #  https://binance-docs.github.io/apidocs/spot/en/#listen-key-isolated-margin
 for i in pairs:
     conn_key = bm.start_isolated_margin_socket(symbol=i, callback=process_message)
-    print(i, ": listener started")
+    print(conn_key, i, ": listener started")
 
 bm.start() #start the socket manager
-
 
 
 # if str(client.ping()) == '{}':
