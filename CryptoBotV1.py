@@ -110,7 +110,7 @@ def get_amount(number:float, decimals:int=2, floor:bool=True):
 
 # orders
 # side effect: AUTO_REPAY, MARGIN_BUY
-def send_order(side, quantity, ticker, price, order_type, isolated, side_effect,timeInForce):
+def send_order(side, quantity, ticker, price, order_type, isolated, side_effect, timeInForce):
     symbol = globals()[ticker]
     global total_money
     try:
@@ -118,6 +118,7 @@ def send_order(side, quantity, ticker, price, order_type, isolated, side_effect,
         # print("limit order")
         order = client.create_margin_order(side=side, quantity=quantity, symbol=ticker, price=price, type=order_type, isIsolated=isolated, sideEffectType=side_effect, timeInForce=timeInForce)
         print(order)
+        get_money()
         if order["side"] == "SELL":
             symbol.TP_order_ID = order['orderId'] #instantie
             return False
@@ -132,9 +133,8 @@ def send_order(side, quantity, ticker, price, order_type, isolated, side_effect,
     except Exception as e:
         print("an exception occured - {}".format(e))
         return False
-    get_money()
 
-def cancel_order(ticker,order_id):
+def cancel_order(ticker, order_id):
     try:
         print("Cancelling order...")
         result = client.cancel_margin_order(symbol=ticker,orderId=order_id,isIsolated="TRUE")        
