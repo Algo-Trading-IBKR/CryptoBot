@@ -303,6 +303,7 @@ def callback_isolated_accounts(msg):
         TP_orderID = msg['i']
         # when the take profit order is reached
         if side == "SELL" and execution_type == "TRADE" and execution_status == "FILLED" and TP_orderID == symbol.TP_order_ID: 
+            time.sleep(1)
             asset = client.get_isolated_margin_account(symbols=name)
             free_asset, borrowed_asset = float(asset["assets"][0]["baseAsset"]["free"]), float(asset["assets"][0]["baseAsset"]["borrowed"])
             free_quote, borrowed_quote = float(asset["assets"][0]["quoteAsset"]["free"]), float(asset["assets"][0]["quoteAsset"]["borrowed"])
