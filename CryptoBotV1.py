@@ -193,7 +193,11 @@ def process_m_message(msg):
                         cancel = cancel_order(ticker=symbol.ticker,order_id=symbol.BUY_order_ID)
                         print("HIER: ",cancel)
                         symbol.open_order = False
-
+                        asset = client.get_isolated_margin_account(symbols=name)
+                        free_asset, borrowed_asset = float(asset["assets"][0]["baseAsset"]["free"]), float(asset["assets"][0]["baseAsset"]["borrowed"])
+                        free_quote, borrowed_quote = float(asset["assets"][0]["quoteAsset"]["free"]), float(asset["assets"][0]["quoteAsset"]["borrowed"])
+                        print("Cancel Order: ","free_asset ",free_asset, "borrowed_asset ",borrowed_asset, "free_quote ",free_quote, "borrowed_quote ",borrowed_quote)
+                        transaction = client.repay_margin_loan(asset='USDT', amount=borrowed_quote, isIsolated='TRUE', symbol=name)
 
                     # verkopen
                     if symbol.has_position:
@@ -331,6 +335,10 @@ def callback_isolated_accounts(msg):
             asset = client.get_isolated_margin_account(symbols=name)
             symbol.amount = get_amount(float(asset["assets"][0]["baseAsset"]["free"]), symbol.precision)
             take_profit_order = send_order(side=SIDE_SELL , quantity=symbol.amount, ticker=symbol.ticker,price=symbol.take_profit,order_type=ORDER_TYPE_LIMIT,isolated=True,side_effect="AUTO_REPAY",timeInForce=TIME_IN_FORCE_GTC)
+
+
+    if event == "balanceUpdate":
+        get_money()
 
 # endregion
 
