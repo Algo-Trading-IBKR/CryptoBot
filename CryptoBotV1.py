@@ -93,6 +93,7 @@ def get_money():
     global total_money
     data = client.get_asset_balance(asset='USDT')
     total_money = float(data["free"])
+    print("total money:" ,total_money)
 
 def get_amount(number:float, decimals:int=2, floor:bool=True):
     if not isinstance(decimals, int):
