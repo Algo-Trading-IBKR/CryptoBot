@@ -326,7 +326,7 @@ def callback_isolated_accounts(msg):
                 symbol.has_position = False 
                 
 
-        elif side=="BUY" and execution_type=="TRADE" and execution_status=="FILLED": #check if order is filled 
+        elif side=="BUY" and execution_type=="TRADE" and execution_status=="FILLED" and symbol.open_order == True: #check if order is filled 
             print('gekocht via de isolated socket')
             symbol.open_order = False
             symbol.log_buy(amount=symbol.piramidding_amount ,buy_price=symbol.buy_price, ticker=name, money=symbol.money)
