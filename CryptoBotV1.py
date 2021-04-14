@@ -203,7 +203,7 @@ def process_m_message(msg):
 
                     # verkopen
                     if symbol.has_position:
-                        current_price = symbol.closes[-1]
+                        current_price = Decimal(symbol.closes[-1])
                         current_high = symbol.highs[-1]
                         order_succeeded = False
                         
@@ -223,7 +223,7 @@ def process_m_message(msg):
                                 symbol.buy_price= current_price
                                 # take profit after average price
                                 order_succeeded = send_order(side=SIDE_BUY , quantity=Decimal(symbol.piramidding_amount*symbol.margin_ratio), ticker=symbol.ticker,price=current_price,order_type=ORDER_TYPE_LIMIT,isolated=True,side_effect="MARGIN_BUY",timeInForce=TIME_IN_FORCE_GTC)
-                                symbol.average_price = (symbol.amount*symbol.average_price + symbol.piramidding_amount*current_price) / (symbol.amount+symbol.piramidding_amount)
+                                symbol.average_price = Decimal((symbol.amount*symbol.average_price + symbol.piramidding_amount*current_price) / (symbol.amount+symbol.piramidding_amount))
                                 symbol.take_profit = get_amount(symbol.average_price * 1.011,symbol.precision_minPrice, False)
                                 if order_succeeded:
                                     symbol.log_buy(amount=symbol.piramidding_amount ,buy_price=current_price, ticker=name, money=symbol.money)
@@ -244,7 +244,7 @@ def process_m_message(msg):
                         else:
                             print("in the buy")
                             transaction = transfer_to_isolated(asset="USDT", ticker=symbol.ticker, amount=23)
-                            symbol.average_price = symbol.closes[-1] #get the wanted buy price 
+                            symbol.average_price = Decimal(symbol.closes[-1]) #get the wanted buy price 
                             symbol.amount = get_amount((22/2)/symbol.average_price, symbol.precision) #get amount the bot could buy
                             symbol.stop_loss = get_low(symbol.ticker) #get a stop loss
                             if symbol.stop_loss > (symbol.average_price - (symbol.average_price*0.03)):
