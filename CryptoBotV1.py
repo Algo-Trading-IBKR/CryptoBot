@@ -245,11 +245,11 @@ def process_m_message(msg):
                             print("in the buy")
                             transaction = transfer_to_isolated(asset="USDT", ticker=symbol.ticker, amount=23)
                             symbol.average_price = Decimal(symbol.closes[-1]) #get the wanted buy price 
-                            symbol.amount = get_amount((22/2)/symbol.average_price, symbol.precision) #get amount the bot could buy
+                            symbol.amount = get_amount(Decimal(22/2)/symbol.average_price, symbol.precision) #get amount the bot could buy
                             symbol.stop_loss = get_low(symbol.ticker) #get a stop loss
                             if symbol.stop_loss > (symbol.average_price - (symbol.average_price*0.03)):
                                 symbol.stop_loss = symbol.average_price - (symbol.average_price*0.03)
-                            symbol.take_profit = get_amount(symbol.average_price * 1.011,symbol.precision_minPrice, False) #get a take profit amount
+                            symbol.take_profit = get_amount(symbol.average_price * Decimal(1.011),symbol.precision_minPrice, False) #get a take profit amount
                             print(f"symbol.amount: {symbol.amount}")
                             print(f"symbol.margin_ratio: {symbol.margin_ratio}")
 
@@ -257,7 +257,7 @@ def process_m_message(msg):
                             print(f"symbol.margin_ratio: {type(symbol.margin_ratio)}")
                             symbol.buy_price= symbol.average_price
                             time.sleep(0.1)
-                            order_succeeded = send_order(side=SIDE_BUY , quantity=Decimal(symbol.amount*symbol.margin_ratio), ticker=symbol.ticker,price=symbol.average_price,order_type=ORDER_TYPE_LIMIT,isolated=True,side_effect="MARGIN_BUY",timeInForce=TIME_IN_FORCE_GTC)
+                            order_succeeded = send_order(side=SIDE_BUY , quantity=Decimal(Decimal(symbol.amount)*Decimal(symbol.margin_ratio)), ticker=symbol.ticker,price=symbol.average_price,order_type=ORDER_TYPE_LIMIT,isolated=True,side_effect="MARGIN_BUY",timeInForce=TIME_IN_FORCE_GTC)
                             print("order succeeded",order_succeeded)
 
                             if order_succeeded:
