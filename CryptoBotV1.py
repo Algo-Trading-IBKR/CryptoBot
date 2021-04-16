@@ -203,7 +203,7 @@ def process_m_message(msg):
 
                     # verkopen
                     if symbol.has_position:
-                        current_price = Decimal(symbol.closes[-1])
+                        current_price = symbol.closes[-1]
                         current_high = symbol.highs[-1]
                         order_succeeded = False
                         
@@ -223,14 +223,14 @@ def process_m_message(msg):
                                 symbol.buy_price= current_price
                                 # take profit after average price
                                 order_succeeded = send_order(side=SIDE_BUY , quantity=Decimal(symbol.piramidding_amount*symbol.margin_ratio), ticker=symbol.ticker,price=current_price,order_type=ORDER_TYPE_LIMIT,isolated=True,side_effect="MARGIN_BUY",timeInForce=TIME_IN_FORCE_GTC)
-                                symbol.average_price = Decimal((symbol.amount*symbol.average_price + symbol.piramidding_amount*current_price) / (symbol.amount+symbol.piramidding_amount))
+                                symbol.average_price = (symbol.amount*symbol.average_price + symbol.piramidding_amount*current_price) / (symbol.amount+symbol.piramidding_amount)
                                 symbol.take_profit = get_amount(symbol.average_price * 1.011,symbol.precision_minPrice, False)
                                 if order_succeeded:
                                     symbol.log_buy(amount=symbol.piramidding_amount ,buy_price=current_price, ticker=name, money=symbol.money)
                                     # get amount for limit sell order
                                     asset = client.get_isolated_margin_account(symbols=name)
-                                    symbol.amount = Decimal(get_amount(float(asset["assets"][0]["baseAsset"]["free"]), symbol.precision))
-                                    take_profit_order = send_order(side=SIDE_SELL , quantity=symbol.amount, ticker=symbol.ticker,price=symbol.take_profit,order_type=ORDER_TYPE_LIMIT,isolated=True,side_effect="AUTO_REPAY",timeInForce=TIME_IN_FORCE_GTC)
+                                    symbol.amount = get_amount(float(asset["assets"][0]["baseAsset"]["free"]), symbol.precision)
+                                    take_profit_order = send_order(side=SIDE_SELL , quantity=Decimal(symbol.amount), ticker=symbol.ticker,price=symbol.take_profit,order_type=ORDER_TYPE_LIMIT,isolated=True,side_effect="AUTO_REPAY",timeInForce=TIME_IN_FORCE_GTC)
                                     symbol.has_position = True
                                     order_succeeded = False
                                     print(Fore.GREEN + f"SECOND BUY: {name} bought for {current_price} dollar. Stop loss at {symbol.stop_loss} and take profit at {symbol.take_profit}")
@@ -244,12 +244,12 @@ def process_m_message(msg):
                         else:
                             print("in the buy")
                             transaction = transfer_to_isolated(asset="USDT", ticker=symbol.ticker, amount=23)
-                            symbol.average_price = Decimal(symbol.closes[-1]) #get the wanted buy price 
-                            symbol.amount = get_amount(Decimal(22/2)/symbol.average_price, symbol.precision) #get amount the bot could buy
+                            symbol.average_price = symbol.closes[-1] #get the wanted buy price 
+                            symbol.amount = get_amount((22/2)/symbol.average_price, symbol.precision) #get amount the bot could buy
                             symbol.stop_loss = get_low(symbol.ticker) #get a stop loss
                             if symbol.stop_loss > (symbol.average_price - (symbol.average_price*0.03)):
                                 symbol.stop_loss = symbol.average_price - (symbol.average_price*0.03)
-                            symbol.take_profit = get_amount(symbol.average_price * Decimal(1.011),symbol.precision_minPrice, False) #get a take profit amount
+                            symbol.take_profit = get_amount(symbol.average_price * 1.011,symbol.precision_minPrice, False) #get a take profit amount
                             print(f"symbol.amount: {symbol.amount}")
                             print(f"symbol.margin_ratio: {symbol.margin_ratio}")
 
@@ -257,7 +257,7 @@ def process_m_message(msg):
                             print(f"symbol.margin_ratio: {type(symbol.margin_ratio)}")
                             symbol.buy_price= symbol.average_price
                             time.sleep(0.1)
-                            order_succeeded = send_order(side=SIDE_BUY , quantity=Decimal(Decimal(symbol.amount)*Decimal(symbol.margin_ratio)), ticker=symbol.ticker,price=symbol.average_price,order_type=ORDER_TYPE_LIMIT,isolated=True,side_effect="MARGIN_BUY",timeInForce=TIME_IN_FORCE_GTC)
+                            order_succeeded = send_order(side=SIDE_BUY , quantity=Decimal(symbol.amount*symbol.margin_ratio), ticker=symbol.ticker,price=symbol.average_price,order_type=ORDER_TYPE_LIMIT,isolated=True,side_effect="MARGIN_BUY",timeInForce=TIME_IN_FORCE_GTC)
                             print("order succeeded",order_succeeded)
 
                             if order_succeeded:
@@ -270,8 +270,8 @@ def process_m_message(msg):
 
                                 # get amount in wallet
                                 asset = client.get_isolated_margin_account(symbols=name)
-                                symbol.amount = Decimal(get_amount(float(asset["assets"][0]["baseAsset"]["free"]), symbol.precision))
-                                take_profit_order = send_order(side=SIDE_SELL , quantity=symbol.amount, ticker=symbol.ticker,price=symbol.take_profit,order_type=ORDER_TYPE_LIMIT,isolated=True,side_effect="AUTO_REPAY",timeInForce=TIME_IN_FORCE_GTC)
+                                symbol.amount = get_amount(float(asset["assets"][0]["baseAsset"]["free"]), symbol.precision)
+                                take_profit_order = send_order(side=SIDE_SELL , quantity=Decimal(symbol.amount), ticker=symbol.ticker,price=symbol.take_profit,order_type=ORDER_TYPE_LIMIT,isolated=True,side_effect="AUTO_REPAY",timeInForce=TIME_IN_FORCE_GTC)
                                 
                 
                 symbol.closes = symbol.closes[-150:]
@@ -336,8 +336,8 @@ def callback_isolated_accounts(msg):
             symbol.has_position = True
 
             asset = client.get_isolated_margin_account(symbols=name)
-            symbol.amount = Decimal(get_amount(float(asset["assets"][0]["baseAsset"]["free"]), symbol.precision))
-            take_profit_order = send_order(side=SIDE_SELL , quantity=symbol.amount, ticker=symbol.ticker,price=symbol.take_profit,order_type=ORDER_TYPE_LIMIT,isolated=True,side_effect="AUTO_REPAY",timeInForce=TIME_IN_FORCE_GTC)
+            symbol.amount = get_amount(float(asset["assets"][0]["baseAsset"]["free"]), symbol.precision)
+            take_profit_order = send_order(side=SIDE_SELL , quantity=Decimal(symbol.amount), ticker=symbol.ticker,price=symbol.take_profit,order_type=ORDER_TYPE_LIMIT,isolated=True,side_effect="AUTO_REPAY",timeInForce=TIME_IN_FORCE_GTC)
 
 
     if event == "balanceUpdate":
