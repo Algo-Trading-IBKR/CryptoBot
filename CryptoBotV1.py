@@ -133,7 +133,18 @@ def send_order(side, quantity, ticker, price, order_type, isolated, side_effect,
             print("buyOrderID: ",symbol.BUY_order_ID)
             return False
     except Exception as e:
-        print("an exception occured - {}".format(e))
+        now = dt.datetime.now()
+        date = now.strftime("%d/%m/%Y")
+        hour = now.strftime("%H:%M:%S")
+
+        exc_type, exc_obj, exc_tb = sys.exc_info()
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        file = open(error_log_file,"a")
+        file.write(f'\n{date}\n{hour}\nan error occured: {e}\n{exc_type}\n{fname}\nLine: {exc_tb.tb_lineno}\n')
+        file.close()
+        print(e)
+
+        #Database.insert_error_log(now, f"{e}\n{exc_type}", fname, f"{exc_tb.tb_lineno}")
         return False
 
 def cancel_order(ticker, order_id):
@@ -142,7 +153,18 @@ def cancel_order(ticker, order_id):
         result = client.cancel_margin_order(symbol=ticker,orderId=order_id,isIsolated="TRUE")        
         print(result)
     except Exception as e:
-        print("an exception occured - {}".format(e))
+        now = dt.datetime.now()
+        date = now.strftime("%d/%m/%Y")
+        hour = now.strftime("%H:%M:%S")
+
+        exc_type, exc_obj, exc_tb = sys.exc_info()
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        file = open(error_log_file,"a")
+        file.write(f'\n{date}\n{hour}\nan error occured: {e}\n{exc_type}\n{fname}\nLine: {exc_tb.tb_lineno}\n')
+        file.close()
+        print(e)
+
+        #Database.insert_error_log(now, f"{e}\n{exc_type}", fname, f"{exc_tb.tb_lineno}")
         return False
     return True
 
@@ -295,53 +317,68 @@ def process_m_message(msg):
 
             
 def callback_isolated_accounts(msg):
-    # sell function here https://binance-docs.github.io/apidocs/spot/en/#payload-balance-update
-    # check if any are still borrowed
-    print(msg)
-    event = msg['e']
-    if event == "executionReport":
-        name = msg['s']
-        symbol = globals()[name]
-        side = msg['S'] #BUY or SELL
-        order_type = msg['o']
-        execution_type = msg['x'] # is TRADE when order has been filled
-        execution_status = msg['X']
-        error = msg['r'] #is NONE when no issues
-        TP_orderID = msg['i']
-        # when the take profit order is reached
-        if side == "SELL" and execution_type == "TRADE" and execution_status == "FILLED" and TP_orderID == symbol.TP_order_ID: 
-            time.sleep(1)
-            asset = client.get_isolated_margin_account(symbols=name)
-            free_asset, borrowed_asset = float(asset["assets"][0]["baseAsset"]["free"]), float(asset["assets"][0]["baseAsset"]["borrowed"])
-            free_quote, borrowed_quote = float(asset["assets"][0]["quoteAsset"]["free"]), float(asset["assets"][0]["quoteAsset"]["borrowed"])
-            print("Sell: ","free_asset ",free_asset, "borrowed_asset ",borrowed_asset, "free_quote ",free_quote, "borrowed_quote ",borrowed_quote)  
+    try:
+        # sell function here https://binance-docs.github.io/apidocs/spot/en/#payload-balance-update
+        # check if any are still borrowed
+        print(msg)
+        event = msg['e']
+        if event == "executionReport":
+            name = msg['s']
+            symbol = globals()[name]
+            side = msg['S'] #BUY or SELL
+            order_type = msg['o']
+            execution_type = msg['x'] # is TRADE when order has been filled
+            execution_status = msg['X']
+            error = msg['r'] #is NONE when no issues
+            TP_orderID = msg['i']
+            # when the take profit order is reached
+            if side == "SELL" and execution_type == "TRADE" and execution_status == "FILLED" and TP_orderID == symbol.TP_order_ID: 
+                time.sleep(1)
+                asset = client.get_isolated_margin_account(symbols=name)
+                free_asset, borrowed_asset = float(asset["assets"][0]["baseAsset"]["free"]), float(asset["assets"][0]["baseAsset"]["borrowed"])
+                free_quote, borrowed_quote = float(asset["assets"][0]["quoteAsset"]["free"]), float(asset["assets"][0]["quoteAsset"]["borrowed"])
+                print("Sell: ","free_asset ",free_asset, "borrowed_asset ",borrowed_asset, "free_quote ",free_quote, "borrowed_quote ",borrowed_quote)  
 
-            print("test bij sell order filled -> volgende print -moet nothing borrowed- zijn")
-            if borrowed_asset == 0 and borrowed_quote == 0: 
-                #transaction to spot
-                print("nothing borrowed")
-                transaction_asset = transfer_to_spot(asset=name[:-4], ticker=symbol.ticker, amount=free_asset) 
-                print(transaction_asset)
-                print("______________________________________________________________________________________")
-                transaction_quote = transfer_to_spot(asset="USDT", ticker=symbol.ticker, amount=free_quote)
-                print(transaction_quote)
-                symbol.has_position = False 
-                
+                print("test bij sell order filled -> volgende print -moet nothing borrowed- zijn")
+                if borrowed_asset == 0 and borrowed_quote == 0: 
+                    #transaction to spot
+                    print("nothing borrowed")
+                    transaction_asset = transfer_to_spot(asset=name[:-4], ticker=symbol.ticker, amount=free_asset) 
+                    print(transaction_asset)
+                    print("______________________________________________________________________________________")
+                    transaction_quote = transfer_to_spot(asset="USDT", ticker=symbol.ticker, amount=free_quote)
+                    print(transaction_quote)
+                    symbol.has_position = False 
+                    
 
-        elif side=="BUY" and execution_type=="TRADE" and execution_status=="FILLED" and symbol.open_order == True: #check if order is filled 
-            print('gekocht via de isolated socket')
-            symbol.open_order = False
-            symbol.log_buy(amount=symbol.piramidding_amount ,buy_price=symbol.buy_price, ticker=name, money=symbol.money)
-            print(Fore.GREEN + f"{name} bought for {symbol.average_price} dollar. pirammiding at {symbol.stop_loss} and take profit at {symbol.take_profit}")
-            symbol.has_position = True
+            elif side=="BUY" and execution_type=="TRADE" and execution_status=="FILLED" and symbol.open_order == True: #check if order is filled 
+                print('gekocht via de isolated socket')
+                symbol.open_order = False
+                symbol.log_buy(amount=symbol.piramidding_amount ,buy_price=symbol.buy_price, ticker=name, money=symbol.money)
+                print(Fore.GREEN + f"{name} bought for {symbol.average_price} dollar. pirammiding at {symbol.stop_loss} and take profit at {symbol.take_profit}")
+                symbol.has_position = True
 
-            asset = client.get_isolated_margin_account(symbols=name)
-            symbol.amount = get_amount(float(asset["assets"][0]["baseAsset"]["free"]), symbol.precision)
-            take_profit_order = send_order(side=SIDE_SELL , quantity=Decimal(symbol.amount), ticker=symbol.ticker,price=symbol.take_profit,order_type=ORDER_TYPE_LIMIT,isolated=True,side_effect="AUTO_REPAY",timeInForce=TIME_IN_FORCE_GTC)
+                asset = client.get_isolated_margin_account(symbols=name)
+                symbol.amount = get_amount(float(asset["assets"][0]["baseAsset"]["free"]), symbol.precision)
+                take_profit_order = send_order(side=SIDE_SELL , quantity=Decimal(symbol.amount), ticker=symbol.ticker,price=symbol.take_profit,order_type=ORDER_TYPE_LIMIT,isolated=True,side_effect="AUTO_REPAY",timeInForce=TIME_IN_FORCE_GTC)
 
 
-    if event == "balanceUpdate":
-        get_money()
+        if event == "balanceUpdate":
+            get_money()
+        
+    except Exception as e:
+        now = dt.datetime.now()
+        date = now.strftime("%d/%m/%Y")
+        hour = now.strftime("%H:%M:%S")
+
+        exc_type, exc_obj, exc_tb = sys.exc_info()
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        file = open(error_log_file,"a")
+        file.write(f'\n{date}\n{hour}\nan error occured: {e}\n{exc_type}\n{fname}\nLine: {exc_tb.tb_lineno}\n')
+        file.close()
+
+        #Database.insert_error_log(now, f"{e}\n{exc_type}", fname, f"{exc_tb.tb_lineno}")
+        raise e
 
 # endregion
 
