@@ -142,7 +142,7 @@ def send_order(side, quantity, ticker, price, order_type, isolated, side_effect,
         file = open(error_log_file,"a")
         file.write(f'\n{date}\n{hour}\nan error occured: {e}\n{exc_type}\n{fname}\nLine: {exc_tb.tb_lineno}\n')
         file.close()
-        print(e)
+        print(str(e))
 
         #Database.insert_error_log(now, f"{e}\n{exc_type}", fname, f"{exc_tb.tb_lineno}")
         return False
@@ -162,7 +162,7 @@ def cancel_order(ticker, order_id):
         file = open(error_log_file,"a")
         file.write(f'\n{date}\n{hour}\nan error occured: {e}\n{exc_type}\n{fname}\nLine: {exc_tb.tb_lineno}\n')
         file.close()
-        print(e)
+        print(str(e))
 
         #Database.insert_error_log(now, f"{e}\n{exc_type}", fname, f"{exc_tb.tb_lineno}")
         return False
