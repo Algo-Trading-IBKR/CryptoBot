@@ -249,7 +249,7 @@ def process_m_message(msg):
                                 # take profit after average price
                                 order_succeeded = send_order(side=SIDE_BUY , quantity=Decimal(symbol.piramidding_amount*symbol.margin_ratio), ticker=symbol.ticker,price=current_price,order_type=ORDER_TYPE_LIMIT,isolated=True,side_effect="MARGIN_BUY",timeInForce=TIME_IN_FORCE_GTC)
                                 symbol.average_price = (symbol.amount*symbol.average_price + symbol.piramidding_amount*current_price) / (symbol.amount+symbol.piramidding_amount)
-                                symbol.take_profit = get_amount(symbol.average_price * 1.011,symbol.precision_minPrice, False)
+                                symbol.take_profit = get_amount(symbol.average_price * 1.012,symbol.precision_minPrice, False)
                                 if order_succeeded:
                                     symbol.log_buy(amount=symbol.piramidding_amount ,buy_price=current_price, ticker=name, money=symbol.money)
                                     # get amount for limit sell order
@@ -274,7 +274,7 @@ def process_m_message(msg):
                             symbol.stop_loss = get_low(symbol.ticker) #get a stop loss
                             if symbol.stop_loss > (symbol.average_price - (symbol.average_price*0.03)):
                                 symbol.stop_loss = symbol.average_price - (symbol.average_price*0.03)
-                            symbol.take_profit = get_amount(symbol.average_price * 1.011,symbol.precision_minPrice, False) #get a take profit amount
+                            symbol.take_profit = get_amount(symbol.average_price * 1.012,symbol.precision_minPrice, False) #get a take profit amount
                             print(f"symbol.amount: {symbol.amount}")
                             print(f"symbol.margin_ratio: {symbol.margin_ratio}")
 
