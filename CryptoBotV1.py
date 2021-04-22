@@ -29,6 +29,8 @@ config.read('./Configs/CryptoBot.ini')
 #endregion
 
 #region variables
+Budget = 11
+
 clickatell = Rest("VmGMIQOQRryF3X8Yg-iUZw==")
 
 API = config['API']
@@ -187,6 +189,7 @@ def transfer_to_spot(asset, ticker, amount):
 # region callbacks
 def process_m_message(msg):
     global total_money
+    global Budget
     try:        
         if msg['data']['e'] == 'error':
             print("error while restarting socket")
@@ -237,10 +240,10 @@ def process_m_message(msg):
                             free_quote, borrowed_quote = float(asset["assets"][0]["quoteAsset"]["free"]), float(asset["assets"][0]["quoteAsset"]["borrowed"])
                             print("PIRAMMIDING: ","free_asset ",free_asset, "borrowed_asset ",borrowed_asset, "free_quote ",free_quote, "borrowed_quote ",borrowed_quote)  
                             # 11 -> half of buy amount (add in config)
-                            if free_quote >= 11:
+                            if free_quote >= Budget/2:
                                 print(Fore.RED  +f"{name} price dropped under the stop loss, buy a second time.")
                                 cancel = cancel_order(ticker=symbol.ticker,order_id=symbol.TP_order_ID)
-                                symbol.piramidding_amount = get_amount((22/2)/current_price, symbol.precision)
+                                symbol.piramidding_amount = get_amount((Budget/2)/current_price, symbol.precision)
                                 symbol.stop_loss = 0
                                 symbol.buy_price= current_price
                                 # take profit after average price
@@ -259,15 +262,15 @@ def process_m_message(msg):
 
  
                     # kopen
-                    if last_rsi < rsi_oversold and last_mfi < mfi_oversold and total_money >= 23:
+                    if last_rsi < rsi_oversold and last_mfi < mfi_oversold and total_money >= Budget+1:
                         if symbol.has_position:
                             print(f"You already own {name}.")
 
                         else:
                             print("in the buy")
-                            transaction = transfer_to_isolated(asset="USDT", ticker=symbol.ticker, amount=23)
+                            transaction = transfer_to_isolated(asset="USDT", ticker=symbol.ticker, amount=Budget+1)
                             symbol.average_price = symbol.closes[-1] #get the wanted buy price 
-                            symbol.amount = get_amount((22/2)/symbol.average_price, symbol.precision) #get amount the bot could buy
+                            symbol.amount = get_amount((Budget/2)/symbol.average_price, symbol.precision) #get amount the bot could buy
                             symbol.stop_loss = get_low(symbol.ticker) #get a stop loss
                             if symbol.stop_loss > (symbol.average_price - (symbol.average_price*0.03)):
                                 symbol.stop_loss = symbol.average_price - (symbol.average_price*0.03)
