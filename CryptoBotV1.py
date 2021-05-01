@@ -29,7 +29,7 @@ config.read('./Configs/CryptoBot.ini')
 #endregion
 
 #region variables
-Budget = 11
+Budget = 18
 
 clickatell = Rest("VmGMIQOQRryF3X8Yg-iUZw==")
 
