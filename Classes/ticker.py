@@ -25,6 +25,8 @@ class Ticker:
         self.amount = 0 # get out of api , get when reboot
         self.piramidding_amount = 0
         self.buy_price= 0
+        self.piramidding = False
+        self.average_price_piramidding = 0
 
         self.precision = 0
         self.precision_minPrice = 0
