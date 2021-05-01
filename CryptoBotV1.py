@@ -225,6 +225,12 @@ def process_m_message(msg):
                         free_quote, borrowed_quote = float(asset["assets"][0]["quoteAsset"]["free"]), float(asset["assets"][0]["quoteAsset"]["borrowed"])
                         print("Cancel Order: ","free_asset ",free_asset, "borrowed_asset ",borrowed_asset, "free_quote ",free_quote, "borrowed_quote ",borrowed_quote)
                         transaction = client.repay_margin_loan(asset='USDT', amount=borrowed_quote, isIsolated='TRUE', symbol=name)
+                        transaction_asset = transfer_to_spot(asset=name[:-4], ticker=symbol.ticker, amount=free_asset) 
+                        print(transaction_asset)
+                        print("______________________________________________________________________________________")
+                        transaction_quote = transfer_to_spot(asset="USDT", ticker=symbol.ticker, amount=free_quote)
+                        print(transaction_quote)
+                        symbol.has_position = False
 
                     # verkopen
                     if symbol.has_position:
