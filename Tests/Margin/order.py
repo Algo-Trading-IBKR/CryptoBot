@@ -39,14 +39,14 @@ def send_order(side, quantity, ticker, price, order_type, isolated,side_effect):
     return True
 
  
-market_buy = send_order(side=SIDE_BUY , quantity=2, ticker=symbol,price=10,order_type=ORDER_TYPE_MARKET,isolated=True,side_effect="MARGIN_BUY")
-print(market_buy)
+# market_buy = send_order(side=SIDE_BUY , quantity=2, ticker=symbol,price=10,order_type=ORDER_TYPE_MARKET,isolated=True,side_effect="MARGIN_BUY")
+# print(market_buy)
 
 # market_sell = send_order(side=SIDE_SELL , quantity=2, ticker=symbol,price=10,order_type=ORDER_TYPE_MARKET,isolated=True,side_effect="AUTO_REPAY") 
 # print(market_sell)
 
-# limit_buy = send_order(side=SIDE_BUY , quantity=2.8, ticker=symbol,price=10,order_type=ORDER_TYPE_LIMIT,isolated=True,side_effect="MARGIN_BUY") 
-# print(limit_buy)
+limit_buy = send_order(side=SIDE_BUY , quantity=9, ticker="SFPUSDT",price=3.1,order_type=ORDER_TYPE_LIMIT,isolated=True,side_effect="MARGIN_BUY") 
+print(limit_buy)
 
 # limit_sell = send_order(side=SIDE_SELL , quantity=120.8, ticker=symbol,price=0.45959,order_type=ORDER_TYPE_LIMIT,isolated=True,side_effect="AUTO_REPAY")
 # print(limit_sell)

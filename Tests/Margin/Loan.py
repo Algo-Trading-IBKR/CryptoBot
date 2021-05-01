@@ -21,10 +21,11 @@ SECRET_KEY = "YHyoGrthBZoqg0gEcVuvwkuRul7L4NxcqjaxHXDM0cbVjRPkN6S7eQCzyeywfVgu"
 client = Client(API_KEY, SECRET_KEY)
 
 
-asset = client.get_isolated_margin_account(symbols="UNFIUSDT")
+asset = client.get_isolated_margin_account(symbols="SFPUSDT")
 free_asset, borrowed_asset = float(asset["assets"][0]["baseAsset"]["free"]), float(asset["assets"][0]["baseAsset"]["borrowed"])
 free_quote, borrowed_quote = float(asset["assets"][0]["quoteAsset"]["free"]), float(asset["assets"][0]["quoteAsset"]["borrowed"])
+print(asset)
 print("free_asset: <",free_asset, "> borrowed_asset: <",borrowed_asset, "> free_quote: <",free_quote, "> borrowed_quote: <",borrowed_quote,">")
 
-transaction = client.repay_margin_loan(asset='USDT', amount=borrowed_quote, isIsolated='TRUE', symbol="UNFIUSDT")
-print(transaction)
+# transaction = client.repay_margin_loan(asset='USDT', amount=borrowed_quote, isIsolated='TRUE', symbol="UNFIUSDT")
+# print(transaction)
