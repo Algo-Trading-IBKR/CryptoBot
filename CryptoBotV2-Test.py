@@ -229,7 +229,7 @@ def process_m_message(msg):
                         transaction_quote = transfer_to_spot(asset="USDT", ticker=symbol.ticker, amount=free_quote)
                         print(transaction_quote)
                         symbol.has_position = False
-                        symbol.piramidding == False
+                        symbol.piramidding = False
 
                     # verkopen
                     if symbol.has_position:
