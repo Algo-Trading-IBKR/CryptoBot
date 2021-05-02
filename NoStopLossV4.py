@@ -30,7 +30,7 @@ clickatell = Rest("VmGMIQOQRryF3X8Yg-iUZw==")
 # rsi
 rsi_period = 14
 rsi_overbought = 84
-rsi_oversold = 19
+rsi_oversold = 17
 
 # mfi
 mfi_period = 12
