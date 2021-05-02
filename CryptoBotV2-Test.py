@@ -278,8 +278,8 @@ def process_m_message(msg):
                             symbol.amount = get_amount(Budget/symbol.average_price, symbol.precision) #get amount the bot could buy
 
                             symbol.stop_loss = get_low(symbol.ticker) #get a stop loss
-                            if symbol.stop_loss > (symbol.average_price - (symbol.average_price*0.03)):
-                                symbol.stop_loss = symbol.average_price - (symbol.average_price*0.03)
+                            if symbol.stop_loss > (symbol.average_price - (symbol.average_price*0.06)):
+                                symbol.stop_loss = symbol.average_price - (symbol.average_price*0.06)
                             symbol.take_profit = get_amount(symbol.average_price * 1.012,symbol.precision_minPrice, False) #get a take profit amount
                             print(f"symbol.amount: {symbol.amount}")
                             print(f"symbol.margin_ratio: {symbol.margin_ratio}")
