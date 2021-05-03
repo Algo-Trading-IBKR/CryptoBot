@@ -96,7 +96,7 @@ def get_money():
     global total_money
     data = client.get_asset_balance(asset='USDT')
     total_money = float(data["free"])
-    print("total money:" ,total_money)
+    # print("total money:" ,total_money)
 
 def get_amount(number:float, decimals:int=2, floor:bool=True):
     if not isinstance(decimals, int):
@@ -332,6 +332,7 @@ def callback_isolated_accounts(msg):
     try:
         # sell function here https://binance-docs.github.io/apidocs/spot/en/#payload-balance-update
         # check if any are still borrowed
+        print("total money: " ,total_money)
         print(msg)
         event = msg['e']
         if event == "executionReport":
