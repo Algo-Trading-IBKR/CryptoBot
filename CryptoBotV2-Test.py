@@ -29,7 +29,7 @@ config.read('./Configs/CryptoBot.ini')
 #endregion
 
 #region variables
-Budget = 20
+Budget = 12
 
 clickatell = Rest("VmGMIQOQRryF3X8Yg-iUZw==")
 
@@ -267,7 +267,7 @@ def process_m_message(msg):
 
  
                     # kopen
-                    if last_rsi < rsi_oversold and last_mfi < mfi_oversold and total_money >= Budget+1:
+                    if last_rsi < rsi_oversold and last_mfi < mfi_oversold and total_money >= Budget*2:
                         if symbol.has_position:
                             print(f"You already own {name}.")
 
@@ -304,7 +304,7 @@ def process_m_message(msg):
                                 asset = client.get_isolated_margin_account(symbols=name)
                                 symbol.amount = get_amount(float(asset["assets"][0]["baseAsset"]["free"]), symbol.precision)
                                 take_profit_order = send_order(side=SIDE_SELL , quantity=Decimal(symbol.amount), ticker=symbol.ticker,price=symbol.take_profit,order_type=ORDER_TYPE_LIMIT,isolated=True,side_effect="AUTO_REPAY",timeInForce=TIME_IN_FORCE_GTC)
-                                symbol.liquidation_price = asset["assets"][0]["liquidatePrice"]
+                                symbol.liquidation_price = float(asset["assets"][0]["liquidatePrice"])
                                 if symbol.liquidation_price > symbol.stop_loss:
                                     symbol.stop_loss = symbol.liquidation_price *1.0075
                 
@@ -377,7 +377,7 @@ def callback_isolated_accounts(msg):
                 take_profit_order = send_order(side=SIDE_SELL , quantity=Decimal(symbol.amount), ticker=symbol.ticker,price=symbol.take_profit,order_type=ORDER_TYPE_LIMIT,isolated=True,side_effect="AUTO_REPAY",timeInForce=TIME_IN_FORCE_GTC)
                 if symbol.piramidding == False:
                     #check liquidation price and update stop loss, also add in direct fill for buy
-                    symbol.liquidation_price = asset["assets"][0]["liquidatePrice"]
+                    symbol.liquidation_price = float(asset["assets"][0]["liquidatePrice"])
                     if symbol.liquidation_price > symbol.stop_loss:
                         symbol.stop_loss = symbol.liquidation_price *1.0075
 
