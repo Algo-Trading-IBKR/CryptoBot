@@ -377,7 +377,7 @@ def callback_isolated_accounts(msg):
                 take_profit_order = send_order(side=SIDE_SELL , quantity=Decimal(symbol.amount), ticker=symbol.ticker,price=symbol.take_profit,order_type=ORDER_TYPE_LIMIT,isolated=True,side_effect="AUTO_REPAY",timeInForce=TIME_IN_FORCE_GTC)
                 if symbol.piramidding == False:
                     #check liquidation price and update stop loss, also add in direct fill for buy
-                    symbol.liquidation_price = int(asset["assets"][0]["liquidatePrice"])
+                    symbol.liquidation_price = float(asset["assets"][0]["liquidatePrice"])
                     if symbol.liquidation_price > symbol.stop_loss:
                         symbol.stop_loss = symbol.liquidation_price *1.0075
 
