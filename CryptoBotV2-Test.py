@@ -29,21 +29,29 @@ config.read('./Configs/CryptoBot.ini')
 #endregion
 
 #region variables
-Budget = 12
-
 clickatell = Rest("VmGMIQOQRryF3X8Yg-iUZw==")
 
-API = config['API']
+API = config['API_YENTE']
+BUDGET = config['BUDGET_YENTE']
+
+# API = config['API_JOREN']
+# BUDGET = config['BUDGET_JOREN']
+
 NOTIFICATIONS = config['NOTIFICATIONS']
 TICKERS = config['TICKERS']
 RSI = config['RSI']
 MFI = config['MFI']
 LOGGING = config['LOGGING']
 
-API_KEY = str(API['API_KEY_Yente'])
-SECRET_KEY = str(API['SECRET_KEY_Yente'])
+API_KEY = str(API['API_KEY'])
+SECRET_KEY = str(API['SECRET_KEY'])
 
 phone_numbers = json.loads(config.get("NOTIFICATIONS","phone_numbers"))
+
+#budgets
+budget = float(BUDGET['budget'])
+budget_divider = float(BUDGET['budget'])
+minimum_cash = float(BUDGET['budget'])
 
 # rsi
 rsi_period = int(RSI['rsi_period'])
@@ -267,7 +275,7 @@ def process_m_message(msg):
 
  
                     # kopen
-                    if last_rsi < rsi_oversold and last_mfi < mfi_oversold and total_money >= Budget*2:
+                    if last_rsi < rsi_oversold and last_mfi < mfi_oversold and total_money >= Budget+minimum_cash:
                         if symbol.has_position:
                             print(f"You already own {name}.")
 
@@ -275,7 +283,7 @@ def process_m_message(msg):
                             print("in the buy")
                             transaction = transfer_to_isolated(asset="USDT", ticker=symbol.ticker, amount=Budget)
                             symbol.average_price = symbol.closes[-1] #get the wanted buy price 
-                            symbol.amount = get_amount(Budget/symbol.average_price, symbol.precision) #get amount the bot could buy
+                            symbol.amount = get_amount((Budget/budget_divider)/symbol.average_price, symbol.precision) #get amount the bot could buy
 
                             symbol.stop_loss = get_low(symbol.ticker) #get a stop loss
                             if symbol.stop_loss > (symbol.average_price - (symbol.average_price*0.06)):
@@ -284,8 +292,8 @@ def process_m_message(msg):
                             print(f"symbol.amount: {symbol.amount}")
                             print(f"symbol.margin_ratio: {symbol.margin_ratio}")
 
-                            print(f"symbol.amount: {type(symbol.amount)}")
-                            print(f"symbol.margin_ratio: {type(symbol.margin_ratio)}")
+                            # print(f"symbol.amount: {type(symbol.amount)}")
+                            # print(f"symbol.margin_ratio: {type(symbol.margin_ratio)}")
                             symbol.buy_price= symbol.average_price
                             time.sleep(0.1)
                             order_succeeded = send_order(side=SIDE_BUY , quantity=Decimal(symbol.amount*symbol.margin_ratio), ticker=symbol.ticker,price=symbol.average_price,order_type=ORDER_TYPE_LIMIT,isolated=True,side_effect="MARGIN_BUY",timeInForce=TIME_IN_FORCE_GTC)
