@@ -31,11 +31,11 @@ config.read('./Configs/CryptoBot.ini')
 #region variables
 clickatell = Rest("VmGMIQOQRryF3X8Yg-iUZw==")
 
-API = config['API_YENTE']
-BUDGET = config['BUDGET_YENTE']
+# API = config['API_YENTE']
+# BUDGET = config['BUDGET_YENTE']
 
-# API = config['API_JOREN']
-# BUDGET = config['BUDGET_JOREN']
+API = config['API_JOREN']
+BUDGET = config['BUDGET_JOREN']
 
 NOTIFICATIONS = config['NOTIFICATIONS']
 TICKERS = config['TICKERS']
@@ -50,8 +50,8 @@ phone_numbers = json.loads(config.get("NOTIFICATIONS","phone_numbers"))
 
 #budgets
 budget = float(BUDGET['budget'])
-budget_divider = float(BUDGET['budget'])
-minimum_cash = float(BUDGET['budget'])
+budget_divider = float(BUDGET['budget_divider'])
+minimum_cash = float(BUDGET['minimum_cash'])
 
 # rsi
 rsi_period = int(RSI['rsi_period'])
@@ -140,7 +140,7 @@ def send_order(side, quantity, ticker, price, order_type, isolated, side_effect,
         elif order["side"] == "BUY":
             symbol.BUY_order_ID = order['orderId']
             symbol.open_order = True
-            print("buyOrderID: {symbol.BUY_order_ID})
+            print("buyOrderID: {symbol.BUY_order_ID}")
             return False
     except Exception as e:
         now = dt.datetime.now()
