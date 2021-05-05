@@ -251,16 +251,16 @@ def process_m_message(msg):
 
                         #initiate piramiding
                         if current_price < symbol.stop_loss and total_money >= budget and symbol.piramidding == False:
-                            transaction = transfer_to_isolated(asset="USDT", ticker=symbol.ticker, amount=Budget)
+                            transaction = transfer_to_isolated(asset="USDT", ticker=symbol.ticker, amount=budget)
                             symbol.piramidding = True
                             asset = client.get_isolated_margin_account(symbols=name)
                             free_asset, borrowed_asset = float(asset["assets"][0]["baseAsset"]["free"]), float(asset["assets"][0]["baseAsset"]["borrowed"])
                             free_quote, borrowed_quote = float(asset["assets"][0]["quoteAsset"]["free"]), float(asset["assets"][0]["quoteAsset"]["borrowed"])
-                            if free_quote >= Budget:
+                            if free_quote >= budget:
                                 print(f"PIRAMMIDING: free_asset {free_asset}  borrowed_asset {borrowed_asset},  free_quote {free_quote}, borrowed_quote {borrowed_quote}")  
                                 print(Fore.RED  +f"{name} price dropped under the stop loss, buy a second time.")
                                 cancel = cancel_order(ticker=symbol.ticker,order_id=symbol.TP_order_ID)
-                                symbol.piramidding_amount = get_amount((Budget)/current_price, symbol.precision)
+                                symbol.piramidding_amount = get_amount((budget)/current_price, symbol.precision)
                                 symbol.buy_price= current_price
                                 # take profit after average price
                                 order_succeeded = send_order(side=SIDE_BUY , quantity=Decimal(symbol.piramidding_amount*symbol.margin_ratio), ticker=symbol.ticker,price=current_price,order_type=ORDER_TYPE_LIMIT,isolated=True,side_effect="MARGIN_BUY",timeInForce=TIME_IN_FORCE_GTC)
@@ -279,15 +279,15 @@ def process_m_message(msg):
                                 print(f"PIRAMMIDING {symbol.ticker} Failed, Not enough money")
  
                     # kopen
-                    if last_rsi < rsi_oversold and last_mfi < mfi_oversold and total_money >= Budget+minimum_cash:
+                    if last_rsi < rsi_oversold and last_mfi < mfi_oversold and total_money >= budget+minimum_cash:
                         if symbol.has_position:
                             print(f"You already own {name}.")
 
                         else:
                             print("in the buy")
-                            transaction = transfer_to_isolated(asset="USDT", ticker=symbol.ticker, amount=Budget)
+                            transaction = transfer_to_isolated(asset="USDT", ticker=symbol.ticker, amount=budget)
                             symbol.average_price = symbol.closes[-1] #get the wanted buy price 
-                            symbol.amount = get_amount((Budget/budget_divider)/symbol.average_price, symbol.precision) #get amount the bot could buy
+                            symbol.amount = get_amount((budget/budget_divider)/symbol.average_price, symbol.precision) #get amount the bot could buy
 
                             symbol.stop_loss = get_low(symbol.ticker) #get a stop loss
                             if symbol.stop_loss > (symbol.average_price - (symbol.average_price*0.06)):
