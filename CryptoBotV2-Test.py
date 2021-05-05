@@ -31,11 +31,11 @@ config.read('./Configs/CryptoBot.ini')
 #region variables
 clickatell = Rest("VmGMIQOQRryF3X8Yg-iUZw==")
 
-API = config['API_YENTE']
-BUDGET = config['BUDGET_YENTE']
+# API = config['API_YENTE']
+# BUDGET = config['BUDGET_YENTE']
 
-# API = config['API_JOREN']
-# BUDGET = config['BUDGET_JOREN']
+API = config['API_JOREN']
+BUDGET = config['BUDGET_JOREN']
 
 NOTIFICATIONS = config['NOTIFICATIONS']
 TICKERS = config['TICKERS']
