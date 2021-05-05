@@ -126,7 +126,7 @@ def send_order(side, quantity, ticker, price, order_type, isolated, side_effect,
     symbol = globals()[ticker]
     global total_money
     try:
-        print("Sending order...")
+        print("Sending {side_effect} order for {ticker}")
         # print("limit order")
         order = client.create_margin_order(side=side, quantity=quantity, symbol=ticker, price=price, type=order_type, isIsolated=isolated, sideEffectType=side_effect, timeInForce=timeInForce)
         print(order)
@@ -140,7 +140,7 @@ def send_order(side, quantity, ticker, price, order_type, isolated, side_effect,
         elif order["side"] == "BUY":
             symbol.BUY_order_ID = order['orderId']
             symbol.open_order = True
-            print("buyOrderID: ",symbol.BUY_order_ID)
+            print("buyOrderID: {symbol.BUY_order_ID})
             return False
     except Exception as e:
         now = dt.datetime.now()
@@ -159,7 +159,7 @@ def send_order(side, quantity, ticker, price, order_type, isolated, side_effect,
 
 def cancel_order(ticker, order_id):
     try:
-        print("Cancelling order...")
+        print(f"Cancelling order for {ticker}")
         result = client.cancel_margin_order(symbol=ticker,orderId=order_id,isIsolated="TRUE")        
         print(result)
     except Exception as e:
@@ -224,21 +224,21 @@ def process_m_message(msg):
                     if symbol.open_order:
                         # plaats hier de cancel order
                         cancel = cancel_order(ticker=symbol.ticker,order_id=symbol.BUY_order_ID)
-                        print("Na 1 minuut nog niet gekocht -> cancel: ",cancel)
+                        print(f"Na 1 minuut nog niet gekocht -> cancel: {cancel}")
                         symbol.open_order = False
                         asset = client.get_isolated_margin_account(symbols=name)
                         free_asset, borrowed_asset = float(asset["assets"][0]["baseAsset"]["free"]), float(asset["assets"][0]["baseAsset"]["borrowed"])
                         free_quote, borrowed_quote = float(asset["assets"][0]["quoteAsset"]["free"]), float(asset["assets"][0]["quoteAsset"]["borrowed"])
-                        print("Cancel Order: ","free_asset ",free_asset, "borrowed_asset ",borrowed_asset, "free_quote ",free_quote, "borrowed_quote ",borrowed_quote)
+                        print(f"Cancel Order: free_asset {free_asset}  borrowed_asset {borrowed_asset},  free_quote {free_quote}, borrowed_quote {borrowed_quote}")  
                         transaction = client.repay_margin_loan(asset='USDT', amount=borrowed_quote, isIsolated='TRUE', symbol=name)
                         print("tussen de repay en transfer back voor de cancel")
                         if free_asset != 0:
                             transaction_asset = transfer_to_spot(asset=name[:-4], ticker=symbol.ticker, amount=free_asset) 
-                            print("transaction_asset: ",transaction_asset)
+                            print("transaction_asset: {transaction_asset}")
                         print("______________________________________________________________________________________")
                         if free_quote != 0:
                             transaction_quote = transfer_to_spot(asset="USDT", ticker=symbol.ticker, amount=free_quote)
-                            print("transaction_quote: ",transaction_quote)
+                            print("transaction_quote: {transaction_quote}")
                         symbol.has_position = False
                         symbol.piramidding = False
 
@@ -256,8 +256,8 @@ def process_m_message(msg):
                             asset = client.get_isolated_margin_account(symbols=name)
                             free_asset, borrowed_asset = float(asset["assets"][0]["baseAsset"]["free"]), float(asset["assets"][0]["baseAsset"]["borrowed"])
                             free_quote, borrowed_quote = float(asset["assets"][0]["quoteAsset"]["free"]), float(asset["assets"][0]["quoteAsset"]["borrowed"])
-                            print("PIRAMMIDING: ","free_asset ",free_asset, "borrowed_asset ",borrowed_asset, "free_quote ",free_quote, "borrowed_quote ",borrowed_quote) 
                             if free_quote >= Budget:
+                                print(f"PIRAMMIDING: free_asset {free_asset}  borrowed_asset {borrowed_asset},  free_quote {free_quote}, borrowed_quote {borrowed_quote}")  
                                 print(Fore.RED  +f"{name} price dropped under the stop loss, buy a second time.")
                                 cancel = cancel_order(ticker=symbol.ticker,order_id=symbol.TP_order_ID)
                                 symbol.piramidding_amount = get_amount((Budget)/current_price, symbol.precision)
@@ -275,7 +275,8 @@ def process_m_message(msg):
                                     symbol.has_position = True
                                     order_succeeded = False
                                     print(Fore.GREEN + f"SECOND BUY: {name} bought for {current_price} dollar. Stop loss at {symbol.stop_loss} and take profit at {symbol.take_profit}")
-
+                            elif free_quote < budget:
+                                print(f"PIRAMMIDING {symbol.ticker} Failed, Not enough money")
  
                     # kopen
                     if last_rsi < rsi_oversold and last_mfi < mfi_oversold and total_money >= Budget+minimum_cash:
@@ -344,7 +345,7 @@ def callback_isolated_accounts(msg):
         # sell function here https://binance-docs.github.io/apidocs/spot/en/#payload-balance-update
         # check if any are still borrowed
         print("total money: " ,total_money)
-        print(msg)
+        # print(msg)
         event = msg['e']
         if event == "executionReport":
             name = msg['s']
@@ -362,19 +363,19 @@ def callback_isolated_accounts(msg):
                 asset = client.get_isolated_margin_account(symbols=name)
                 free_asset, borrowed_asset = float(asset["assets"][0]["baseAsset"]["free"]), float(asset["assets"][0]["baseAsset"]["borrowed"])
                 free_quote, borrowed_quote = float(asset["assets"][0]["quoteAsset"]["free"]), float(asset["assets"][0]["quoteAsset"]["borrowed"])
-                print("Sell: ","free_asset ",free_asset, "borrowed_asset ",borrowed_asset, "free_quote ",free_quote, "borrowed_quote ",borrowed_quote)  
-
-                print("test bij sell order filled -> volgende print -moet nothing borrowed- zijn")
+                print(f"Sell: free_asset {free_asset}  borrowed_asset {borrowed_asset},  free_quote {free_quote}, borrowed_quote {borrowed_quote}")
+                # print("test bij sell order filled -> volgende print -moet nothing borrowed- zijn")
                 if borrowed_asset == 0 and borrowed_quote == 0: 
                     #transaction to spot
-                    print("nothing borrowed")
+                    print("nothing borrowed: True")
                     transaction_asset = transfer_to_spot(asset=name[:-4], ticker=symbol.ticker, amount=free_asset) 
                     print(transaction_asset)
                     print("______________________________________________________________________________________")
                     transaction_quote = transfer_to_spot(asset="USDT", ticker=symbol.ticker, amount=free_quote)
                     print(transaction_quote)
                     symbol.has_position = False 
-                    
+                else:
+                    print("nothing borrowed: False")
 
             elif side=="BUY" and execution_type=="TRADE" and execution_status=="FILLED" and symbol.open_order == True: #check if order is filled 
                 print('gekocht via de isolated socket')
@@ -392,10 +393,6 @@ def callback_isolated_accounts(msg):
                     symbol.liquidation_price = float(asset["assets"][0]["liquidatePrice"])
                     if symbol.liquidation_price > symbol.stop_loss:
                         symbol.stop_loss = symbol.liquidation_price *1.0075
-
-           
-
-
         if event == "balanceUpdate":
             get_money()
         
@@ -417,7 +414,7 @@ def callback_isolated_accounts(msg):
 
 if str(client.ping()) == '{}': #{} means that it is connected
     status = client.get_system_status()
-    print("Connected to Binance, server status:", status["msg"])
+    print(f"Connected to Binance, server status: {status['msg']}")
     print("Fetching historical data.")
     # data = client.get_asset_balance(asset='USDT')
     # total_money = data["free"]
