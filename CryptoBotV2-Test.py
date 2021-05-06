@@ -130,7 +130,7 @@ def send_order(side, quantity, ticker, price, order_type, isolated, side_effect,
         print("Sending {side_effect} order for {ticker}")
         # print("limit order")
         order = client.create_margin_order(side=side, quantity=quantity, symbol=ticker, price=price, type=order_type, isIsolated=isolated, sideEffectType=side_effect, timeInForce=timeInForce)
-        print(order)
+        # print(order)
         get_money()
         if order["side"] == "SELL":
             symbol.TP_order_ID = order['orderId'] #instantie
@@ -141,7 +141,7 @@ def send_order(side, quantity, ticker, price, order_type, isolated, side_effect,
         elif order["side"] == "BUY":
             symbol.BUY_order_ID = order['orderId']
             symbol.open_order = True
-            print("buyOrderID: {symbol.BUY_order_ID}")
+            # print("buyOrderID: {symbol.BUY_order_ID}")
             return False
     except Exception as e:
         now = dt.datetime.now()
@@ -162,7 +162,7 @@ def cancel_order(ticker, order_id):
     try:
         print(f"Cancelling order for {ticker}")
         result = client.cancel_margin_order(symbol=ticker,orderId=order_id,isIsolated="TRUE")        
-        print(result)
+        print("Cancelled order result: ",result)
     except Exception as e:
         now = dt.datetime.now()
         date = now.strftime("%d/%m/%Y")
@@ -260,7 +260,7 @@ def process_m_message(msg):
                             free_quote, borrowed_quote = float(asset["assets"][0]["quoteAsset"]["free"]), float(asset["assets"][0]["quoteAsset"]["borrowed"])
                             if free_quote >= budget:
                                 print(f"PIRAMMIDING: free_asset {free_asset}  borrowed_asset {borrowed_asset},  free_quote {free_quote}, borrowed_quote {borrowed_quote}")  
-                                print(Fore.RED  +f"{name} price dropped under the stop loss, buy a second time.")
+                                print(Fore.RED  +f"{name} price dropped under the piramidding price, buy a second time.")
                                 cancel = cancel_order(ticker=symbol.ticker,order_id=symbol.TP_order_ID)
                                 symbol.piramidding_amount = get_amount((budget)/current_price, symbol.precision)
                                 symbol.buy_price= current_price
@@ -286,7 +286,7 @@ def process_m_message(msg):
                             print(f"You already own {name}.")
 
                         else:
-                            print("in the buy")
+                            print("------------BUY--------------")
                             transaction = transfer_to_isolated(asset="USDT", ticker=symbol.ticker, amount=budget)
                             symbol.average_price = symbol.closes[-1] #get the wanted buy price 
                             symbol.amount = get_amount((budget/budget_divider)/symbol.average_price, symbol.precision) #get amount the bot could buy
@@ -303,11 +303,11 @@ def process_m_message(msg):
                             symbol.buy_price= symbol.average_price
                             time.sleep(0.1)
                             order_succeeded = send_order(side=SIDE_BUY , quantity=Decimal(symbol.amount*symbol.margin_ratio), ticker=symbol.ticker,price=symbol.average_price,order_type=ORDER_TYPE_LIMIT,isolated=True,side_effect="MARGIN_BUY",timeInForce=TIME_IN_FORCE_GTC)
-                            print("order succeeded",order_succeeded)
+                            print("Direct gekocht: ",order_succeeded)
 
                             if order_succeeded:
                                 # log buy 
-                                print('gekocht via direct FILL')
+                                # print('gekocht via direct FILL')
                                 symbol.log_buy(amount=symbol.amount ,buy_price=symbol.average_price, ticker=name, money=symbol.money)
                                 print(Fore.GREEN + f"{name} bought for {symbol.average_price} dollar. rsi: {last_rsi} mfi: {last_mfi}. pirammiding at {symbol.stop_loss} and take profit at {symbol.take_profit}")
                                 symbol.has_position = True
@@ -346,7 +346,7 @@ def callback_isolated_accounts(msg):
     try:
         # sell function here https://binance-docs.github.io/apidocs/spot/en/#payload-balance-update
         # check if any are still borrowed
-        print("total money: " ,total_money)
+        # print("total money: " ,total_money)
         # print(msg)
         event = msg['e']
         if event == "executionReport":
@@ -371,10 +371,10 @@ def callback_isolated_accounts(msg):
                     #transaction to spot
                     print("nothing borrowed: True")
                     transaction_asset = transfer_to_spot(asset=name[:-4], ticker=symbol.ticker, amount=free_asset) 
-                    print(transaction_asset)
-                    print("______________________________________________________________________________________")
+                    # print(transaction_asset)
+                    # print("______________________________________________________________________________________")
                     transaction_quote = transfer_to_spot(asset="USDT", ticker=symbol.ticker, amount=free_quote)
-                    print(transaction_quote)
+                    # print(transaction_quote)
                     symbol.has_position = False 
                 else:
                     print("nothing borrowed: False")
@@ -396,6 +396,7 @@ def callback_isolated_accounts(msg):
                     if symbol.liquidation_price > symbol.stop_loss:
                         symbol.stop_loss = symbol.liquidation_price *1.0075
         if event == "balanceUpdate":
+            print("total money: " ,total_money)
             get_money()
         
     except Exception as e:
