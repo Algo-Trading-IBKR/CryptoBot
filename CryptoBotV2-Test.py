@@ -11,6 +11,7 @@ import numpy as np
 import json
 # binance
 from binance.client import Client
+# from binance import BinanceSocketManager
 from binance.websockets import BinanceSocketManager
 from binance.enums import *
 # extra
@@ -232,12 +233,13 @@ def process_m_message(msg):
                         print(f"Cancel Order: free_asset {free_asset}  borrowed_asset {borrowed_asset},  free_quote {free_quote}, borrowed_quote {borrowed_quote}")  
                         transaction = client.repay_margin_loan(asset='USDT', amount=borrowed_quote, isIsolated='TRUE', symbol=name)
                         print("tussen de repay en transfer back voor de cancel")
+
                         if free_asset != 0:
                             transaction_asset = transfer_to_spot(asset=name[:-4], ticker=symbol.ticker, amount=free_asset) 
                             print("transaction_asset: {transaction_asset}")
-                        print("______________________________________________________________________________________")
+                            print("______________________________________________________________________________________")
                         if free_quote != 0:
-                            transaction_quote = transfer_to_spot(asset="USDT", ticker=symbol.ticker, amount=free_quote)
+                            transaction_quote = transfer_to_spot(asset="USDT", ticker=symbol.ticker, amount=free_quote-borrowed_quote)
                             print("transaction_quote: {transaction_quote}")
                         symbol.has_position = False
                         symbol.piramidding = False
@@ -293,8 +295,8 @@ def process_m_message(msg):
                             if symbol.stop_loss > (symbol.average_price - (symbol.average_price*0.06)):
                                 symbol.stop_loss = symbol.average_price - (symbol.average_price*0.06)
                             symbol.take_profit = get_amount(symbol.average_price * 1.012,symbol.precision_minPrice, False) #get a take profit amount
-                            print(f"symbol.amount: {symbol.amount}")
-                            print(f"symbol.margin_ratio: {symbol.margin_ratio}")
+                            # print(f"symbol.amount: {symbol.amount}")
+                            # print(f"symbol.margin_ratio: {symbol.margin_ratio}")
 
                             # print(f"symbol.amount: {type(symbol.amount)}")
                             # print(f"symbol.margin_ratio: {type(symbol.margin_ratio)}")
@@ -453,7 +455,9 @@ if str(client.ping()) == '{}':
     print("Intitialize listeners for isolated accounts.")
     for i in tqdm(instances):
         conn_key = bm.start_isolated_margin_socket(symbol=i.ticker, callback=callback_isolated_accounts)
+        # conn_key = bm.isolated_margin_socket(symbol=i.ticker, callback=callback_isolated_accounts)
     conn_key = bm.start_multiplex_socket(tickers, process_m_message)
+    # conn_key = bm.multiplex_socket(tickers, process_m_message)
     bm.start() #start the socket manager
     # print("5 sec sleep.")
     time.sleep(5)
