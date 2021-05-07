@@ -8,4 +8,4 @@ RUN pip install -r requirements.txt
 
 COPY . .
 
-ENTRYPOINT [ "python", "CryptoBotV1.py" ]
+ENTRYPOINT [ "python", "CryptoBotV2-Test.py" ]

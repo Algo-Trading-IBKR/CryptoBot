@@ -2,7 +2,7 @@ colorama
 clickatell
 pandas
 pymongo
-python-binance
+python-binance==0.7.11
 numpy
 TA-Lib
 tqdm

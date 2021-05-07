@@ -1,5 +1,8 @@
-version: "3"
+version: "3.4"
 services:
   cryptobot:
     container_name: cryptobot
     build: .
+    volumes:
+      - ./Configs:/app/Configs
+      - ./Logs:/app/Logs
