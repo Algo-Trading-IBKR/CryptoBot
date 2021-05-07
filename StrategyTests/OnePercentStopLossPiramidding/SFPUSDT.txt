@@ -1,8 +1,0 @@
-03 Mar 2021 - 05:47:00 | Bought 23.119 SFPUSDT with 50.0 dollar for 2.1627 dollar per unit. 
-03 Mar 2021 - 05:55:02 | PROFIT, sold 23.11924908678966 SFPUSDT for 2.1897 dollar per unit. Money left 100.62421972534332 dollar
-03 Mar 2021 - 11:43:01 | Bought 24.663 SFPUSDT with 50.31210986267166 dollar for 2.04 dollar per unit. 
-03 Mar 2021 - 11:57:00 | PROFIT, sold 24.66279895229003 SFPUSDT for 2.065 dollar per unit. Money left 101.24078969915057 dollar
-03 Mar 2021 - 19:18:05 | Bought 25.566 SFPUSDT with 50.620394849575284 dollar for 1.98 dollar per unit. 
-03 Mar 2021 - 19:42:00 | PROFIT, sold 25.56585598463398 SFPUSDT for 2.0096 dollar per unit. Money left 101.99753903629573 dollar
-03 Mar 2021 - 22:56:03 | Bought 26.084 SFPUSDT with 50.99876951814787 dollar for 1.9552 dollar per unit. 
-03 Mar 2021 - 23:11:04 | PROFIT, sold 26.083658714273664 SFPUSDT for 1.9799 dollar per unit. Money left 102.6418054065383 dollar

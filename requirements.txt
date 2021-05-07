@@ -1,8 +1,8 @@
+asyncio
 colorama
 clickatell
 pandas
 pymongo
-python-binance==0.7.11
+python-binance
 numpy
 TA-Lib
-tqdm
