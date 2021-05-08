@@ -1,5 +1,4 @@
 asyncio
-colorama
 clickatell
 pandas
 pymongo

@@ -1,55 +1,58 @@
-from colorama import *
-from datetime import datetime
-init()
+import datetime
 
+colors = {
+    'VERB': ['\x1b[34m', '\x1b[0m'],
+    'INFO': ['\x1b[32m', '\x1b[0m'],
+    'WARN': ['\x1b[33m', '\x1b[0m'],
+    'ERR': ['\x1b[31m', '\x1b[0m'],
+    'CRIT': ['\x1b[31m', '\x1b[0m']
+}
 
-class Logger():
-    _logLevel = 'INFO'
-    _logTypes = ['VERBOSE','INFO','WARNING','ERROR','CRITICAL']
-    _logColors = {
-        'VERBOSE': Fore.CYAN,
-        'INFO': Fore.GREEN,
-        'WARNING': Fore.YELLOW,
-        'ERROR': Fore.RED,
-        'CRITICAL': Fore.RED
-    }
+class Log():
+    log_level = 'INFO'
 
-    @staticmethod
-    def log(level, name, message):
-        level = level.upper()
-
-        if level not in Logger._logTypes:
-            print(Fore.YELLOW + 'Invalid Loglevel')
-            print(Style.RESET_ALL)
-
-        print(Logger._logColors[level] + f'[{datetime.now} - {name}] {message}')
-        print(Style.RESET_ALL)
+    # fallback to old method
+    def __init__(self, *args):
+        Log._log(*args)
 
     @staticmethod
-    def set_log_level(level: str):
-        level = level.upper()
-        if level in Logger._logTypes:
-            Logger._logLevel = level
-        else:
-            print(Fore.YELLOW + 'Invalid Loglevel')
-            print(Style.RESET_ALL)
+    def _log(name, level, message, show_time = True):
+        level_types = ['VERB', 'INFO', 'WARN', 'ERR', 'CRIT']
+
+        if level not in level_types:
+            print('Invalid error logging level, please use one of the following:', level_types)
+            return
+
+        if level_types.index(level) < level_types.index(Log.log_level):
+            return
+
+        log = ''
+        color = ('', '')
+
+        if show_time:
+            currentDate = datetime.datetime.now()
+            log = f'[{currentDate.strftime("%H:%M:%S")}] '
+
+            color = colors[level]
+
+        print('{}{}[{:<8s}/{:>5s}]{} {}'.format(log, color[0], name, level, color[1], message))
 
     @staticmethod
-    def verbose(name, message):
-        Logger.log('VERBOSE', name, message)
+    def verbose(name, message, show_time = True):
+        Log._log(name, 'VERB', message, show_time)
 
     @staticmethod
-    def info(name, message):
-        Logger.log('INFO', name, message)
+    def info(name, message, show_time = True):
+        Log._log(name, 'INFO', message, show_time)
 
     @staticmethod
-    def warn(name, message):
-        Logger.log('WARNING', name, message)
+    def warning(name, message, show_time = True):
+        Log._log(name, 'WARN', message, show_time)
 
     @staticmethod
-    def error(name, message):
-        Logger.log('ERROR', name, message)
+    def error(name, message, show_time = True):
+        Log._log(name, 'ERR', message, show_time)
 
     @staticmethod
-    def critical(name, message):
-        Logger.log('CRITICAL', name, message)
+    def critical(name, message, show_time = True):
+        Log._log(name, 'CRIT', message, show_time)
