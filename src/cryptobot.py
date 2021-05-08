@@ -1,5 +1,7 @@
 import asyncio
-from binance import AsyncClient
+from binance import AsyncClient, BinanceSocketManager
+import sys
+from time import sleep
 from src.util.logger import Log
 from src.util.util import load_json
 from .coin import Coin
@@ -11,6 +13,10 @@ class CryptoBot:
         self._config = load_json('./configs/config.json')
 
     @property
+    def bm(self):
+        return self._socket_manager
+
+    @property
     def client(self):
         return self._client
 
@@ -18,29 +24,35 @@ class CryptoBot:
     def config(self):
         return self._config
 
-    def load_coins(self):
-        pass
+    @property
+    def log(self):
+        return Log
 
-    async def start(self):
+    @asyncio.coroutine
+    def start(self):
         self._active = self._config["configs"][self._config["active_config"]]
 
         Log.info('BOT', f"Using active config {self._active['name']}")
         Log.info('BOT', f"Using {len(self._config['pairs'])} coin pairs.")
 
-        self._client = await AsyncClient.create(api_key=self._active["key"], api_secret=self._active["secret"])
+        self._client = yield from AsyncClient.create(api_key=self._active["key"], api_secret=self._active["secret"])
+        self._socket_manager = BinanceSocketManager(self._client) # user_timeout is now 5 minutes (5 * 60)
 
-        status = await self._client.get_system_status()
+        status = yield from self._client.get_system_status()
         Log.info('BOT', f"System status: {status['msg']}")
 
         self._coins = [Coin(self, symbol_pair) for symbol_pair in self._config["pairs"]]
         self._order_manager = OrderManager(self)
         self._wallet = Wallet(self)
 
-        for coin in self._coins:
-            coin.start()
+        Log.info('BOT', f"Total usable ${(yield from self._wallet.get_money()):.2f} in spot wallet.")
 
-        await self._client.close_connection()
+        self.tasks = [asyncio.create_task(coin.init()) for coin in self._coins]
 
-    async def shutdown(self):
+        yield from asyncio.gather(*self.tasks)
+        yield from self._client.close_connection()
+
+    def shutdown(self, signal, stack_frame):
         # gracefull shutdown, close positionts etc
-        await self._client.close_connection()
+        for task in self.tasks:
+            task.cancel()
