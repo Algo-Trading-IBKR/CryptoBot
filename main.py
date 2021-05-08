@@ -3,6 +3,7 @@ import signal
 from src.cryptobot import CryptoBot
 
 cryptobot = CryptoBot()
+cryptobot.log.log_level = 'VERB' # VERB/INFO/WARN/ERR/CRIT
 
 signal.signal(signal.SIGINT, cryptobot.shutdown)
 signal.signal(signal.SIGTERM, cryptobot.shutdown)
