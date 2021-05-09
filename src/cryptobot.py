@@ -11,6 +11,7 @@ from .wallet import Wallet
 class CryptoBot:
     def __init__(self):
         self._config = load_json('./configs/config.json')
+        self._running = True
 
     @property
     def bm(self):
@@ -28,31 +29,35 @@ class CryptoBot:
     def log(self):
         return Log
 
-    @asyncio.coroutine
-    def start(self):
+    async def start(self):
         self._active = self._config["configs"][self._config["active_config"]]
 
         Log.info('BOT', f"Using active config {self._active['name']}")
         Log.info('BOT', f"Using {len(self._config['pairs'])} coin pairs.")
 
-        self._client = yield from AsyncClient.create(api_key=self._active["key"], api_secret=self._active["secret"])
+        self._client = await AsyncClient.create(api_key=self._active["key"], api_secret=self._active["secret"])
         self._socket_manager = BinanceSocketManager(self._client) # user_timeout is now 5 minutes (5 * 60)
 
-        status = yield from self._client.get_system_status()
+        status = await self._client.get_system_status()
         Log.info('BOT', f"System status: {status['msg']}")
 
         self._coins = [Coin(self, symbol_pair) for symbol_pair in self._config["pairs"]]
         self._order_manager = OrderManager(self)
         self._wallet = Wallet(self)
 
-        Log.info('BOT', f"Total usable ${(yield from self._wallet.get_money()):.2f} in spot wallet.")
+        Log.info('BOT', f"Total usable ${(await self._wallet.get_money()):.2f} in spot wallet.")
 
         self.tasks = [asyncio.create_task(coin.init()) for coin in self._coins]
 
-        yield from asyncio.gather(*self.tasks)
-        yield from self._client.close_connection()
+        while self._running:
+            await asyncio.sleep(0.1)
+        await self._client.close_connection()
 
     def shutdown(self, signal, stack_frame):
         # gracefull shutdown, close positionts etc
         for task in self.tasks:
             task.cancel()
+
+        self._running = False
+
+        Log.info('BOT', 'Application exitted.')
