@@ -4,7 +4,7 @@ import sys
 from time import sleep
 from src.util.logger import Log
 from src.util.util import load_json
-from .coin import Coin
+from .coin_manager import CoinManager
 from .order_manager import OrderManager
 from .wallet import Wallet
 
@@ -13,12 +13,14 @@ class CryptoBot:
         self._config = load_json('./configs/config.json')
         self._running = True
 
+        self.tasks = []
+
     @property
-    def bm(self):
+    def bm(self) -> BinanceSocketManager:
         return self._socket_manager
 
     @property
-    def client(self):
+    def client(self) -> AsyncClient:
         return self._client
 
     @property
@@ -26,7 +28,7 @@ class CryptoBot:
         return self._config
 
     @property
-    def log(self):
+    def log(self) -> Log:
         return Log
 
     async def start(self):
@@ -41,23 +43,25 @@ class CryptoBot:
         status = await self._client.get_system_status()
         Log.info('BOT', f"System status: {status['msg']}")
 
-        self._coins = [Coin(self, symbol_pair) for symbol_pair in self._config["pairs"]]
+        self._coin_manager = CoinManager(self, self._config['pairs'])
         self._order_manager = OrderManager(self)
         self._wallet = Wallet(self)
 
         Log.info('BOT', f"Total usable ${(await self._wallet.get_money()):.2f} in spot wallet.")
 
-        self.tasks = [asyncio.create_task(coin.init()) for coin in self._coins]
+        # self.tasks = self._coin_manager.init()
+        self.tasks.append(self._coin_manager.init_multiplex())
 
+        # keep the main event loop active
         while self._running:
-            await asyncio.sleep(0.1)
+            await asyncio.sleep(0.01)
+        # close our connection cleanly
         await self._client.close_connection()
 
     def shutdown(self, signal, stack_frame):
-        # gracefull shutdown, close positionts etc
+        Log.info('BOT', 'Application exitted.')
+
         for task in self.tasks:
             task.cancel()
 
         self._running = False
-
-        Log.info('BOT', 'Application exitted.')

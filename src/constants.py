@@ -1,0 +1,10 @@
+CANDLE = 'k'
+CANDLE_CLOSED = 'x'
+CANDLE_CLOSE = 'c'
+CANDLE_HIGH = 'h'
+CANDLE_LOW = 'l'
+CANDLE_VOLUME = 'v'
+
+EVENT_TYPE = 'e'
+SYMBOL = 's'
+TIMESTAMP = 'E'

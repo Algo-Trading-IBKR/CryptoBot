@@ -4,6 +4,7 @@ from concurrent.futures import CancelledError
 import threading
 import math
 from time import sleep
+from .constants import CANDLE_CLOSE, CANDLE_HIGH, CANDLE_LOW, CANDLE_VOLUME
 
 class Coin:
     def __init__(self, bot, symbol_pair : str):
@@ -26,7 +27,7 @@ class Coin:
         try:
             self.bot.create_isolated_margin_account(base = self.symbol_pair[:-4], quote = 'USDT')
         except Exception as e:
-            self.bot.log.verbose(self.symbol_pair, 'Isolated wallet already exists.')
+            self.bot.log.verbose('COIN', f'Isolated wallet exists for {self.symbol_pair}')
 
         candles = await self.bot.client.get_historical_klines(self.symbol_pair, interval = AsyncClient.KLINE_INTERVAL_1MINUTE, start_str = '150 minutes ago CET', end_str = '1 minutes ago CET')
         for candle in candles:
@@ -35,8 +36,8 @@ class Coin:
             self.lows.append(float(candle[3]))
             self.volumes.append(float(candle[5]))
 
-        info = await self.bot.client.get_isolated_margin_account(symbols = self.symbol_pair)
-        self.margin_ratio = float(info['assets'][0]['marginRatio'])
+        account = await self.bot.client.get_isolated_margin_account(symbols = self.symbol_pair)
+        self.margin_ratio = float(account['assets'][0]['marginRatio'])
 
         info = await self.bot.client.get_symbol_info(self.symbol_pair)
         for f in info['filters']:
@@ -55,11 +56,23 @@ class Coin:
     async def run(self):
         self._running = True
 
-        async with self.bot.bm.isolated_margin_socket(self.symbol_pair) as ts:
+        s = self.bot.bm.isolated_margin_socket(self.symbol_pair)
+        async with s as ts:
             while self._running:
                 res = await ts.recv()
+                if not res:
+                    continue
 
                 print(res)
 
+    def update(self, candle):
+        close = float(candle[CANDLE_CLOSE])
+        high = float(candle[CANDLE_HIGH])
+        low = float(candle[CANDLE_LOW])
+        volume = float(candle[CANDLE_VOLUME])
 
+        self.closes.append(close)
+        self.highs.append(high)
+        self.lows.append(low)
+        self.volumes.append(volume)
 
