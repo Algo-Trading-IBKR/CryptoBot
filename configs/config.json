@@ -54,5 +54,8 @@
         "VTHOUSDT",
         "XEMUSDT",
         "XMRUSDT"
-    ]
+    ],
+    "strategy": {
+        "take_profit_percentage": 1.012
+    }
 }

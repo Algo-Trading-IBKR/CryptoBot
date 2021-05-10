@@ -3,17 +3,21 @@ from binance import AsyncClient, BinanceSocketManager
 import sys
 from time import sleep
 from src.util.logger import Log
-from src.util.util import load_json
+from src.util.util import util
 from .coin_manager import CoinManager
 from .order_manager import OrderManager
 from .wallet import Wallet
 
 class CryptoBot:
     def __init__(self):
-        self._config = load_json('./configs/config.json')
+        self._config = util.load_json('./configs/config.json')
         self._running = True
 
         self.tasks = []
+
+    @property
+    def active(self):
+        return self._active
 
     @property
     def bm(self) -> BinanceSocketManager:
@@ -31,6 +35,14 @@ class CryptoBot:
     def log(self) -> Log:
         return Log
 
+    @property
+    def order_manager(self) -> OrderManager:
+        return self._order_manager
+
+    @property
+    def wallet(self) -> Wallet:
+        return self._wallet
+
     async def start(self):
         self._active = self._config["configs"][self._config["active_config"]]
 
@@ -47,7 +59,7 @@ class CryptoBot:
         self._order_manager = OrderManager(self)
         self._wallet = Wallet(self)
 
-        Log.info('BOT', f"Total usable ${(await self._wallet.get_money()):.2f} in spot wallet.")
+        Log.info('BOT', f"Total usable ${(await self._wallet.update_money()):.2f} in spot wallet.")
 
         self.tasks = self._coin_manager.init()
         self.tasks.append(self._coin_manager.init_multiplex())
