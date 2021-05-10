@@ -8,7 +8,7 @@ import math
 import numpy as np
 import talib
 from time import sleep
-from .constants import CANDLE_CLOSE, CANDLE_HIGH, CANDLE_LOW, CANDLE_VOLUME
+from .constants import CANDLE_CLOSE, CANDLE_HIGH, CANDLE_LOW, CANDLE_VOLUME, EVENT_TYPE, EXECUTION_ERROR, EXECUTION_TYPE, EXECUTION_STATUS, EXECUTION_ORDER_ID, SIDE
 from src.util.util import util
 
 class Coin:
@@ -81,7 +81,62 @@ class Coin:
                 if not res:
                     continue
 
-                print(res)
+                await self.update_margin(res)
+
+    async def update_margin(self, msg):
+        event = msg[EVENT_TYPE]
+
+        if event == 'executionReport':
+            error = msg[EXECUTION_ERROR]
+            if error is not None:
+                self.bot.log.error('COIN', f'Execution Report error: {error}')
+
+                return
+            side = msg[SIDE]
+            order_type = msg[ORDER_TYPE]
+            execution_type = msg[EXECUTION_TYPE]
+            execution_status = msg[EXECUTION_STATUS]
+            order_id = msg[EXECUTION_ORDER_ID]
+
+            if side == 'SELL' and execution_type == 'TRADE' and execution_status == 'FILLED' and self.bot.order_manager.has_order_id(self.symbol_pair, order_id):
+                self.is_piramidding = False
+                await asyncio.sleep(2)
+
+                account = await self.bot.client.get_isolated_margin_account(symbol = self.symbol_pair)
+                free_asset, borrowed_asset, free_quote, borrowed_quote = util.get_asset_and_quote(account)
+
+                self.has_position = False
+
+                if borrowed_asset == 0 and borrowed_quote == 0:
+                    transaction_asset = await self.bot.wallet.transfer_to_spot(self.symbol, self.symbol_pair, free_asset)
+                    transaction_quote = await self.bot.wallet.transfer_to_spot('USDT', self.symbol_pair, free_quote)
+            elif side == 'BUY' and execution_type == 'TRADE'  and execution_status == 'FILLED' and self.has_open_order:
+                self.has_open_order = False
+                self.has_position = True
+
+                transaction = await self.bot.wallet.transfer_to_isolated('USDT', self.symbol_pair, 1)
+
+                account = await self.bot.client.get_isolated_margin_account(symbol = self.symbol_pair)
+                self.amount = util.get_amount(float(account['assets'][0]['baseAsset']['free'], self.precision))
+
+                take_profit_order = await self.bot.order_manager.send_order(
+                    coin = self,
+                    side = SIDE_SELL,
+                    quantity = Decimal(self.amount),
+                    price = self.take_profit,
+                    order_type = ORDER_TYPE_LIMIT,
+                    isolated = True,
+                    side_effect = 'AUTO_REPAY',
+                    time_in_force = TIME_IN_FORCE_GTC
+                )
+
+                if not self.is_piramidding:
+                    #check liquidation price and update stop loss, also add in direct fill for buy
+                    self.liquidation_price = float(account["assets"][0]["liquidatePrice"])
+                    if self.liquidation_price > self.piramidding_price:
+                        self.piramidding_price = self.liquidation_price * 1.0075
+        if event == 'balanceUpdate':
+            await self.bot.wallet.update_money()
 
     async def update(self, candle):
         close = float(candle[CANDLE_CLOSE])
@@ -115,10 +170,7 @@ class Coin:
             await self.bot.order_manager.cancel_order(self)
 
             account = await self.bot.client.get_isolated_margin_account(self.symbol_pair)
-            free_asset = float(account['assets'][0]['baseAsset']['free'])
-            borrowed_asset = float(account['assets'][0]['baseAsset']['borrowed'])
-            free_quote = float(account['assets'][0]['quoteAsset']['free'])
-            borrowed_quote = float(account['assets'][0]['quoteAsset']['borrowed'])
+            free_asset, borrowed_asset, free_quote, borrowed_quote = util.get_asset_and_quote(account)
 
             if free_asset > 0:
                 transaction_asset = await self.bot.wallet.transfer_to_spot(self.symbol, self.symbol_pair, free_asset)
@@ -143,10 +195,7 @@ class Coin:
                 self.is_piramidding = True
 
                 account = await self.bot.client.get_isolated_margin_account(symbol = self.symbol_pair)
-                free_asset = float(account['assets'][0]['baseAsset']['free'])
-                borrowed_asset = float(account['assets'][0]['baseAsset']['borrowed'])
-                free_quote = float(account['assets'][0]['quoteAsset']['free'])
-                borrowed_quote = float(account['assets'][0]['quoteAsset']['borrowed'])
+                free_asset, borrowed_asset, free_quote, borrowed_quote = util.get_asset_and_quote(account)
 
                 if free_quote >= self.bot.active.budget:
                     self.bot.order_manager.cancel_order(self)

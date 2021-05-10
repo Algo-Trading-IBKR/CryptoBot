@@ -19,6 +19,9 @@ class OrderManager():
 
         return float(data['lowPrice'])
 
+    def has_order_id(self, symbol_pair, order_id):
+        return symbol_pair in self.order_book and self.order_book[symbol_pair] == order_id
+
     def repay_margin_loan(self, coin):
         pass
 
