@@ -12,10 +12,8 @@
 - Functions in Alphabetical order
 - Separate code as much as possible
 
+# To Do
 
-# Logging
--
-
-
-
-
+ - Logging to files
+ - Add extra verbose logging on each step
+ - Extended logging on exceptions, lines, file, etc...
