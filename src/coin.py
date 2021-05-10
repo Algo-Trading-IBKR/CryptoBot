@@ -172,6 +172,8 @@ class Coin:
             account = await self.bot.client.get_isolated_margin_account(self.symbol_pair)
             free_asset, borrowed_asset, free_quote, borrowed_quote = util.get_asset_and_quote(account)
 
+            transaction = await self.bot.client.repay_margin_loan(asset='USDT', amount=borrowed_quote, isIsolated=True, symbol = self.symbol_pair)
+
             if free_asset > 0:
                 transaction_asset = await self.bot.wallet.transfer_to_spot(self.symbol, self.symbol_pair, free_asset)
             if free_quote > 0:
