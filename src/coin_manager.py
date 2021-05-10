@@ -15,7 +15,7 @@ class CoinManager:
     def get_coin(self, symbol_pair):
         return self._coins[symbol_pair]
 
-    def process_message(self, msg):
+    async def process_message(self, msg):
         data = msg['data']
 
         if data[EVENT_TYPE] == 'error':
@@ -25,7 +25,7 @@ class CoinManager:
         candle = data[CANDLE]
         if candle[CANDLE_CLOSED]:
             coin = self.get_coin(data[SYMBOL])
-            coin.update(candle)
+            await coin.update(candle)
 
     def init(self):
         return [asyncio.create_task(coin.init()) for coin in self._coins.values()]
@@ -43,7 +43,7 @@ class CoinManager:
                     res = await mps.recv()
                     if not res:
                         continue
-                    self.process_message(res)
+                    await self.process_message(res)
             except (CancelledError,Exception) as e:
                 if isinstance(e, CancelledError):
                     self._running = False
