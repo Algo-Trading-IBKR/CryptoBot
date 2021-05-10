@@ -1,5 +1,5 @@
 {
-    "active_config": 0,
+    "active_config": 1,
     "configs": [
         {
             "name": "ANDREAS",
@@ -8,6 +8,14 @@
             "budget": 15,
             "budget_divider ": 1,
             "minimum_cash ": 20
+        },
+        {
+            "name": "JONAS",
+            "key": "WYNtbtXDhOQg4m741vtktdLoq6V6MJjpUcouQqcGv7Sc9BuE06cj6T0mBYmsAdiF",
+            "secret": "hm3jqleXr1Bx5gRaqYv4mTJAASG9ZROR5gsV2MzSQOv00NdWebvxNMsNwOPcSX1P",
+            "budget": 20,
+            "budget_divider": 2,
+            "minimum_cash": 25
         },
         {
             "name": "JOREN",
