@@ -45,7 +45,8 @@ class Coin:
         try:
             self.bot.create_isolated_margin_account(base = self.symbol, quote = 'USDT')
         except Exception as e:
-            self.bot.log.verbose('COIN', f'Isolated wallet exists for {self.symbol_pair}')
+            # self.bot.log.verbose('COIN', f'Isolated wallet exists for {self.symbol_pair}')
+            pass
 
         candles = await self.bot.client.get_historical_klines(self.symbol_pair, interval = AsyncClient.KLINE_INTERVAL_1MINUTE, start_str = '150 minutes ago CET', end_str = '1 minutes ago CET')
         for candle in candles:
@@ -74,6 +75,8 @@ class Coin:
     async def run(self):
         self._running = True
 
+        self.bot.log.verbose('COIN', f'Starting isolated margin socket for {self.symbol_pair}')
+
         s = self.bot.bm.isolated_margin_socket(self.symbol_pair)
         async with s as ts:
             while self._running:
@@ -99,6 +102,8 @@ class Coin:
             order_id = msg[EXECUTION_ORDER_ID]
 
             if side == 'SELL' and execution_type == 'TRADE' and execution_status == 'FILLED' and self.bot.order_manager.has_order_id(self.symbol_pair, order_id):
+                self.bot.log.verbose('COIN', f'Filled SELL order for {self.symbol_pair}')
+
                 self.is_piramidding = False
                 await asyncio.sleep(2)
 
@@ -111,6 +116,8 @@ class Coin:
                     transaction_asset = await self.bot.wallet.transfer_to_spot(self.symbol, self.symbol_pair, free_asset)
                     transaction_quote = await self.bot.wallet.transfer_to_spot('USDT', self.symbol_pair, free_quote)
             elif side == 'BUY' and execution_type == 'TRADE'  and execution_status == 'FILLED' and self.has_open_order:
+                self.bot.log.verbose('COIN', f'Filled BUY order for {self.symbol_pair}')
+
                 self.has_open_order = False
                 self.has_position = True
 
@@ -136,6 +143,8 @@ class Coin:
                     if self.liquidation_price > self.piramidding_price:
                         self.piramidding_price = self.liquidation_price * 1.0075
         if event == 'balanceUpdate':
+            self.bot.log.verbose('COIN', 'Got balance update from isolated margin account.')
+
             await self.bot.wallet.update_money()
 
     async def update(self, candle):
@@ -182,12 +191,12 @@ class Coin:
             self.has_position = False
             self.is_piramidding = False
 
-        await self.bot.wallet.update_money()
-
         # sell
         if self.has_position:
             current_price = self.closes[-1]
             current_high = self.highs[-1]
+
+            await self.bot.wallet.update_money()
 
             order_succeeded = False
 
@@ -200,6 +209,8 @@ class Coin:
                 free_asset, borrowed_asset, free_quote, borrowed_quote = util.get_asset_and_quote(account)
 
                 if free_quote >= self.bot.active["budget"]:
+                    self.bot.log.verbose('COIN', 'free_asset {free_asset}, borrowed_asset {borrowed_asset}, free_quote {free_quote}, borrowed_quote {borrowed_quote}')
+
                     self.bot.order_manager.cancel_order(self)
 
                     self.piramidding_amount = util.get_amount((self.bot.active["budget"] / self.bot.active["budget_divider"]) / current_price, self.precision)

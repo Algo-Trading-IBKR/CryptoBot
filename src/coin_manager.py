@@ -1,5 +1,6 @@
 import asyncio
 from concurrent.futures import CancelledError
+import traceback
 from .coin import Coin
 from .constants import CANDLE, CANDLE_CLOSED, EVENT_TYPE, SYMBOL, TIMESTAMP
 
@@ -47,5 +48,6 @@ class CoinManager:
             except (CancelledError,Exception) as e:
                 if isinstance(e, CancelledError):
                     self._running = False
-                self.bot.log.error('COIN_MANAGER', e)
+                self.bot.log.error('COIN_MANAGER', 'Error occured')
+                traceback.print_exc()
 
