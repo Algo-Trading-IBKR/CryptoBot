@@ -5,9 +5,9 @@
             "name": "ANDREAS",
             "key": "wzQNrGo3NbZ6qyEHu5k1dwOANrMrShBb73uCAw5n8Ns5PvCBZ9p6qsEKubWG575B",
             "secret": "lo8j6sNW1TmWkY4QccZMwzwalGVeHVXRwiBgDhuGyYhq2TxRPUjAWYCliDg1SpLj",
-            "budget": 200,
-            "budget_divider ": 1.2,
-            "minimum_cash ": 200
+            "budget": 15,
+            "budget_divider ": 1,
+            "minimum_cash ": 20
         },
         {
             "name": "JOREN",
@@ -52,8 +52,7 @@
         "UNFIUSDT",
         "VETUSDT",
         "VTHOUSDT",
-        "XEMUSDT",
-        "XMRUSDT"
+        "XEMUSDT"
     ],
     "strategy": {
         "take_profit_percentage": 1.012
