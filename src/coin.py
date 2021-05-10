@@ -244,7 +244,7 @@ class Coin:
 
             transaction = await self.bot.wallet.transfer_to_isolated('USDT', self.symbol_pair, self.bot.active["budget"])
 
-            self.average_price = symbol.closes[-1]
+            self.average_price = self.closes[-1]
             self.amount = util.get_amount((self.bot.active["budget"] / self.bot.active["budget_divider"]) / self.average_price, self.precision)
 
             self.piramidding_price = await self.bot.order_manager.get_low(self.symbol_pair)
@@ -290,7 +290,7 @@ class Coin:
                 if self.liquidation_price > self.piramidding_price:
                     self.piramidding_price = self.liquidation_price * 1.0075
 
-        symbol.closes = symbol.closes[-150:]
-        symbol.highs = symbol.highs[-150:]
-        symbol.lows = symbol.lows[-150:]
-        symbol.volumes = symbol.volumes[-150:]
+        self.closes = self.closes[-150:]
+        self.highs = self.highs[-150:]
+        self.lows = self.lows[-150:]
+        self.volumes = self.volumes[-150:]
