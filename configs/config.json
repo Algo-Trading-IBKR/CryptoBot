@@ -11,8 +11,8 @@
         },
         {
             "name": "JONAS",
-            "key": "WYNtbtXDhOQg4m741vtktdLoq6V6MJjpUcouQqcGv7Sc9BuE06cj6T0mBYmsAdiF",
-            "secret": "hm3jqleXr1Bx5gRaqYv4mTJAASG9ZROR5gsV2MzSQOv00NdWebvxNMsNwOPcSX1P",
+            "key": "eNNLFlfS1Hl574Bvi2Ltz2Amprl8xeV2kFQjm7AQ6V1BOdgPY1U1p8eHgRe2vGav",
+            "secret": "DofbxHKEA5gQoIkwZEL0XDKprORFGI8dvDrw3akLcaYvyOfKMqnsO5ZkCq5NKSCP",
             "budget": 20,
             "budget_divider": 2,
             "minimum_cash": 25
@@ -21,8 +21,8 @@
             "name": "JOREN",
             "key": "j6jCrcOolzWBFIZDRiBVciAao6z4utvUkTIb5mWxPooEapGVqixgWLUNO0v3BjTt",
             "secret": "89ZtTXdme8rmjvctgJafBLvMzrAsOEdwNEsYy0hNjbHUF9koVBLpfB5uLXHCga8o",
-            "budget": 20,
-            "budget_divider": 1.5,
+            "budget": 15,
+            "budget_divider": 2,
             "minimum_cash": 25
         },
         {
