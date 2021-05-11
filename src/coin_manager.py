@@ -5,7 +5,7 @@ from .coin import Coin
 from .constants import CANDLE, CANDLE_CLOSED, EVENT_TYPE, SYMBOL, TIMESTAMP
 
 class CoinManager:
-    def __init__(self, bot, pairs : [str]):
+    def __init__(self, bot, pairs):
         self.bot = bot
 
         self._coins = {}
