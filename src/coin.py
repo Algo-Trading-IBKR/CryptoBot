@@ -166,13 +166,13 @@ class Coin:
         if len(self.closes) <= 149:
             return
 
-        rsi = talib.RSI(np.array(self.closes), timeperiod=self.bot.config["indicators"]["rsi"]["period"])
+        rsi = talib.RSI(np.array(self.closes), timeperiod=self.bot.indicators["rsi"]["period"])
         mfi = talib.MFI(
             np.array(self.highs),
             np.array(self.lows),
             np.array(self.closes),
             np.array(self.volumes),
-            timeperiod=self.bot.config["indicators"]["mfi"]["period"]
+            timeperiod=self.bot.indicators["mfi"]["period"]
         )
 
         last_rsi = rsi[-1]
@@ -205,20 +205,20 @@ class Coin:
 
             order_succeeded = False
 
-            if current_price < self.piramidding_price and self.bot.wallet.money >= (self.bot.active["budget"] + self.bot.active["minimum_cash"]) and not self.is_piramidding:
-                transaction = await self.bot.wallet.transfer_to_isolated('USDT', self.symbol_pair, self.bot.active["budget"])
+            if current_price < self.piramidding_price and self.bot.wallet.money >= (self.bot.user["wallet"]["budget"] + self.bot.user["wallet"]["minimum_cash"]) and not self.is_piramidding:
+                transaction = await self.bot.wallet.transfer_to_isolated('USDT', self.symbol_pair, self.bot.user["wallet"]["budget"])
 
                 self.is_piramidding = True
 
                 account = await self.bot.client.get_isolated_margin_account(symbol = self.symbol_pair)
                 free_asset, borrowed_asset, free_quote, borrowed_quote = util.get_asset_and_quote(account)
 
-                if free_quote >= self.bot.active["budget"]:
+                if free_quote >= self.bot.user["wallet"]["budget"]:
                     self.bot.log.verbose('COIN', 'free_asset {free_asset}, borrowed_asset {borrowed_asset}, free_quote {free_quote}, borrowed_quote {borrowed_quote}')
 
                     self.bot.order_manager.cancel_order(self)
 
-                    self.piramidding_amount = util.get_amount((self.bot.active["budget"] / self.bot.active["budget_divider"]) / current_price, self.precision)
+                    self.piramidding_amount = util.get_amount((self.bot.user["wallet"]["budget"] / self.bot.user["wallet"]["budget_divider"]) / current_price, self.precision)
                     self.buy_price = current_price
 
                     order_succeeded = await self.bot.order_manager.send_order(
@@ -232,7 +232,7 @@ class Coin:
                         time_in_force = TIME_IN_FORCE_GTC
                     )
                     self.average_price_piramidding = (self.amount * self.average_price + self.piramidding_amount * current_price) / (self.amount + self.piramidding_amount)
-                    self.take_profit = util.get_amount(self.average_price_piramidding * self.bot.config["strategy"]["take_profit_percentage"], self.precision_min_price, False)
+                    self.take_profit = util.get_amount(self.average_price_piramidding * self.bot.user["strategy"]["take_profit_percentage"], self.precision_min_price, False)
 
                     if order_succeeded:
                         account = await self.bot.client.get_isolated_margin_account(symbol=self.symbol_pair)
@@ -249,27 +249,27 @@ class Coin:
                             time_in_force = TIME_IN_FORCE_GTC
                         )
                         self.has_position = True
-                elif free_quote < self.bot.active["budget"]:
+                elif free_quote < self.bot.user["wallet"]["budget"]:
                     self.bot.log.warning('COIN', f'Failed to piramid for {self.symbol_pair}, not enough money.')
 
         # buy
         elif (
-            last_rsi < self.bot.config["indicators"]["rsi"]["oversold"] and
-            last_mfi < self.bot.config["indicators"]["mfi"]["oversold"] and
-            self.bot.wallet.money >= (self.bot.active["budget"] + self.bot.active["minimum_cash"])
+            last_rsi < self.bot.indicators["rsi"]["oversold"] and
+            last_mfi < self.bot.indicators["mfi"]["oversold"] and
+            self.bot.wallet.money >= (self.bot.user["wallet"]["budget"] + self.bot.user["wallet"]["minimum_cash"])
         ):
             self.bot.log.verbose('COIN', f'Starting buy for {self.symbol_pair}')
 
-            transaction = await self.bot.wallet.transfer_to_isolated('USDT', self.symbol_pair, self.bot.active["budget"])
+            transaction = await self.bot.wallet.transfer_to_isolated('USDT', self.symbol_pair, self.bot.user["wallet"]["budget"])
 
             self.average_price = self.closes[-1]
-            self.amount = util.get_amount((self.bot.active["budget"] / self.bot.active["budget_divider"]) / self.average_price, self.precision)
+            self.amount = util.get_amount((self.bot.user["wallet"]["budget"] / self.bot.user["wallet"]["budget_divider"]) / self.average_price, self.precision)
 
             self.piramidding_price = await self.bot.order_manager.get_low(self.symbol_pair)
             if self.piramidding_price > (self.average_price - self.average_price * 0.06):
                 self.piramidding_price = self.average_price - self.average_price * 0.06
 
-            self.take_profit = util.get_amount(self.average_price * self.bot.config["strategy"]["take_profit_percentage"], self.precision_min_price, False)
+            self.take_profit = util.get_amount(self.average_price * self.bot.user["strategy"]["take_profit_percentage"], self.precision_min_price, False)
 
             self.buy_price = self.average_price
             await asyncio.sleep(0.1)
