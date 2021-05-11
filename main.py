@@ -1,4 +1,5 @@
 import asyncio
+import os
 import signal
 from src.cryptobot import CryptoBot
 
@@ -9,7 +10,7 @@ signal.signal(signal.SIGINT, cryptobot.shutdown)
 signal.signal(signal.SIGTERM, cryptobot.shutdown)
 
 async def main():
-    await cryptobot.start()
+    await cryptobot.start(os.environ.get('ACTIVE_CONFIG'))
 
 if __name__ == '__main__':
     loop = asyncio.get_event_loop()

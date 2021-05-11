@@ -43,8 +43,12 @@ class CryptoBot:
     def wallet(self) -> Wallet:
         return self._wallet
 
-    async def start(self):
-        self._active = self._config["configs"][self._config["active_config"]]
+    async def start(self, active_index):
+        active_index = int(active_index)
+        if active_index >= len(self._config["configs"]):
+            Log.error('BOT', 'Active config index does not exist.')
+            return
+        self._active = self._config["configs"][active_index]
 
         Log.info('BOT', f"Using active config {self._active['name']}")
         Log.info('BOT', f"Using {len(self._config['pairs'])} coin pairs.")
