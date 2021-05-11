@@ -1,6 +1,5 @@
 import asyncio
 from binance import AsyncClient, BinanceSocketManager
-import sys
 from time import sleep
 from src.util.logger import Log
 from src.util.util import util
@@ -10,14 +9,9 @@ from .wallet import Wallet
 
 class CryptoBot:
     def __init__(self):
-        self._config = util.load_json('./configs/config.json')
         self._running = True
 
         self.tasks = []
-
-    @property
-    def active(self):
-        return self._active
 
     @property
     def bm(self) -> BinanceSocketManager:
@@ -28,8 +22,8 @@ class CryptoBot:
         return self._client
 
     @property
-    def config(self):
-        return self._config
+    def indicators(self):
+        return self._indicators
 
     @property
     def log(self) -> Log:
@@ -40,26 +34,35 @@ class CryptoBot:
         return self._order_manager
 
     @property
+    def symbol_pairs(self):
+        return self._symbol_pairs
+
+    @property
+    def user(self) -> dict:
+        return self._user
+
+    @property
     def wallet(self) -> Wallet:
         return self._wallet
 
-    async def start(self, active_index):
-        active_index = int(active_index)
-        if active_index >= len(self._config["configs"]):
-            Log.error('BOT', 'Active config index does not exist.')
-            return
-        self._active = self._config["configs"][active_index]
+    async def start(self, config, symbol_pairs, indicators):
+        self._indicators = {}
+        for indicator in indicators:
+            self._indicators[indicator['name']] = indicator
 
-        Log.info('BOT', f"Using active config {self._active['name']}")
-        Log.info('BOT', f"Using {len(self._config['pairs'])} coin pairs.")
+        self._symbol_pairs = [symbol['name'] for symbol in symbol_pairs]
+        self._user = config
 
-        self._client = await AsyncClient.create(api_key=self._active["key"], api_secret=self._active["secret"])
+        Log.info('BOT', f"Using active config {self._user['name']}")
+        Log.info('BOT', f"Using {len(self._symbol_pairs)} coin pairs.")
+
+        self._client = await AsyncClient.create(api_key=self._user["api_keys"]["key"], api_secret=self._user["api_keys"]["secret"])
         self._socket_manager = BinanceSocketManager(self._client) # user_timeout is now 5 minutes (5 * 60)
 
         status = await self._client.get_system_status()
         Log.info('BOT', f"System status: {status['msg']}")
 
-        self._coin_manager = CoinManager(self, self._config['pairs'])
+        self._coin_manager = CoinManager(self, self._symbol_pairs)
         self._order_manager = OrderManager(self)
         self._wallet = Wallet(self)
 
