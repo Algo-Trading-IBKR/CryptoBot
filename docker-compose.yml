@@ -1,8 +1,30 @@
 version: "3.4"
 services:
-  cryptobot:
-    container_name: cryptobot
+  cryptobot-andreas:
     build: .
+    environment:
+      ACTIVE_CONFIG: 0
+    volumes:
+      - ./Configs:/app/Configs
+      - ./Logs:/app/Logs
+  cryptobot-jonas:
+    build: .
+    environment:
+      ACTIVE_CONFIG: 1
+    volumes:
+      - ./Configs:/app/Configs
+      - ./Logs:/app/Logs
+  cryptobot-joren:
+    build: .
+    environment:
+      ACTIVE_CONFIG: 2
+    volumes:
+      - ./Configs:/app/Configs
+      - ./Logs:/app/Logs
+  cryptobot-yente:
+    build: .
+    environment:
+      ACTIVE_CONFIG: 3
     volumes:
       - ./Configs:/app/Configs
       - ./Logs:/app/Logs
