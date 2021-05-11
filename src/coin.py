@@ -201,7 +201,7 @@ class Coin:
             order_succeeded = False
 
             if current_price < self.piramidding_price and self.bot.wallet.money >= (self.bot.active["budget"] + self.bot.active["minimum_cash"]) and not self.is_piramidding:
-                transaction = self.bot.wallet.transfer_to_isolated('USDT', self.symbol_pair, self.bot.active["budget"])
+                transaction = await self.bot.wallet.transfer_to_isolated('USDT', self.symbol_pair, self.bot.active["budget"])
 
                 self.is_piramidding = True
 
@@ -244,7 +244,7 @@ class Coin:
                             time_in_force = TIME_IN_FORCE_GTC
                         )
                         self.has_position = True
-                elif free_quote < budget:
+                elif free_quote < self.bot.active["budget"]:
                     self.bot.log.warning('COIN', f'Failed to piramid for {self.symbol_pair}, not enough money.')
 
         # buy
