@@ -1,6 +1,6 @@
 asyncio
-clickatell
-pandas
+# clickatell
+# pandas
 # pymongo
 python-binance~=1.0.8
 numpy
