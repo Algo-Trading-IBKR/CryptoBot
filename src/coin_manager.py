@@ -29,7 +29,10 @@ class CoinManager:
             await coin.update(candle)
 
     def init(self):
-        return [asyncio.create_task(coin.init()) for coin in self._coins.values()]
+        tasks = [asyncio.create_task(coin.init()) for coin in self._coins.values()]
+        tasks.append(self.init_multiplex())
+
+        return tasks
 
     def init_multiplex(self):
         return asyncio.create_task(self.start_multiplex())
