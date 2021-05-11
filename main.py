@@ -20,6 +20,8 @@ async def main():
     symbol_pairs = client.cryptobot.symbol_pairs.find({})
     user_config = client.cryptobot.users.find_one({ "name": active_config })
 
+    cryptobot.log.set_log_group(user_config['name'])
+
     await cryptobot.start(user_config, symbol_pairs, indicators)
 
 if __name__ == '__main__':

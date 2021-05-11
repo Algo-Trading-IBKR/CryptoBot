@@ -1,4 +1,5 @@
 import datetime
+import os
 
 colors = {
     'VERB': ['\x1b[34m', '\x1b[0m'],
@@ -9,6 +10,7 @@ colors = {
 }
 
 class Log():
+    log_group = 'UNKNOWN'
     log_level = 'INFO'
 
     # fallback to old method
@@ -35,7 +37,10 @@ class Log():
 
             color = colors[level]
 
-        print('{}{}[{:<8s}/{:>5s}]{} {}'.format(log, color[0], name, level, color[1], message))
+        print(f'{log}{color[0]}[{name:<5s}/{level:>5s}]{color[1]} {message}')
+
+        with open(f'./logs/{Log.log_group}/{level.lower()}_{currentDate.strftime("%Y-%m-%d")}.log', 'a') as f:
+            f.write(f'{log}[{name}/{level}] {message}\n')
 
     @staticmethod
     def verbose(name, message, show_time = True):
@@ -56,3 +61,12 @@ class Log():
     @staticmethod
     def critical(name, message, show_time = True):
         Log._log(name, 'CRIT', message, show_time)
+
+    @staticmethod
+    def set_log_group(name):
+        Log.log_group = name
+
+        try:
+            os.mkdir(f'./logs/{name}/')
+        except FileExistsError:
+            pass

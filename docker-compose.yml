@@ -6,29 +6,25 @@ services:
       ACTIVE_CONFIG: ANDREAS
       MONGODB_URL: mongodb://db_user:2i8HhKrJQ72ZVieMPWMg8dnG8SueM3xZ@home.damon.sh:27017/cryptobot
     volumes:
-      - ./Configs:/app/Configs
-      - ./Logs:/app/Logs
+      - ./logs:/app/logs
   cryptobot-jonas:
     build: .
     environment:
       ACTIVE_CONFIG: JONAS
       MONGODB_URL: mongodb://db_user:2i8HhKrJQ72ZVieMPWMg8dnG8SueM3xZ@home.damon.sh:27017/cryptobot
     volumes:
-      - ./Configs:/app/Configs
-      - ./Logs:/app/Logs
+      - ./logs:/app/logs
   cryptobot-joren:
     build: .
     environment:
       ACTIVE_CONFIG: JOREN
       MONGODB_URL: mongodb://db_user:2i8HhKrJQ72ZVieMPWMg8dnG8SueM3xZ@home.damon.sh:27017/cryptobot
     volumes:
-      - ./Configs:/app/Configs
-      - ./Logs:/app/Logs
+      - ./logs:/app/logs
   cryptobot-yente:
     build: .
     environment:
       ACTIVE_CONFIG: YENTE
       MONGODB_URL: mongodb://db_user:2i8HhKrJQ72ZVieMPWMg8dnG8SueM3xZ@home.damon.sh:27017/cryptobot
     volumes:
-      - ./Configs:/app/Configs
-      - ./Logs:/app/Logs
+      - ./logs:/app/logs
