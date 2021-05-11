@@ -59,6 +59,8 @@ class Coin:
         account = await self.bot.client.get_isolated_margin_account(symbols = self.symbol_pair)
         self.margin_ratio = float(account['assets'][0]['marginRatio'])
 
+        self.bot.log.verbose('COIN', f'Got isolated margin account for {self.symbol_pair}')
+
         info = await self.bot.client.get_symbol_info(self.symbol_pair)
         for f in info['filters']:
             if f['filterType'] == 'LOT_SIZE':
@@ -67,6 +69,8 @@ class Coin:
             elif f['filterType'] == 'PRICE_FILTER':
                 min_price = float(f['minPrice'])
                 self.precision_min_price = round(-math.log(min_price, 10))
+
+        self.bot.log.verbose('COIN', f'Got symbol info for {self.symbol_pair}')
 
         try:
             await self.run()
