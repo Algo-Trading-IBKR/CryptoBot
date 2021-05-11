@@ -7,7 +7,7 @@ class Wallet:
         return self._money
 
     async def transfer_to_isolated(self, symbol, symbol_pair, amount):
-        t = self.bot.client.transfer_spot_to_isolated_margin(asset=symbol, symbol=symbol_pair, amount=amount)
+        t = await self.bot.client.transfer_spot_to_isolated_margin(asset=symbol, symbol=symbol_pair, amount=amount)
 
         self.bot.log.verbose('WALLET', f'Transfer {amount} {symbol} to isolated')
 
