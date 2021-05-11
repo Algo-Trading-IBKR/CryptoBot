@@ -106,47 +106,48 @@ class Coin:
             execution_status = msg[EXECUTION_STATUS]
             order_id = msg[EXECUTION_ORDER_ID]
 
-            if side == 'SELL' and execution_type == 'TRADE' and execution_status == 'FILLED' and self.bot.order_manager.has_order_id(self.symbol_pair, order_id):
-                self.bot.log.verbose('COIN', f'Filled SELL order for {self.symbol_pair}')
+            if execution_type == 'TRADE' and execution_status == 'FILLED':
+                if side == 'SELL' and self.bot.order_manager.has_order_id(self.symbol_pair, order_id):
+                    self.bot.log.verbose('COIN', f'Filled SELL order for {self.symbol_pair}')
 
-                self.is_piramidding = False
-                await asyncio.sleep(2)
+                    self.is_piramidding = False
+                    await asyncio.sleep(2)
 
-                account = await self.bot.client.get_isolated_margin_account(symbol = self.symbol_pair)
-                free_asset, borrowed_asset, free_quote, borrowed_quote = util.get_asset_and_quote(account)
+                    account = await self.bot.client.get_isolated_margin_account(symbol = self.symbol_pair)
+                    free_asset, borrowed_asset, free_quote, borrowed_quote = util.get_asset_and_quote(account)
 
-                self.has_position = False
+                    self.has_position = False
 
-                if borrowed_asset == 0 and borrowed_quote == 0:
-                    transaction_asset = await self.bot.wallet.transfer_to_spot(self.symbol, self.symbol_pair, free_asset)
-                    transaction_quote = await self.bot.wallet.transfer_to_spot('USDT', self.symbol_pair, free_quote)
-            elif side == 'BUY' and execution_type == 'TRADE'  and execution_status == 'FILLED' and self.has_open_order:
-                self.bot.log.verbose('COIN', f'Filled BUY order for {self.symbol_pair}')
+                    if borrowed_asset == 0 and borrowed_quote == 0:
+                        transaction_asset = await self.bot.wallet.transfer_to_spot(self.symbol, self.symbol_pair, free_asset)
+                        transaction_quote = await self.bot.wallet.transfer_to_spot('USDT', self.symbol_pair, free_quote)
+                elif side == 'BUY' and self.has_open_order:
+                    self.bot.log.verbose('COIN', f'Filled BUY order for {self.symbol_pair}')
 
-                self.has_open_order = False
-                self.has_position = True
+                    self.has_open_order = False
+                    self.has_position = True
 
-                transaction = await self.bot.wallet.transfer_to_isolated('USDT', self.symbol_pair, 1)
+                    transaction = await self.bot.wallet.transfer_to_isolated('USDT', self.symbol_pair, 1)
 
-                account = await self.bot.client.get_isolated_margin_account(symbol = self.symbol_pair)
-                self.amount = util.get_amount(float(account['assets'][0]['baseAsset']['free'], self.precision))
+                    account = await self.bot.client.get_isolated_margin_account(symbol = self.symbol_pair)
+                    self.amount = util.get_amount(float(account['assets'][0]['baseAsset']['free'], self.precision))
 
-                take_profit_order = await self.bot.order_manager.send_order(
-                    coin = self,
-                    side = SIDE_SELL,
-                    quantity = Decimal(self.amount),
-                    price = self.take_profit,
-                    order_type = ORDER_TYPE_LIMIT,
-                    isolated = True,
-                    side_effect = 'AUTO_REPAY',
-                    time_in_force = TIME_IN_FORCE_GTC
-                )
+                    take_profit_order = await self.bot.order_manager.send_order(
+                        coin = self,
+                        side = SIDE_SELL,
+                        quantity = Decimal(self.amount),
+                        price = self.take_profit,
+                        order_type = ORDER_TYPE_LIMIT,
+                        isolated = True,
+                        side_effect = 'AUTO_REPAY',
+                        time_in_force = TIME_IN_FORCE_GTC
+                    )
 
-                if not self.is_piramidding:
-                    #check liquidation price and update stop loss, also add in direct fill for buy
-                    self.liquidation_price = float(account["assets"][0]["liquidatePrice"])
-                    if self.liquidation_price > self.piramidding_price:
-                        self.piramidding_price = self.liquidation_price * 1.0075
+                    if not self.is_piramidding:
+                        #check liquidation price and update stop loss, also add in direct fill for buy
+                        self.liquidation_price = float(account["assets"][0]["liquidatePrice"])
+                        if self.liquidation_price > self.piramidding_price:
+                            self.piramidding_price = self.liquidation_price * 1.0075
         if event == 'balanceUpdate':
             self.bot.log.verbose('COIN', 'Got balance update from isolated margin account.')
 
