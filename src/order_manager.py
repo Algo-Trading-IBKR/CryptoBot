@@ -38,7 +38,7 @@ class OrderManager():
 
         await self.bot.wallet.update_money()
 
-        self.bot.log.verbose('ORDER_MANAGER', f'Sent {order["side"]} order, order_type {order_type}, amount {amount}, price {price}, side_effect {side_effect}')
+        self.bot.log.verbose('ORDER_MANAGER', f'Sent {order["side"]} order, order_type {order_type}, quantity {quantity}, price {price}, side_effect {side_effect}')
 
         if order['side'] == 'SELL':
             self.order_book[coin.symbol_pair] = order['orderId']
