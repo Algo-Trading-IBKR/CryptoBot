@@ -92,7 +92,7 @@ class Coin:
 
         if event == 'executionReport':
             error = msg[EXECUTION_ERROR]
-            if error is not None:
+            if error != 'NONE':
                 self.bot.log.error('COIN', f'Execution Report error: {error}')
 
                 return
