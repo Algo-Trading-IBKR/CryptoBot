@@ -38,7 +38,7 @@ class Coin:
         self.is_piramidding = False
 
     @property
-    def symbol():
+    def symbol(self):
         return self.symbol_pair[:-4]
 
     async def init(self):
