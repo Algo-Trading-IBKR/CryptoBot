@@ -18,4 +18,4 @@
  - Add extra verbose logging on each step
  - Extended logging on exceptions, lines, file, etc...
  - more user-defined config values (take profit %, etc.)
- - multiple accounts (one account per docker container)
+ - multiple accounts (one account per docker container) - done but not yet automatic generation of containers from database
