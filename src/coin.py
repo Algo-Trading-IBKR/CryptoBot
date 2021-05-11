@@ -8,7 +8,7 @@ import math
 import numpy as np
 import talib
 from time import sleep
-from .constants import CANDLE_CLOSE, CANDLE_HIGH, CANDLE_LOW, CANDLE_VOLUME, EVENT_TYPE, EXECUTION_ERROR, EXECUTION_TYPE, EXECUTION_STATUS, EXECUTION_ORDER_ID, SIDE
+from .constants import CANDLE_CLOSE, CANDLE_HIGH, CANDLE_LOW, CANDLE_VOLUME, EVENT_TYPE, EXECUTION_ERROR, EXECUTION_TYPE, EXECUTION_STATUS, EXECUTION_ORDER_ID, ORDER_TYPE, SIDE
 from src.util.util import util
 
 class Coin:
@@ -45,8 +45,7 @@ class Coin:
         try:
             self.bot.create_isolated_margin_account(base = self.symbol, quote = 'USDT')
         except Exception as e:
-            # self.bot.log.verbose('COIN', f'Isolated wallet exists for {self.symbol_pair}')
-            pass
+            self.bot.log.verbose('COIN', f'Isolated wallet exists for {self.symbol_pair}')
 
         candles = await self.bot.client.get_historical_klines(self.symbol_pair, interval = AsyncClient.KLINE_INTERVAL_1MINUTE, start_str = '150 minutes ago CET', end_str = '1 minutes ago CET')
         for candle in candles:
@@ -54,6 +53,8 @@ class Coin:
             self.highs.append(float(candle[2]))
             self.lows.append(float(candle[3]))
             self.volumes.append(float(candle[5]))
+
+        self.bot.log.verbose('COIN', f'Fetched historical klines for {self.symbol_pair}')
 
         account = await self.bot.client.get_isolated_margin_account(symbols = self.symbol_pair)
         self.margin_ratio = float(account['assets'][0]['marginRatio'])
