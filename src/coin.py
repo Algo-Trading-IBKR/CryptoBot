@@ -217,7 +217,7 @@ class Coin:
                 if free_quote >= self.bot.user["wallet"]["budget"]:
                     self.bot.log.verbose('COIN', 'free_asset {free_asset}, borrowed_asset {borrowed_asset}, free_quote {free_quote}, borrowed_quote {borrowed_quote}')
 
-                    self.bot.order_manager.cancel_order(self)
+                    await self.bot.order_manager.cancel_order(self)
 
                     self.piramidding_amount = util.get_amount((self.bot.user["wallet"]["budget"] / self.bot.user["wallet"]["budget_divider"]) / current_price, self.precision)
                     self.buy_price = current_price
