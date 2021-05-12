@@ -7,6 +7,7 @@ import threading
 import math
 import numpy as np
 import talib
+import traceback
 from time import sleep
 from .constants import CANDLE_CLOSE, CANDLE_HIGH, CANDLE_LOW, CANDLE_VOLUME, EVENT_TYPE, EXECUTION_ERROR, EXECUTION_TYPE, EXECUTION_STATUS, EXECUTION_ORDER_ID, ORDER_TYPE, SIDE
 from src.util.util import util
@@ -89,7 +90,10 @@ class Coin:
                 if not res:
                     continue
 
-                await self.update_margin(res)
+                try:
+                    await self.update_margin(res)
+                except:
+                    self.bot.log.error('COIN', f'Error occurred on isolated margin socket:\n{traceback.format_exc()}')
 
     async def update_margin(self, msg):
         event = msg[EVENT_TYPE]
