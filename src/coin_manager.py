@@ -51,6 +51,5 @@ class CoinManager:
             except (CancelledError,Exception) as e:
                 if isinstance(e, CancelledError):
                     self._running = False
-                self.bot.log.error('COIN_MANAGER', 'Error occured')
-                traceback.print_exc()
+                self.bot.log.error('COIN_MANAGER', f'Error occured:\n{traceback.format_exc()}')
 
