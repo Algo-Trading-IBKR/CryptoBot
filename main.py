@@ -18,9 +18,12 @@ async def main():
 
     indicators = client.cryptobot.indicators.find({})
     symbol_pairs = client.cryptobot.symbol_pairs.find({})
-    user_config = client.cryptobot.users.find_one({ "name": active_config })
+    user_config = client.cryptobot.users.find_one({ "active": True, "name": active_config })
 
-    cryptobot.log.set_log_group(user_config['name'])
+    cryptobot.log.set_log_group(active_config)
+
+    if user_config == None:
+        return cryptobot.log.info('MAIN', f'User config "{active_config}" is disabled')
 
     await cryptobot.start(user_config, symbol_pairs, indicators)
 
