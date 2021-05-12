@@ -134,7 +134,7 @@ class Coin:
                     transaction = await self.bot.wallet.transfer_to_isolated('USDT', self.symbol_pair, 1)
 
                     account = await self.bot.client.get_isolated_margin_account(symbols = self.symbol_pair)
-                    self.amount = util.get_amount(float(account['assets'][0]['baseAsset']['free'], self.precision))
+                    self.amount = util.get_amount(float(account['assets'][0]['baseAsset']['free']), self.precision)
 
                     take_profit_order = await self.bot.order_manager.send_order(
                         coin = self,
