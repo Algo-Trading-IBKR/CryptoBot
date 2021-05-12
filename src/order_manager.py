@@ -4,16 +4,17 @@ class OrderManager():
     def __init__(self, bot):
         self.bot = bot
 
-        self.order_book = {}
+        self.buy_book = {}
+        self.sell_book = {}
 
     async def cancel_order(self, coin):
         if coin.symbol_pair not in self.order_book:
             return
         order_id = self.order_book[coin.symbol_pair]
 
-        self.bot.log.verbose('ORDER_MANAGER', 'Cancelled order for {coin.symbol_pair}')
+        self.bot.log.verbose('ORDER_MANAGER', f'Cancelled order for {coin.symbol_pair} with ID {order_id}')
 
-        result = await self.bot.client.cancel_margin_order(symbol=coin.symbol_pair, order_id=order_id)
+        result = await self.bot.client.cancel_margin_order(symbol=coin.symbol_pair, order_id=order_id, isIsolated='TRUE')
         self.bot.log.verbose('ORDER_MANAGER', f'Order Cancelled: {result}')
 
     async def get_low(self, symbol):
