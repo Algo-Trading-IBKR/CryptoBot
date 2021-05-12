@@ -17,7 +17,7 @@ async def main():
     client = MongoClient(mongo_connect_url)
 
     indicators = client.cryptobot.indicators.find({})
-    symbol_pairs = client.cryptobot.symbol_pairs.find({})
+    symbol_pairs = client.cryptobot.symbol_pairs.find({ "active": True })
     user_config = client.cryptobot.users.find_one({ "active": True, "name": active_config })
 
     cryptobot.log.set_log_group(active_config)
