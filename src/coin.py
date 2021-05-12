@@ -113,7 +113,7 @@ class Coin:
                     self.is_piramidding = False
                     await asyncio.sleep(2)
 
-                    account = await self.bot.client.get_isolated_margin_account(symbol = self.symbol_pair)
+                    account = await self.bot.client.get_isolated_margin_account(symbols = self.symbol_pair)
                     free_asset, borrowed_asset, free_quote, borrowed_quote = util.get_asset_and_quote(account)
 
                     self.has_position = False
@@ -129,7 +129,7 @@ class Coin:
 
                     transaction = await self.bot.wallet.transfer_to_isolated('USDT', self.symbol_pair, 1)
 
-                    account = await self.bot.client.get_isolated_margin_account(symbol = self.symbol_pair)
+                    account = await self.bot.client.get_isolated_margin_account(symbols = self.symbol_pair)
                     self.amount = util.get_amount(float(account['assets'][0]['baseAsset']['free'], self.precision))
 
                     take_profit_order = await self.bot.order_manager.send_order(
@@ -184,7 +184,7 @@ class Coin:
 
             await self.bot.order_manager.cancel_order(self)
 
-            account = await self.bot.client.get_isolated_margin_account(self.symbol_pair)
+            account = await self.bot.client.get_isolated_margin_account(symbols = self.symbol_pair)
             free_asset, borrowed_asset, free_quote, borrowed_quote = util.get_asset_and_quote(account)
 
             transaction = await self.bot.client.repay_margin_loan(asset='USDT', amount=borrowed_quote, isIsolated=True, symbol = self.symbol_pair)
@@ -211,7 +211,7 @@ class Coin:
 
                 self.is_piramidding = True
 
-                account = await self.bot.client.get_isolated_margin_account(symbol = self.symbol_pair)
+                account = await self.bot.client.get_isolated_margin_account(symbols = self.symbol_pair)
                 free_asset, borrowed_asset, free_quote, borrowed_quote = util.get_asset_and_quote(account)
 
                 if free_quote >= self.bot.user["wallet"]["budget"]:
@@ -236,7 +236,7 @@ class Coin:
                     self.take_profit = util.get_amount(self.average_price_piramidding * self.bot.user["strategy"]["take_profit_percentage"], self.precision_min_price, False)
 
                     if order_succeeded:
-                        account = await self.bot.client.get_isolated_margin_account(symbol=self.symbol_pair)
+                        account = await self.bot.client.get_isolated_margin_account(symbols = self.symbol_pair)
                         self.amount = util.get_amount(float(account["assets"][0]["baseAsset"]["free"]), self.precision)
 
                         take_profit_order = await self.bot.order_manager.send_order(
@@ -292,7 +292,7 @@ class Coin:
 
                 transaction = await self.bot.wallet.transfer_to_isolated('USDT', self.symbol_pair, 1)
 
-                account = await self.bot.client.get_isolated_margin_account(symbol = self.symbol_pair)
+                account = await self.bot.client.get_isolated_margin_account(symbols = self.symbol_pair)
                 self.amount = util.get_amount(float(account['assets'][0]['baseAsset']['free']), self.precision)
                 take_profit_order = await self.bot.order_manager.send_order(
                     coin = self,
