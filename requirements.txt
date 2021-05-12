@@ -2,6 +2,6 @@ asyncio
 # clickatell
 # pandas
 pymongo
-python-binance~=1.0.8
+python-binance~=1.0.9
 numpy
 TA-Lib
