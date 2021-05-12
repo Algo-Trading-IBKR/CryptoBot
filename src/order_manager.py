@@ -4,8 +4,7 @@ class OrderManager():
     def __init__(self, bot):
         self.bot = bot
 
-        self.buy_book = {}
-        self.sell_book = {}
+        self.order_book = {}
 
     async def cancel_order(self, coin):
         if coin.symbol_pair not in self.order_book:
