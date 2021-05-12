@@ -13,7 +13,7 @@ class OrderManager():
 
         self.bot.log.verbose('ORDER_MANAGER', 'Cancelled order for {coin.symbol_pair}')
 
-        result = self.bot.client.cancel_margin_order(symbol=coin.symbol_pair, order_id=order_id)
+        result = await self.bot.client.cancel_margin_order(symbol=coin.symbol_pair, order_id=order_id)
         self.bot.log.verbose('ORDER_MANAGER', f'Order Cancelled: {result}')
 
     async def get_low(self, symbol):
