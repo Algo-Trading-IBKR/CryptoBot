@@ -43,7 +43,7 @@ class Coin:
 
     async def init(self):
         try:
-            self.bot.create_isolated_margin_account(base = self.symbol, quote = 'USDT')
+            await self.bot.client.create_isolated_margin_account(base = self.symbol, quote = 'USDT')
         except Exception as e:
             self.bot.log.verbose('COIN', f'Isolated wallet exists for {self.symbol_pair}')
 
