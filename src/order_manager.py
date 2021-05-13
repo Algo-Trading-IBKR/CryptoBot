@@ -15,7 +15,7 @@ class OrderManager():
             self.bot.log.warning('ORDER_MANAGER', f'Attempted {side} order cancel for {coin.symbol_pair} but got None')
             return
 
-        self.bot.log.verbose('ORDER_MANAGER', f'Cancelled order for {coin.symbol_pair} with ID {order_id}')
+        self.bot.log.info('ORDER_MANAGER', f'Cancelled order for {coin.symbol_pair} with ID {order_id}')
 
         result = await self.bot.client.cancel_margin_order(symbol=coin.symbol_pair, order_id=order_id, isIsolated='TRUE')
         self.bot.log.verbose('ORDER_MANAGER', f'Order Cancelled: {result}')
@@ -42,7 +42,7 @@ class OrderManager():
 
         await self.bot.wallet.update_money()
 
-        self.bot.log.verbose('ORDER_MANAGER', f'Sent {order["side"]} order, order_type {order_type}, quantity {quantity}, price {price}, side_effect {side_effect}')
+        self.bot.log.info('ORDER_MANAGER', f'[{order["status"]} | {order_type}] {order["side"]} order for {coin.symbol_pair}, quantity {str(quantity)[:-10]} at {price} USDT with effect {side_effect}')
 
         if order['side'] == 'SELL':
             self.order_book.set_order_for_symbol(coin.symbol_pair, order['side'], order['orderId'])
