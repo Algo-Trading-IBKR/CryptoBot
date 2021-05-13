@@ -8,8 +8,6 @@ class OrderManager():
         self.order_book = OrderBook()
 
     async def cancel_order(self, coin, side):
-        if coin.symbol_pair not in self.order_book:
-            return
         order_id = self.order_book.get_order_for_symbol(coin.symbol_pair, side)
         if order_id == None:
             self.bot.log.warning('ORDER_MANAGER', f'Attempted {side} order cancel for {coin.symbol_pair} but got None')
