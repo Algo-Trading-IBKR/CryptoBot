@@ -4,27 +4,42 @@ services:
     build: .
     environment:
       ACTIVE_CONFIG: ANDREAS
-      MONGODB_URL: mongodb://db_user:2i8HhKrJQ72ZVieMPWMg8dnG8SueM3xZ@home.damon.sh:27017/cryptobot
+      MONGODB_URL: mongodb://db_admin:qrXp0HtVfWDH1otKSZM9HiC8m838Ud5u@mongo:27017/cryptobot
     volumes:
       - ./logs:/app/logs
+    networks:
+      - shared
+
   cryptobot-jonas:
     build: .
     environment:
       ACTIVE_CONFIG: JONAS
-      MONGODB_URL: mongodb://db_user:2i8HhKrJQ72ZVieMPWMg8dnG8SueM3xZ@home.damon.sh:27017/cryptobot
+      MONGODB_URL: mongodb://db_admin:qrXp0HtVfWDH1otKSZM9HiC8m838Ud5u@mongo:27017/cryptobot
     volumes:
       - ./logs:/app/logs
+    networks:
+      - shared
+
   cryptobot-joren:
     build: .
     environment:
       ACTIVE_CONFIG: JOREN
-      MONGODB_URL: mongodb://db_user:2i8HhKrJQ72ZVieMPWMg8dnG8SueM3xZ@home.damon.sh:27017/cryptobot
+      MONGODB_URL: mongodb://db_admin:qrXp0HtVfWDH1otKSZM9HiC8m838Ud5u@mongo:27017/cryptobot
     volumes:
       - ./logs:/app/logs
+    networks:
+      - shared
+
   cryptobot-yente:
     build: .
     environment:
       ACTIVE_CONFIG: YENTE
-      MONGODB_URL: mongodb://db_user:2i8HhKrJQ72ZVieMPWMg8dnG8SueM3xZ@home.damon.sh:27017/cryptobot
+      MONGODB_URL: mongodb://db_admin:qrXp0HtVfWDH1otKSZM9HiC8m838Ud5u@mongo:27017/cryptobot
     volumes:
       - ./logs:/app/logs
+    networks:
+      - shared
+
+networks:
+    shared:
+      driver: bridge
