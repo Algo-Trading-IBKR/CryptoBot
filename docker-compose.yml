@@ -41,5 +41,5 @@ services:
       - shared
 
 networks:
-    shared:
-      driver: bridge
+  shared:
+    driver: bridge
