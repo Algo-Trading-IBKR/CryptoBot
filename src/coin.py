@@ -186,7 +186,7 @@ class Coin:
         if self.has_open_order:
             self.has_open_order = False
 
-            await self.bot.order_manager.cancel_order(self)
+            await self.bot.order_manager.cancel_order(self, 'BUY')
 
             account = await self.bot.client.get_isolated_margin_account(symbols = self.symbol_pair)
             free_asset, borrowed_asset, free_quote, borrowed_quote = util.get_asset_and_quote(account)
@@ -221,7 +221,7 @@ class Coin:
                 if free_quote >= self.bot.user["wallet"]["budget"]:
                     self.bot.log.verbose('COIN', 'free_asset {free_asset}, borrowed_asset {borrowed_asset}, free_quote {free_quote}, borrowed_quote {borrowed_quote}')
 
-                    await self.bot.order_manager.cancel_order(self)
+                    await self.bot.order_manager.cancel_order(self, 'SELL')
 
                     self.piramidding_amount = util.get_amount((self.bot.user["wallet"]["budget"] / self.bot.user["wallet"]["budget_divider"]) / current_price, self.precision)
                     self.buy_price = current_price
