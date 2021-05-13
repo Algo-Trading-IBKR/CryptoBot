@@ -25,9 +25,6 @@ class Log():
             print('Invalid error logging level, please use one of the following:', level_types)
             return
 
-        if level_types.index(level) < level_types.index(Log.log_level):
-            return
-
         log = ''
         color = ('', '')
 
@@ -37,10 +34,13 @@ class Log():
 
             color = colors[level]
 
-        print(f'{log}{color[0]}[{name:<5s}/{level:>5s}]{color[1]} {message}')
-
         with open(f'./logs/{Log.log_group}/{level.lower()}_{currentDate.strftime("%Y-%m-%d")}.log', 'a') as f:
             f.write(f'{log}[{name}/{level}] {message}\n')
+
+        if level_types.index(level) < level_types.index(Log.log_level):
+            return
+
+        print(f'{log}{color[0]}[{name:<5s}/{level:>5s}]{color[1]} {message}')
 
     @staticmethod
     def verbose(name, message, show_time = True):
