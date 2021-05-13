@@ -11,7 +11,7 @@ class OrderBook:
         return self._sell[symbol_pair] if side == 'SELL' else self._buy[symbol_pair]
 
     def has_order_id(self, symbol_pair : str, order_id : int):
-        return self._buy[symbol_pair] == order_id or self._sell[symbol_pair] == order_id
+        return (symbol_pair in self._buy and self._buy[symbol_pair] == order_id) or (symbol_pair in self._sell and self._sell[symbol_pair] == order_id)
 
     def set_order_for_symbol(self, symbol_pair : str, side, order_id : str) -> None:
         if side == 'SELL':
