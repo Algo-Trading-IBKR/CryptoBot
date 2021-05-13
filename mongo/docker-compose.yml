@@ -1,4 +1,4 @@
-version: "3.1"
+version: "3.5"
 
 services:
   mongo:
@@ -9,11 +9,12 @@ services:
         MONGO_INITDB_ROOT_PASSWORD: qrXp0HtVfWDH1otKSZM9HiC8m838Ud5u
     ports:
       - 27017:27017
-    volumes:
-      - /var/mongodb:/data/db
     networks:
       - shared
+    volumes:
+      - /var/mongodb:/data/db
 
 networks:
-    shared:
-      driver: bridge
+  shared:
+    name: shared
+    driver: bridge
