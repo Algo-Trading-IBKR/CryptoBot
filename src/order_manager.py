@@ -45,12 +45,12 @@ class OrderManager():
         self.bot.log.verbose('ORDER_MANAGER', f'Sent {order["side"]} order, order_type {order_type}, quantity {quantity}, price {price}, side_effect {side_effect}')
 
         if order['side'] == 'SELL':
-            self.order_book.set_order_for_symbol(self.symbol_pair, order['side'], order['orderId'])
+            self.order_book.set_order_for_symbol(coin.symbol_pair, order['side'], order['orderId'])
             return False
         if order['status'] == 'FILLED' and order['side'] == 'BUY':
             coin.has_open_order = False
             return True
         if order['side'] == 'BUY':
-            self.order_book.set_order_for_symbol(self.symbol_pair, order['side'], order['orderId'])
+            self.order_book.set_order_for_symbol(coin.symbol_pair, order['side'], order['orderId'])
             coin.has_open_order = True
             return False
