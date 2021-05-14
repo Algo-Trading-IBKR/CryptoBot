@@ -29,6 +29,6 @@ class Wallet:
 
         self._money = float(res['free'])
 
-        self.bot.log.verbose('WALLET', f'Updated money in wallet, new wallet total: {self._money}')
+        self.bot.log.info('WALLET', f'Updated money in wallet, new wallet total: {self._money}')
 
         return self._money

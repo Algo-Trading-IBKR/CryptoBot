@@ -153,8 +153,7 @@ class Coin:
                         if self.liquidation_price > self.piramidding_price:
                             self.piramidding_price = self.liquidation_price * 1.0075
         if event == 'balanceUpdate':
-            self.bot.log.verbose('COIN', 'Got balance update from isolated margin account.')
-
+            # self.bot.log.verbose('COIN', 'Got balance update from isolated margin account.')
             await self.bot.wallet.update_money()
 
     async def update(self, candle):
