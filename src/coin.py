@@ -185,20 +185,21 @@ class Coin:
         if self.has_open_order:
             self.has_open_order = False
 
-            await self.bot.order_manager.cancel_order(self, 'BUY')
+            canceled = await self.bot.order_manager.cancel_order(self, 'BUY')
 
-            account = await self.bot.client.get_isolated_margin_account(symbols = self.symbol_pair)
-            free_asset, borrowed_asset, free_quote, borrowed_quote = util.get_asset_and_quote(account)
+            if canceled:
+                account = await self.bot.client.get_isolated_margin_account(symbols = self.symbol_pair)
+                free_asset, borrowed_asset, free_quote, borrowed_quote = util.get_asset_and_quote(account)
 
-            transaction = await self.bot.client.repay_margin_loan(asset='USDT', amount=borrowed_quote, isIsolated=True, symbol = self.symbol_pair)
+                transaction = await self.bot.client.repay_margin_loan(asset='USDT', amount=borrowed_quote, isIsolated=True, symbol = self.symbol_pair)
 
-            if free_asset > 0:
-                transaction_asset = await self.bot.wallet.transfer_to_spot(self.symbol, self.symbol_pair, free_asset)
-            if free_quote > 0:
-                transaction_quote = await self.bot.wallet.transfer_to_spot(self.symbol, self.symbol_pair, free_quote - borrowed_quote)
+                if free_asset > 0:
+                    transaction_asset = await self.bot.wallet.transfer_to_spot(self.symbol, self.symbol_pair, free_asset)
+                if free_quote > 0:
+                    transaction_quote = await self.bot.wallet.transfer_to_spot(self.symbol, self.symbol_pair, free_quote - borrowed_quote)
 
-            self.has_position = False
-            self.is_piramidding = False
+                self.has_position = False
+                self.is_piramidding = False
 
         # sell
         if self.has_position:

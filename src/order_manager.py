@@ -11,15 +11,17 @@ class OrderManager():
         order_id = self.order_book.get_order_for_symbol(coin.symbol_pair, side)
         if order_id == None:
             self.bot.log.warning('ORDER_MANAGER', f'Attempted {side} order cancel for {coin.symbol_pair} but got None')
-            return
+            return False
 
         self.bot.log.info('ORDER_MANAGER', f'Cancelled order for {coin.symbol_pair} with ID {order_id}')
 
         try:
             result = await self.bot.client.cancel_margin_order(symbol=coin.symbol_pair, order_id=order_id, isIsolated="TRUE")
             self.bot.log.verbose('ORDER_MANAGER', f'Order Cancelled: {result}')
+            return True
         except Exception as e:
             self.bot.log.warning('ORDER_MANAGER', f'Failed to cancel order: {e}')
+            return False
             
 
     async def get_low(self, symbol):
