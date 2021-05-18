@@ -89,9 +89,6 @@ class Coin:
     async def update_socket(self, msg):
         event = msg[EVENT_TYPE]
 
-        if event != 'trade':
-            self.bot.log.info('COIN', f'event: {msg}')
-
         if event == 'executionReport':
             error = msg[EXECUTION_ERROR]
             if error != 'NONE':
