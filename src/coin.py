@@ -262,9 +262,7 @@ class Coin:
                     time_in_force = TIME_IN_FORCE_GTC
                 )
 
-                # self.liquidation_price = float(account['assets'][0]['liquidatePrice'])
-                # if self.liquidation_price > self.piramidding_price:
-                #     self.piramidding_price = self.liquidation_price * 1.0075
+                self.piramidding_price = self.average_price * self.bot.user["strategy"]["piramidding_percentage"]
 
         self.closes = self.closes[-150:]
         self.highs = self.highs[-150:]
