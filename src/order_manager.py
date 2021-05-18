@@ -15,13 +15,13 @@ class OrderManager():
 
         self.bot.log.info('ORDER_MANAGER', f'Cancelled order for {coin.symbol_pair} with ID {order_id}')
 
-        try:
-            result = await self.bot.client.cancel_margin_order(symbol=coin.symbol_pair, orderId=order_id, isIsolated="TRUE")
-            self.bot.log.verbose('ORDER_MANAGER', f'Order Cancelled: {result}')
-            return True
-        except Exception as e:
-            self.bot.log.warning('ORDER_MANAGER', f'Failed to cancel order: {e}')
-            return False
+        # try:
+        #     result = await self.bot.client.cancel_margin_order(symbol=coin.symbol_pair, orderId=order_id, isIsolated="TRUE")
+        #     self.bot.log.verbose('ORDER_MANAGER', f'Order Cancelled: {result}')
+        #     return True
+        # except Exception as e:
+        #     self.bot.log.warning('ORDER_MANAGER', f'Failed to cancel order: {e}')
+        #     return False
 
 
     async def get_low(self, symbol):
@@ -33,16 +33,16 @@ class OrderManager():
         return self.order_book.has_order_id(symbol_pair, order_id)
 
     async def send_order(self, coin, side : str, quantity : Decimal, price : float, order_type : str, isolated : bool, side_effect : str, time_in_force : str) -> bool:
-        order = await self.bot.client.create_margin_order(
-            side=side,
-            quantity=quantity,
-            symbol=coin.symbol_pair,
-            price=price,
-            type=order_type,
-            isIsolated=isolated,
-            sideEffectType=side_effect,
-            timeInForce=time_in_force
-        )
+        # order = await self.bot.client.create_margin_order(
+        #     side=side,
+        #     quantity=quantity,
+        #     symbol=coin.symbol_pair,
+        #     price=price,
+        #     type=order_type,
+        #     isIsolated=isolated,
+        #     sideEffectType=side_effect,
+        #     timeInForce=time_in_force
+        # )
 
         await self.bot.wallet.update_money()
 
