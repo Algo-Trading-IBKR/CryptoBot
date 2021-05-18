@@ -75,7 +75,7 @@ class Coin:
         self.bot.log.verbose('COIN', f'Starting socket for {self.symbol_pair}')
 
         # s = self.bot.bm.isolated_margin_socket(self.symbol_pair)
-        s = self.bot.bm.trade_socket(self.symbol_pair)
+        s = self.bot.bm.user_socket(self.symbol_pair)
         async with s as ts:
             while self._running:
                 res = await ts.recv()
