@@ -183,11 +183,10 @@ class Coin:
         last_mfi = mfi[-1]
 
         if self.has_open_order:
-            self.has_open_order = False
-
             canceled = await self.bot.order_manager.cancel_order(self, 'BUY')
 
             if canceled:
+                self.has_open_order = False
                 account = await self.bot.client.get_isolated_margin_account(symbols = self.symbol_pair)
                 free_asset, borrowed_asset, free_quote, borrowed_quote = util.get_asset_and_quote(account)
 
