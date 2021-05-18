@@ -33,16 +33,7 @@ class OrderManager():
         return self.order_book.has_order_id(symbol_pair, order_id)
 
     async def send_order(self, coin, side : str, quantity : Decimal, price : float, order_type : str, isolated : bool, side_effect : str, time_in_force : str) -> bool:
-        order = client.create_test_order(
-            symbol=coin.symbol_pair,
-            side=side,
-            type=order_type,
-            timeInForce=time_in_force,
-            quantity=quantity,
-            price=price
-        )
-
-        # order = client.create_order(
+        # order = client.create_test_order(
         #     symbol=coin.symbol_pair,
         #     side=side,
         #     type=order_type,
@@ -51,7 +42,16 @@ class OrderManager():
         #     price=price
         # )
 
-        # await self.bot.wallet.update_money() # mogelijks overbodig
+        order = client.create_order(
+            symbol=coin.symbol_pair,
+            side=side,
+            type=order_type,
+            timeInForce=time_in_force,
+            quantity=quantity,
+            price=price
+        )
+
+        await self.bot.wallet.update_money() # mogelijks overbodig
 
         self.bot.log.info('ORDER_MANAGER', f'[{order["status"]} | {order_type}] {order["side"]} order for {coin.symbol_pair} (id: {order["orderId"]}), quantity {str(quantity)[:-10]} at {price} USDT')
 
