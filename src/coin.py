@@ -43,11 +43,7 @@ class Coin:
         return self.symbol_pair[:-4]
 
     async def init(self):
-        # try:
-        #     await self.bot.client.create_isolated_margin_account(base = self.symbol, quote = 'USDT')
-        # except Exception as e:
-        #     self.bot.log.verbose('COIN', f'Isolated wallet exists for {self.symbol_pair}')
-
+        self.bot.log.verbose('COIN', f'init')
         candles = await self.bot.client.get_historical_klines(self.symbol_pair, interval = AsyncClient.KLINE_INTERVAL_1MINUTE, start_str = '150 minutes ago CET', end_str = '1 minutes ago CET')
         for candle in candles:
             self.closes.append(float(candle[4]))
@@ -56,10 +52,6 @@ class Coin:
             self.volumes.append(float(candle[5]))
 
         self.bot.log.verbose('COIN', f'Fetched historical klines for {self.symbol_pair}')
-
-        # account = await self.bot.client.get_isolated_margin_account(symbols = self.symbol_pair)
-
-        self.bot.log.verbose('COIN', f'Got account for {self.symbol_pair}')
 
         info = await self.bot.client.get_symbol_info(self.symbol_pair)
         for f in info['filters']:
@@ -83,19 +75,22 @@ class Coin:
         self.bot.log.verbose('COIN', f'Starting socket for {self.symbol_pair}')
 
         # s = self.bot.bm.isolated_margin_socket(self.symbol_pair)
+        s = self.bot.bm.trade_socket(self.symbol_pair)
         async with s as ts:
             while self._running:
                 res = await ts.recv()
                 if not res:
                     continue
-
                 try:
-                    await self.update(res)
+                    await self.update_socket(res)
                 except:
                     self.bot.log.error('COIN', f'Error occurred on socket:\n{traceback.format_exc()}')
 
-    async def update(self, msg):
+    async def update_socket(self, msg):
         event = msg[EVENT_TYPE]
+
+        if event != 'trade':
+            self.bot.log.info('COIN', f'event: {msg}')
 
         if event == 'executionReport':
             error = msg[EXECUTION_ERROR]
@@ -115,10 +110,6 @@ class Coin:
 
                     self.is_piramidding = False
                     await asyncio.sleep(2)
-
-                    # account = await self.bot.client.get_isolated_margin_account(symbols = self.symbol_pair)
-                    # free_asset, borrowed_asset, free_quote, borrowed_quote = util.get_asset_and_quote(account)
-
                     self.has_position = False
 
                 elif side == 'BUY' and self.has_open_order:
@@ -127,20 +118,17 @@ class Coin:
                     self.has_open_order = False
                     self.has_position = True
 
-                   
-                    # account = await self.bot.client.get_isolated_margin_account(symbols = self.symbol_pair)
-                    self.amount = util.get_amount(float(account['assets'][0]['baseAsset']['free']), self.precision)
+                    asset = await self.bot.client.get_asset_balance(self.symbol)
+                    self.amount = util.get_amount(float(asset['free']), self.precision)
 
-                    # take_profit_order = await self.bot.order_manager.send_order(
-                    #     coin = self,
-                    #     side = SIDE_SELL,
-                    #     quantity = Decimal(self.amount),
-                    #     price = self.take_profit,
-                    #     order_type = ORDER_TYPE_LIMIT,
-                    #     isolated = True,
-                    #     side_effect = 'AUTO_REPAY',
-                    #     time_in_force = TIME_IN_FORCE_GTC
-                    # )
+                    take_profit_order = await self.bot.order_manager.send_order(
+                        coin = self,
+                        side = SIDE_SELL,
+                        quantity = Decimal(self.amount),
+                        price = self.take_profit,
+                        order_type = ORDER_TYPE_LIMIT,
+                        time_in_force = TIME_IN_FORCE_GTC
+                    )
 
                     # if not self.is_piramidding:
                         #check liquidation price and update stop loss, also add in direct fill for buy
@@ -148,10 +136,11 @@ class Coin:
                         # if self.liquidation_price > self.piramidding_price:
                         #     self.piramidding_price = self.liquidation_price * 1.0075
         if event == 'balanceUpdate':
-            # self.bot.log.verbose('COIN', 'Got balance update from isolated margin account.')
             await self.bot.wallet.update_money()
 
     async def update(self, candle):
+        # self.bot.log.verbose('COIN', f'update')
+
         close = float(candle[CANDLE_CLOSE])
         high = float(candle[CANDLE_HIGH])
         low = float(candle[CANDLE_LOW])
@@ -194,52 +183,52 @@ class Coin:
 
             order_succeeded = False
 
-            if current_price < self.piramidding_price and self.bot.wallet.money >= (self.bot.user["wallet"]["budget"] + self.bot.user["wallet"]["minimum_cash"]) and not self.is_piramidding:
+            # if current_price < self.piramidding_price and self.bot.wallet.money >= (self.bot.user["wallet"]["budget"] + self.bot.user["wallet"]["minimum_cash"]) and not self.is_piramidding:
                
-                self.is_piramidding = True
+            #     self.is_piramidding = True
 
-                # account = await self.bot.client.get_isolated_margin_account(symbols = self.symbol_pair)
-                # free_asset, borrowed_asset, free_quote, borrowed_quote = util.get_asset_and_quote(account)
+            #     account = await self.bot.client.get_isolated_margin_account(symbols = self.symbol_pair)
+            #     free_asset, borrowed_asset, free_quote, borrowed_quote = util.get_asset_and_quote(account)
 
-                # if free_quote >= self.bot.user["wallet"]["budget"]:
-                #     self.bot.log.verbose('COIN', 'free_asset {free_asset}, borrowed_asset {borrowed_asset}, free_quote {free_quote}, borrowed_quote {borrowed_quote}')
+            #     if free_quote >= self.bot.user["wallet"]["budget"]:
+            #         self.bot.log.verbose('COIN', 'free_asset {free_asset}, borrowed_asset {borrowed_asset}, free_quote {free_quote}, borrowed_quote {borrowed_quote}')
 
-                    await self.bot.order_manager.cancel_order(self, 'SELL')
+            #         await self.bot.order_manager.cancel_order(self, 'SELL')
 
-                    self.piramidding_amount = util.get_amount((self.bot.user["wallet"]["budget"] / self.bot.user["wallet"]["budget_divider"]) / current_price, self.precision)
-                    self.buy_price = current_price
+            #         self.piramidding_amount = util.get_amount((self.bot.user["wallet"]["budget"] / self.bot.user["wallet"]["budget_divider"]) / current_price, self.precision)
+            #         self.buy_price = current_price
 
-                    # order_succeeded = await self.bot.order_manager.send_order(
-                    #     coin = self,
-                    #     side = SIDE_BUY,
-                    #     quantity = Decimal(self.piramidding_amount * self.margin_ratio),
-                    #     price = current_price,
-                    #     order_type = ORDER_TYPE_LIMIT,
-                    #     isolated = True,
-                    #     side_effect = 'MARGIN_BUY',
-                    #     time_in_force = TIME_IN_FORCE_GTC
-                    # )
+            #         order_succeeded = await self.bot.order_manager.send_order(
+            #             coin = self,
+            #             side = SIDE_BUY,
+            #             quantity = Decimal(self.piramidding_amount * self.margin_ratio),
+            #             price = current_price,
+            #             order_type = ORDER_TYPE_LIMIT,
+            #             isolated = True,
+            #             side_effect = 'MARGIN_BUY',
+            #             time_in_force = TIME_IN_FORCE_GTC
+            #         )
 
-                    self.average_price_piramidding = (self.amount * self.average_price + self.piramidding_amount * current_price) / (self.amount + self.piramidding_amount)
-                    self.take_profit = util.get_amount(self.average_price_piramidding * self.bot.user["strategy"]["take_profit_percentage"], self.precision_min_price, False)
+            #         self.average_price_piramidding = (self.amount * self.average_price + self.piramidding_amount * current_price) / (self.amount + self.piramidding_amount)
+            #         self.take_profit = util.get_amount(self.average_price_piramidding * self.bot.user["strategy"]["take_profit_percentage"], self.precision_min_price, False)
 
-                    if order_succeeded:
-                        # account = await self.bot.client.get_isolated_margin_account(symbols = self.symbol_pair)
-                        self.amount = util.get_amount(float(account["assets"][0]["baseAsset"]["free"]), self.precision)
+            #         if order_succeeded:
+            #             account = await self.bot.client.get_isolated_margin_account(symbols = self.symbol_pair)
+            #             self.amount = util.get_amount(float(account["assets"][0]["baseAsset"]["free"]), self.precision)
 
-                        # take_profit_order = await self.bot.order_manager.send_order(
-                        #     coin = self,
-                        #     side = SIDE_SELL,
-                        #     quantity = Decimal(self.amount),
-                        #     price = self.take_profit,
-                        #     order_type = ORDER_TYPE_LIMIT,
-                        #     isolated = True,
-                        #     side_effect = 'AUTO_REPAY',
-                        #     time_in_force = TIME_IN_FORCE_GTC
-                        # )
-                        self.has_position = True
-                # elif free_quote < self.bot.user["wallet"]["budget"]:
-                #     self.bot.log.warning('COIN', f'Failed to piramid for {self.symbol_pair}, not enough money.')
+            #             take_profit_order = await self.bot.order_manager.send_order(
+            #                 coin = self,
+            #                 side = SIDE_SELL,
+            #                 quantity = Decimal(self.amount),
+            #                 price = self.take_profit,
+            #                 order_type = ORDER_TYPE_LIMIT,
+            #                 isolated = True,
+            #                 side_effect = 'AUTO_REPAY',
+            #                 time_in_force = TIME_IN_FORCE_GTC
+            #             )
+            #             self.has_position = True
+            #     elif free_quote < self.bot.user["wallet"]["budget"]:
+            #         self.bot.log.warning('COIN', f'Failed to piramid for {self.symbol_pair}, not enough money.')
 
         # buy
         elif (
@@ -251,26 +240,24 @@ class Coin:
 
             
             self.average_price = self.closes[-1]
-            # self.amount = util.get_amount((self.bot.user["wallet"]["budget"] / self.bot.user["wallet"]["budget_divider"]) / self.average_price, self.precision)
+            self.amount = util.get_amount((self.bot.user["wallet"]["budget"] / self.bot.user["wallet"]["budget_divider"]) / self.average_price, self.precision)
 
-            self.piramidding_price = await self.bot.order_manager.get_low(self.symbol_pair)
-            if self.piramidding_price > (self.average_price - self.average_price * 0.06):
-                self.piramidding_price = self.average_price - self.average_price * 0.06
+            # self.piramidding_price = await self.bot.order_manager.get_low(self.symbol_pair)
+            # if self.piramidding_price > (self.average_price - self.average_price * 0.06):
+            #     self.piramidding_price = self.average_price - self.average_price * 0.06
 
             self.take_profit = util.get_amount(self.average_price * self.bot.user["strategy"]["take_profit_percentage"], self.precision_min_price, False)
 
             self.buy_price = self.average_price
             await asyncio.sleep(0.1)
-            # order_succeeded = await self.bot.order_manager.send_order(
-            #     coin = self,
-            #     side = SIDE_BUY,
-            #     quantity = Decimal(self.amount * self.margin_ratio),
-            #     price = self.average_price,
-            #     order_type = ORDER_TYPE_LIMIT,
-            #     isolated = True,
-            #     side_effect = 'MARGIN_BUY',
-            #     time_in_force = TIME_IN_FORCE_GTC
-            # )
+            order_succeeded = await self.bot.order_manager.send_order(
+                coin = self,
+                side = SIDE_BUY,
+                quantity = Decimal(self.amount),
+                price = self.buy_price,
+                order_type = ORDER_TYPE_LIMIT,
+                time_in_force = TIME_IN_FORCE_GTC
+            )
 
             if order_succeeded:
                 self.bot.log.verbose('COIN', f'Buy order filled for {self.symbol_pair}')
@@ -278,18 +265,17 @@ class Coin:
                 self.has_position = True
 
                 
-                # account = await self.bot.client.get_isolated_margin_account(symbols = self.symbol_pair)
-                # self.amount = util.get_amount(float(account['assets'][0]['baseAsset']['free']), self.precision)
-                # take_profit_order = await self.bot.order_manager.send_order(
-                #     coin = self,
-                #     side = SIDE_SELL,
-                #     quantity = Decimal(self.amount),
-                #     price = self.take_profit,
-                #     order_type = ORDER_TYPE_LIMIT,
-                #     isolated = True,
-                #     side_effect = 'AUTO_REPAY',
-                #     time_in_force = TIME_IN_FORCE_GTC
-                # )
+                asset = await self.bot.client.get_asset_balance(self.symbol)
+                self.amount = util.get_amount(float(asset['free']), self.precision)
+
+                take_profit_order = await self.bot.order_manager.send_order(
+                    coin = self,
+                    side = SIDE_SELL,
+                    quantity = Decimal(self.amount),
+                    price = self.take_profit,
+                    order_type = ORDER_TYPE_LIMIT,
+                    time_in_force = TIME_IN_FORCE_GTC
+                )
 
                 # self.liquidation_price = float(account['assets'][0]['liquidatePrice'])
                 # if self.liquidation_price > self.piramidding_price:
