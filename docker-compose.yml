@@ -10,15 +10,15 @@ services:
     networks:
       - shared
 
-  # cryptobot-jonas:
-  #   build: .
-  #   environment:
-  #     ACTIVE_CONFIG: JONAS
-  #     MONGODB_URL: mongodb://db_admin:qrXp0HtVfWDH1otKSZM9HiC8m838Ud5u@192.168.50.69:27017/cryptobot?authSource=admin
-  #   volumes:
-  #     - ./logs:/app/logs
-  #   networks:
-  #     - shared
+  cryptobot-jonas:
+    build: .
+    environment:
+      ACTIVE_CONFIG: JONAS
+      MONGODB_URL: mongodb://db_admin:qrXp0HtVfWDH1otKSZM9HiC8m838Ud5u@192.168.50.69:27017/cryptobot?authSource=admin
+    volumes:
+      - ./logs:/app/logs
+    networks:
+      - shared
 
   cryptobot-joren:
     build: .
@@ -30,15 +30,15 @@ services:
     networks:
       - shared
 
-  # cryptobot-yente:
-  #   build: .
-  #   environment:
-  #     ACTIVE_CONFIG: YENTE
-  #     MONGODB_URL: mongodb://db_admin:qrXp0HtVfWDH1otKSZM9HiC8m838Ud5u@192.168.50.69:27017/cryptobot?authSource=admin
-  #   volumes:
-  #     - ./logs:/app/logs
-  #   networks:
-  #     - shared
+  cryptobot-yente:
+    build: .
+    environment:
+      ACTIVE_CONFIG: YENTE
+      MONGODB_URL: mongodb://db_admin:qrXp0HtVfWDH1otKSZM9HiC8m838Ud5u@192.168.50.69:27017/cryptobot?authSource=admin
+    volumes:
+      - ./logs:/app/logs
+    networks:
+      - shared
 
 networks:
   shared:
