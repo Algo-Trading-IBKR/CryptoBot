@@ -33,15 +33,6 @@ class OrderManager():
         return self.order_book.has_order_id(symbol_pair, order_id)
 
     async def send_order(self, coin, side : str, quantity : Decimal, price : float, order_type : str, isolated : bool, side_effect : str, time_in_force : str) -> bool:
-        # order = self.bot.client.create_test_order(
-        #     symbol=coin.symbol_pair,
-        #     side=side,
-        #     type=order_type,
-        #     timeInForce=time_in_force,
-        #     quantity=quantity,
-        #     price=price
-        # )
-
         order = await self.bot.client.create_order(
             symbol=coin.symbol_pair,
             side=side,

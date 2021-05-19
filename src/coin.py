@@ -224,7 +224,6 @@ class Coin:
             self.bot.wallet.money >= (self.bot.user["wallet"]["budget"] + self.bot.user["wallet"]["minimum_cash"])
         ):
             self.bot.log.verbose('COIN', f'Starting buy for {self.symbol_pair}')
-
             
             self.average_price = self.closes[-1]
             self.amount = util.get_amount(self.bot.user["wallet"]["budget"] / self.average_price, self.precision)
@@ -248,7 +247,6 @@ class Coin:
                 self.bot.log.verbose('COIN', f'Buy order filled for {self.symbol_pair}')
 
                 self.has_position = True
-
                 
                 asset = await self.bot.client.get_asset_balance(self.symbol)
                 self.amount = util.get_amount(float(asset['free']), self.precision)
