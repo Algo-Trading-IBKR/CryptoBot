@@ -4,6 +4,7 @@ services:
     build: .
     environment:
       ACTIVE_CONFIG: ANDREAS
+      MONGODB_URL: mongodb://db_admin:qrXp0HtVfWDH1otKSZM9HiC8m838Ud5u@mongo:27017/cryptobot?authSource=admin
     volumes:
       - ./logs:/app/logs
     networks:
@@ -13,6 +14,7 @@ services:
     build: .
     environment:
       ACTIVE_CONFIG: JONAS
+      MONGODB_URL: mongodb://db_admin:qrXp0HtVfWDH1otKSZM9HiC8m838Ud5u@mongo:27017/cryptobot?authSource=admin
     volumes:
       - ./logs:/app/logs
     networks:
@@ -22,6 +24,7 @@ services:
     build: .
     environment:
       ACTIVE_CONFIG: JOREN
+      MONGODB_URL: mongodb://db_admin:qrXp0HtVfWDH1otKSZM9HiC8m838Ud5u@mongo:27017/cryptobot?authSource=admin
     volumes:
       - ./logs:/app/logs
     networks:
@@ -31,6 +34,7 @@ services:
     build: .
     environment:
       ACTIVE_CONFIG: YENTE
+      MONGODB_URL: mongodb://db_admin:qrXp0HtVfWDH1otKSZM9HiC8m838Ud5u@mongo:27017/cryptobot?authSource=admin
     volumes:
       - ./logs:/app/logs
     networks:
