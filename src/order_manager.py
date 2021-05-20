@@ -38,8 +38,8 @@ class OrderManager():
             side=side,
             type=order_type,
             timeInForce=time_in_force,
-            quantity=quantity,
-            price=str(price)
+            quantity=f"{quantity:.10f}",
+            price=price
         )
 
         await self.bot.wallet.update_money(coin.currency) # mogelijks overbodig
