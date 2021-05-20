@@ -50,7 +50,7 @@ class CryptoBot:
         for indicator in indicators:
             self._indicators[indicator['name']] = indicator
 
-        self._symbol_pairs = [symbol['name'] for symbol in symbol_pairs]
+        self._symbol_pairs = symbol_pairs
         self._user = config
 
         Log.info('BOT', f"Using active config {self._user['name']}")
@@ -66,7 +66,8 @@ class CryptoBot:
         self._order_manager = OrderManager(self)
         self._wallet = Wallet(self)
 
-        Log.info('BOT', f"Total usable ${(await self._wallet.update_money()):.2f} in spot wallet.")
+        Log.info('BOT', f"Total usable {(await self._wallet.update_money('USDT')):.2f} USDT in spot wallet.")
+        Log.info('BOT', f"Total usable {(await self._wallet.update_money('EUR')):.2f} EURO in spot wallet.")
 
         self.tasks = self._coin_manager.init()
 

@@ -13,11 +13,13 @@ from .constants import CANDLE_CLOSE, CANDLE_HIGH, CANDLE_LOW, CANDLE_VOLUME, EVE
 from src.util.util import util
 
 class Coin:
-    def __init__(self, bot, symbol_pair : str):
+    def __init__(self, bot, trade_symbol : str, currency_symbol : str):
         threading.Thread.__init__(self, daemon=True)
 
         self.bot = bot
-        self.symbol_pair = symbol_pair
+
+        self.currency_symbol = currency_symbol
+        self.trade_symbol = trade_symbol
 
         # candles
         self.closes = []
@@ -39,8 +41,16 @@ class Coin:
         self.allow_piramidding = False
 
     @property
+    def currency(self):
+        return self.currency_symbol
+
+    @property
     def symbol(self):
-        return self.symbol_pair[:-4]
+        return self.trade_symbol
+
+    @property
+    def symbol_pair(self):
+        return self.trade_symbol + self.currency_symbol
 
     async def init(self):
         self.bot.log.verbose('COIN', f'init')
@@ -130,7 +140,7 @@ class Coin:
                     if not self.allow_piramidding:
                         self.piramidding_price = self.average_price * self.bot.user["strategy"]["piramidding_percentage"]
         if event == 'balanceUpdate':
-            await self.bot.wallet.update_money()
+            await self.bot.wallet.update_money(self.currency)
 
     async def update(self, candle):
         # self.bot.log.verbose('COIN', f'update')
@@ -173,12 +183,12 @@ class Coin:
             current_price = self.closes[-1]
             current_high = self.highs[-1]
 
-            await self.bot.wallet.update_money()
+            await self.bot.wallet.update_money(self.currency)
 
             order_succeeded = False
 
             if current_price < self.piramidding_price and self.bot.wallet.money >= (self.bot.user["wallet"]["budget"] + self.bot.user["wallet"]["minimum_cash"]) and not self.allow_piramidding:
-               
+
                 self.allow_piramidding = True
 
                 # asset = await self.bot.client.get_asset_balance(self.symbol)
@@ -224,7 +234,7 @@ class Coin:
             self.bot.wallet.money >= (self.bot.user["wallet"]["budget"] + self.bot.user["wallet"]["minimum_cash"])
         ):
             self.bot.log.verbose('COIN', f'Starting buy for {self.symbol_pair}')
-            
+
             self.average_price = self.closes[-1]
             self.amount = util.get_amount(self.bot.user["wallet"]["budget"] / self.average_price, self.precision)
 
@@ -247,7 +257,7 @@ class Coin:
                 self.bot.log.verbose('COIN', f'Buy order filled for {self.symbol_pair}')
 
                 self.has_position = True
-                
+
                 asset = await self.bot.client.get_asset_balance(self.symbol)
                 self.amount = util.get_amount(float(asset['free']), self.precision)
 

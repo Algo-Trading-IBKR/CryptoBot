@@ -42,9 +42,9 @@ class OrderManager():
             price=price
         )
 
-        await self.bot.wallet.update_money() # mogelijks overbodig
+        await self.bot.wallet.update_money(coin.currency) # mogelijks overbodig
 
-        self.bot.log.info('ORDER_MANAGER', f'[{order["status"]} | {order_type}] {order["side"]} order for {coin.symbol_pair} (id: {order["orderId"]}), quantity {str(quantity)[:-10]} at {price} USDT')
+        self.bot.log.info('ORDER_MANAGER', f'[{order["status"]} | {order_type}] {order["side"]} order for {coin.symbol_pair} (id: {order["orderId"]}), quantity {str(quantity)[:-10]} at {price} {coin.currency}')
 
         if order['side'] == 'SELL':
             self.order_book.set_order_for_symbol(coin.symbol_pair, order['side'], order['orderId'])
