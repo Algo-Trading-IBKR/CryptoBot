@@ -11,7 +11,9 @@ class CoinManager:
         self._coins = {}
 
         for pair in pairs:
-            self._coins[pair] = Coin(bot, pair["trade_symbol"], pair["currency_symbol"])
+            coin = Coin(bot, pair["trade_symbol"], pair["currency_symbol"])
+
+            self._coins[coin.symbol_pair] = coin
 
     def get_coin(self, symbol_pair):
         return self._coins[symbol_pair]
