@@ -13,7 +13,7 @@ services:
       - shared
     volumes:
       - /var/mongodb:/data/db
-      
+
   influxdb:
       image: influxdb:latest
       container_name: influxdb
