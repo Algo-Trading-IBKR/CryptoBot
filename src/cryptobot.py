@@ -54,7 +54,7 @@ class CryptoBot:
         self._user = config
 
         Log.info('BOT', f"Using active config {self._user['name']}")
-        Log.info('BOT', f"Using {len(self._symbol_pairs)} coin pairs.")
+        Log.info('BOT', f"Using {len(list(self._symbol_pairs.clone()))} coin pairs.")
 
         self._client = await AsyncClient.create(api_key=self._user["api_keys"]["key"], api_secret=self._user["api_keys"]["secret"])
         self._socket_manager = BinanceSocketManager(self._client) # user_timeout is now 5 minutes (5 * 60)
