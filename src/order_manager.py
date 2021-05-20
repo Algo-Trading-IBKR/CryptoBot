@@ -14,7 +14,7 @@ class OrderManager():
             return False
 
         self.bot.log.info('ORDER_MANAGER', f'Cancelled order for {coin.symbol_pair} with ID {order_id}')
-        
+
         try:
             result = await self.bot.client.cancel_order(symbol=coin.symbol_pair, orderId=order_id)
             self.bot.log.verbose('ORDER_MANAGER', f'Order Cancelled: {result}')
@@ -32,7 +32,7 @@ class OrderManager():
     def has_order_id(self, symbol_pair, order_id):
         return self.order_book.has_order_id(symbol_pair, order_id)
 
-    async def send_order(self, coin, side : str, quantity : Decimal, price : float, order_type : str, isolated : bool, side_effect : str, time_in_force : str) -> bool:
+    async def send_order(self, coin, side : str, quantity : Decimal, price : float, order_type : str, time_in_force : str) -> bool:
         order = await self.bot.client.create_order(
             symbol=coin.symbol_pair,
             side=side,
