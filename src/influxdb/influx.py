@@ -10,7 +10,7 @@ class Influx:
         self.client = influxdb_client.InfluxDBClient(
             url=self.url,
             token=self.token,
-            org=self.org
+            org=self.orgls
         )
         self.write_api = self.client.write_api(write_options=ASYNCHRONOUS)
         self.query_api = self.client.query_api()
