@@ -13,6 +13,12 @@ signal.signal(signal.SIGTERM, cryptobot.shutdown)
 async def main():
     active_config = os.environ.get('ACTIVE_CONFIG')
     mongo_connect_url = os.environ.get('MONGODB_URL')
+    influx_bucket = os.environ.get('INFLUX_BUCKET')
+    influx_org = os.environ.get('INFLUX_ORG')
+    influx_token = os.environ.get('INFLUX_TOKEN')
+    influx_url = os.environ.get('INFLUX_URL')
+
+    influx_config = [influx_bucket, influx_org, influx_token, influx_url]
 
     client = MongoClient(mongo_connect_url)
 
@@ -25,8 +31,14 @@ async def main():
     if user_config == None:
         return cryptobot.log.info('MAIN', f'User config "{active_config}" is disabled')
 
-    await cryptobot.start(user_config, symbol_pairs, indicators)
+    await cryptobot.start(user_config, symbol_pairs, indicators, influx_config)
 
 if __name__ == '__main__':
     loop = asyncio.get_event_loop()
     loop.run_until_complete(main())
+
+
+    # self.bucket = config
+    # self.org = config
+    # self.token = config
+    # self.url = config
