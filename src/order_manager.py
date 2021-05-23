@@ -42,6 +42,11 @@ class OrderManager():
             price=price
         )
 
+        try:
+            coin.bot.influx.write_order(coin, order["orderId"], side, order_type, quantity, price, quantity*price)
+        except Exception as e:
+            print(str(e))
+
         await self.bot.wallet.update_money(coin.currency) # mogelijks overbodig
 
         self.bot.log.info('ORDER_MANAGER', f'[{order["status"]} | {order_type}] {order["side"]} order for {coin.symbol_pair} (id: {order["orderId"]}), quantity {str(quantity)[:-10]} at {price} {coin.currency}')
