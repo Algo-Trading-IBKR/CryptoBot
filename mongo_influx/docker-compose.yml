@@ -23,12 +23,13 @@ services:
           DOCKER_INFLUXDB_INIT_PASSWORD: qrXp0HtVfWDH1otKSZM9HiC8m838Ud5u
           DOCKER_INFLUXDB_INIT_ORG: crypto
           DOCKER_INFLUXDB_INIT_BUCKET: orders
+          DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: m0DQvW6wvIdy0l2YN3dceFKR4LInurm4-yhoR5r0Uq95F-btt21K0GmFeZORbujdSwJ0iqosr5dHlhr-ghc9tA==
       ports:
           - 8086:8086
       networks:
           - shared
       volumes:
-          - /var/influxdb:/data/db
+          - /var/influxdb:/var/lib/influxdb2
 
 networks:
   shared:
