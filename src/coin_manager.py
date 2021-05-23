@@ -2,7 +2,7 @@ import asyncio
 from concurrent.futures import CancelledError
 import traceback
 from .coin import Coin
-from time import sleep
+from random import uniform
 from .constants import CANDLE, CANDLE_CLOSED, EVENT_TYPE, SYMBOL, TIMESTAMP
 
 class CoinManager:
@@ -30,11 +30,11 @@ class CoinManager:
             coin = self.get_coin(data[SYMBOL])
             await coin.update(candle)
 
-    def init(self):
+    async def init(self):
         tasks = []
         for coin in self._coins.values():
+            await asyncio.sleep(len(self._coins)/60*uniform(1,5))
             tasks.append(asyncio.create_task(coin.init()))
-        # tasks = [asyncio.create_task(coin.init()) for coin in self._coins.values()]
         tasks.append(self.init_multiplex())
 
         return tasks

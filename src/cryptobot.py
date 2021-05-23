@@ -76,7 +76,7 @@ class CryptoBot:
         Log.info('BOT', f"Total usable {(await self._wallet.update_money('USDT')):.2f} USDT in spot wallet.")
         Log.info('BOT', f"Total usable {(await self._wallet.update_money('EUR')):.2f} EURO in spot wallet.")
 
-        self.tasks = self._coin_manager.init()
+        self.tasks = await self._coin_manager.init()
 
         # keep the main event loop active
         while self._running:
