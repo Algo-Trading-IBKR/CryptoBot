@@ -9,6 +9,7 @@ import numpy as np
 import talib
 import traceback
 from time import sleep
+from random import uniform
 from .constants import CANDLE_CLOSE, CANDLE_HIGH, CANDLE_LOW, CANDLE_VOLUME, EVENT_TYPE, EXECUTION_ERROR, EXECUTION_TYPE, EXECUTION_STATUS, EXECUTION_ORDER_ID, ORDER_TYPE, SIDE
 from src.util.util import util
 
@@ -53,6 +54,8 @@ class Coin:
         return self.trade_symbol + self.currency_symbol
 
     async def init(self):
+        await asyncio.sleep(uniform(1, 20)) # fix api ban
+
         self.bot.log.verbose('COIN', f'init')
         candles = await self.bot.client.get_historical_klines(self.symbol_pair, interval = AsyncClient.KLINE_INTERVAL_1MINUTE, start_str = '150 minutes ago CET', end_str = '1 minutes ago CET')
         for candle in candles:
