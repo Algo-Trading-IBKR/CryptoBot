@@ -115,16 +115,23 @@ class Coin:
             if execution_type == 'TRADE' and execution_status == 'FILLED':
                 if side == 'SELL' and self.bot.order_manager.has_order_id(self.symbol_pair, order_id):
                     self.bot.log.verbose('COIN', f'Filled SELL order for {self.symbol_pair}')
-
                     self.allow_piramidding = False
-                    await asyncio.sleep(2)
+                    await asyncio.sleep(1) # why?
                     self.has_position = False
+
+                    fee = msg["n"]
+                    fee_currency = msg["N"]
+                    self.bot.influx.write_trade(self, order_id, side, order_type, msg["q"], msg["p"], fee, fee_currency)
 
                 elif side == 'BUY' and self.has_open_order:
                     self.bot.log.verbose('COIN', f'Filled BUY order for {self.symbol_pair}')
 
                     self.has_open_order = False
                     self.has_position = True
+
+                    fee = msg["n"]
+                    fee_currency = msg["N"]
+                    self.bot.influx.write_trade(self, order_id, side, order_type, msg["q"], msg["p"], fee, fee_currency)
 
                     asset = await self.bot.client.get_asset_balance(self.symbol)
                     self.amount = util.get_amount(float(asset['free']), self.precision)
@@ -206,7 +213,8 @@ class Coin:
                     quantity = Decimal(self.piramidding_amount),
                     price = current_price,
                     order_type = ORDER_TYPE_LIMIT,
-                    time_in_force = TIME_IN_FORCE_GTC
+                    time_in_force = TIME_IN_FORCE_GTC,
+                    piramidding=True
                 )
 
                 self.average_price_piramidding = (self.amount * self.average_price + self.piramidding_amount * current_price) / (self.amount + self.piramidding_amount)
@@ -244,7 +252,7 @@ class Coin:
             self.take_profit = util.get_amount(self.average_price * self.bot.user["strategy"]["take_profit_percentage"], self.precision_min_price, False)
 
             self.buy_price = self.average_price
-            await asyncio.sleep(0.1)
+            # await asyncio.sleep(0.1)
             order_succeeded = await self.bot.order_manager.send_order(
                 coin = self,
                 side = SIDE_BUY,

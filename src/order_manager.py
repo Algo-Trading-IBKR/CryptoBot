@@ -32,7 +32,7 @@ class OrderManager():
     def has_order_id(self, symbol_pair, order_id):
         return self.order_book.has_order_id(symbol_pair, order_id)
 
-    async def send_order(self, coin, side : str, quantity : Decimal, price : float, order_type : str, time_in_force : str) -> bool:
+    async def send_order(self, coin, side : str, quantity : Decimal, price : float, order_type : str, time_in_force : str, piramidding : bool = False) -> bool:
         order = await self.bot.client.create_order(
             symbol=coin.symbol_pair,
             side=side,
@@ -42,10 +42,7 @@ class OrderManager():
             price=price
         )
 
-        try:
-            coin.bot.influx.write_order(coin, order["orderId"], side, order_type, quantity, price, quantity*price)
-        except Exception as e:
-            print(str(e))
+        coin.bot.influx.write_order(coin, order["orderId"], side, order_type, quantity, price)
 
         await self.bot.wallet.update_money(coin.currency) # mogelijks overbodig
 
@@ -55,6 +52,11 @@ class OrderManager():
             self.order_book.set_order_for_symbol(coin.symbol_pair, order['side'], order['orderId'])
             return False
         if order['status'] == 'FILLED' and order['side'] == 'BUY':
+            self.bot.log.verbose('COIN', f'Filled BUY order for {coin.symbol_pair}')
+            fee = 0
+            for i in order["fills"]: fee += i["commission"]
+            fee_currency = order["fills"][0]["commissionAsset"]
+            coin.bot.influx.write_trade(coin, order["orderId"], side, order_type, quantity, price, fee, fee_currency, piramidding=piramidding)
             coin.has_open_order = False
             return True
         if order['side'] == 'BUY':

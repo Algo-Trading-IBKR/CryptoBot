@@ -2,13 +2,13 @@ import influxdb_client
 from influxdb_client import Point, WritePrecision
 from influxdb_client.client.write_api import SYNCHRONOUS # or ASYNCHRONOUS
 from datetime import datetime
+from time import sleep
 
 class Influx:
     def __init__(self, config):
-        self.bucket = str(config[0])
-        self.org = str(config[1])
-        self.token = str(config[2])
-        self.url = str(config[3])
+        self.org = str(config[0])
+        self.token = str(config[1])
+        self.url = str(config[2])
 
         # print(config)
 
@@ -16,40 +16,22 @@ class Influx:
             url=self.url,
             token=self.token,
             org=self.org,
-            debug=False
+            debug=True
         )
 
         self.write_api = self.client.write_api(write_options=SYNCHRONOUS)
         self.query_api = self.client.query_api()
 
 
-        # point = Point("name") \
-        #         .tag("discord_id", 1) \
-        #         .tag("order_id", 2) \
-        #         .tag("side", "SELL") \
-        #         .tag("order_type", "limit") \
-        #         .tag("coin", "DOGE") \
-        #         .tag("currency", "USDT") \
-        #         .field("amount", 5) \
-        #         .field("price", 5) \
-        #         .field("total", 10) \
-        #         .field("piramidding", False) \
-        #         .time(datetime.utcnow(), WritePrecision.S)
-        # self.write_api.write(bucket = self.bucket, record=point)
-
-        # query = f'from(bucket:"orders") |> range(start: -20m)'
-        # result = self.fetch(query)
-        # print(result)
-
-    def write(self, record):
-        self.write_api.write(bucket = self.bucket, record=record)
+    def write(self, bucket, record):
+        self.write_api.write(bucket = bucket, record=record)
     
     def fetch(self, query):
         result = self.query_api.query(org=self.org, query=query)
         return result
 
-    def write_order(self, coin, order_id, side, order_type, amount, price, total, piramidding : bool = False):
-        point = Point("measurement name") \
+    def write_order(self, coin, order_id, side, order_type, amount, price, piramidding : bool = False):
+        point = Point("order") \
                 .tag("discord_id", coin.bot.user["discord_id"]) \
                 .tag("order_id", order_id) \
                 .tag("side", side) \
@@ -58,26 +40,42 @@ class Influx:
                 .tag("currency", coin.currency) \
                 .field("amount", amount) \
                 .field("price", price) \
-                .field("total", total) \
+                .field("total", amount*price) \
                 .field("piramidding", piramidding) \
                 .time(datetime.utcnow(), WritePrecision.S)
-        self.write(point)
+        self.write(bucket="orders", record=point)
         
-    def write_trade(self, coin, order_id, side, order_type, amount, price, total, fee, fee_currency, profit, piramidding : bool = False):
-        # if side == "SELL":
-        #     query = f"""from(bucket: self.bucket)
-        #             |> filter(fn: (r) =>
-        #                 r.discord_id == {coin.bot.user['discord_id']}
-        #                 r.coin == {coin.symbol}
-        #                 r.currency == {coin.currency}
-        #             |> sort(columns: ['time'])
-        #             |> last()
-        #             |> limit(n: 1)
-        #             )"""
-        #     result = self.fetch(query)
-        #     console.log(result)
+    def write_trade(self, coin, order_id, side, order_type, amount, price, fee, fee_currency, profit : float = 0.0, piramidding : bool = False):
+        if side == "SELL":
+            query = f'from(bucket: "trades")\
+                    |> range(start: 0, stop: now())\
+                    |> filter(fn:(r) => r["discord_id"] == "{coin.bot.user["discord_id"]}")\
+                    |> filter(fn:(r) => r["coin"] == "{coin.symbol}")\
+                    |> filter(fn:(r) => r["currency"] == "{coin.currency}")\
+                    |> filter(fn:(r) => r["side"] == "BUY")\
+                    |> limit(n: 2)\
+                    |> sort(columns: ["_time"], desc: false))'
+            # desc false very important
+            result = self.fetch(query)
+            for table in result:
+                for row in table:    
+                    if row.get_field() == "piramidding": 
+                        buy_piramidding = row.get_value()
 
-        point = Point("measurement name") \
+            buy_total = 0
+            # always last item will decide (newest)
+            if buy_piramidding:
+                for table in result:
+                    for row in table:
+                        if row.get_field() == "total": buy_total += row.get_value()
+            else:
+                for table in result:
+                    for row in table:
+                        if row.get_field() == "total": buy_total = row.get_value() # last row will decide te value, so the latest buy in theory
+
+            profit = (amount*price)-buy_total
+
+        point = Point("trade") \
                 .tag("discord_id", coin.bot.user["discord_id"]) \
                 .tag("order_id", order_id) \
                 .tag("side", side) \
@@ -86,19 +84,10 @@ class Influx:
                 .tag("currency", coin.currency) \
                 .field("amount", amount) \
                 .field("price", price) \
-                .field("total", total) \
+                .field("total", amount*price) \
                 .field("fee", fee) \
                 .field("fee_currency", fee_currency) \
                 .field("profit", profit) \
                 .field("piramidding", piramidding) \
                 .time(datetime.utcnow(), WritePrecision.S)
-        self.write(point)
-
-
-
-# config = ['orders', 'crypto', 'm0DQvW6wvIdy0l2YN3dceFKR4LInurm4-yhoR5r0Uq95F-btt21K0GmFeZORbujdSwJ0iqosr5dHlhr-ghc9tA==', 'http://localhost:8086']
-# influx = Influx(config)
-
-
-
-
+        self.write(bucket="trades", record=point)
