@@ -3,6 +3,7 @@ version: "3.8"
 services:
   mongo:
     image: mongo
+    container_name: mongo
     restart: unless-stopped
     environment:
         MONGO_INITDB_ROOT_USERNAME: db_admin

@@ -151,7 +151,7 @@ class Coin:
             await self.bot.wallet.update_money(self.currency)
 
     async def update(self, candle):
-        # self.bot.log.verbose('COIN', f'update')
+        # self.bot.log.info('COIN', f'update')
 
         close = float(candle[CANDLE_CLOSE])
         high = float(candle[CANDLE_HIGH])
@@ -186,14 +186,15 @@ class Coin:
                 self.has_position = False
                 self.allow_piramidding = False
 
+        
+
         # sell
         if self.has_position:
             current_price = self.closes[-1]
-            current_high = self.highs[-1]
-
-            await self.bot.wallet.update_money(self.currency)
+            # current_high = self.highs[-1] # not used
 
             order_succeeded = False
+            await self.bot.wallet.update_money(self.currency)
 
             if current_price < self.piramidding_price and self.bot.wallet.money >= (self.bot.user["wallet"]["budget"] + self.bot.user["wallet"]["minimum_cash"]) and not self.allow_piramidding:
 
@@ -236,6 +237,9 @@ class Coin:
             elif self.bot.wallet.money < (self.bot.user["wallet"]["budget"] + self.bot.user["wallet"]["minimum_cash"]):
                 self.bot.log.warning('COIN', f'Failed to piramid for {self.symbol_pair}, not enough money.')
 
+        elif (last_rsi < self.bot.indicators["rsi"]["oversold"] and
+            last_mfi < self.bot.indicators["mfi"]["oversold"]):
+            self.bot.log.info('COIN', f'indicators are met, but there is not enough money in the account')
         # buy
         elif (
             last_rsi < self.bot.indicators["rsi"]["oversold"] and

@@ -33,7 +33,7 @@ class CoinManager:
     async def init(self):
         tasks = []
         for coin in self._coins.values():
-            await asyncio.sleep(len(self._coins)/60*uniform(1,5))
+            await asyncio.sleep(len(self._coins)/50*uniform(1,5))
             tasks.append(asyncio.create_task(coin.init()))
         tasks.append(self.init_multiplex())
 
