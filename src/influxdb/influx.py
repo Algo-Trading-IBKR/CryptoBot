@@ -40,7 +40,7 @@ class Influx:
                 .tag("currency", coin.currency) \
                 .field("amount", amount) \
                 .field("price", price) \
-                .field("total", amount*price) \
+                .field("total", float(amount)*price) \
                 .field("piramidding", piramidding) \
                 .time(datetime.utcnow(), WritePrecision.S)
         self.write(bucket="orders", record=point)
@@ -84,7 +84,7 @@ class Influx:
                 .tag("currency", coin.currency) \
                 .field("amount", amount) \
                 .field("price", price) \
-                .field("total", amount*price) \
+                .field("total", float(amount)*price) \
                 .field("fee", fee) \
                 .field("fee_currency", fee_currency) \
                 .field("profit", profit) \

@@ -38,7 +38,7 @@ class OrderManager():
             side=side,
             type=order_type,
             timeInForce=time_in_force,
-            quantity=f"{quantity:.10f}",
+            quantity=f"{round(quantity,coin.precision)}",
             price=price
         )
 
