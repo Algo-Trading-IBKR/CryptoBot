@@ -1,6 +1,7 @@
 class Wallet:
     def __init__(self, bot):
         self.bot = bot
+        self._money = {}
 
     @property
     def money(self):
@@ -9,8 +10,8 @@ class Wallet:
     async def update_money(self, asset : str ):
         res = await self.bot.client.get_asset_balance(asset)
 
-        self._money = float(res['free'])
+        self._money[asset] = float(res['free'])
 
-        self.bot.log.info('WALLET', f'Updated money in wallet, new wallet total: {self._money} {asset}')
+        self.bot.log.info('WALLET', f'Updated money in wallet, new wallet total: {self._money[asset]} {asset}')
 
-        return self._money
+        return self._money[asset]

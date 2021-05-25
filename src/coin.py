@@ -196,7 +196,7 @@ class Coin:
             order_succeeded = False
             await self.bot.wallet.update_money(self.currency)
 
-            if current_price < self.piramidding_price and self.bot.wallet.money >= (self.bot.user["wallet"]["budget"] + self.bot.user["wallet"]["minimum_cash"]) and not self.allow_piramidding:
+            if current_price < self.piramidding_price and self.bot.wallet.money[self.currency] >= (self.bot.user["wallet"]["budget"] + self.bot.user["wallet"]["minimum_cash"]) and not self.allow_piramidding:
 
                 self.allow_piramidding = True
 
@@ -234,17 +234,18 @@ class Coin:
                         time_in_force = TIME_IN_FORCE_GTC
                     )
                     self.has_position = True
-            elif self.bot.wallet.money < (self.bot.user["wallet"]["budget"] + self.bot.user["wallet"]["minimum_cash"]):
+            elif self.bot.wallet.money[self.currency] < (self.bot.user["wallet"]["budget"] + self.bot.user["wallet"]["minimum_cash"]):
                 self.bot.log.warning('COIN', f'Failed to piramid for {self.symbol_pair}, not enough money.')
 
         elif (last_rsi < self.bot.indicators["rsi"]["oversold"] and
             last_mfi < self.bot.indicators["mfi"]["oversold"]):
-            self.bot.log.info('COIN', f'indicators are met, but there is not enough money in the account')
+            self.bot.log.info('COIN', f'indicators are met, but there is not enough money in the account, updating wallet...')
+            await self.bot.wallet.update_money(self.currency)
         # buy
         elif (
             last_rsi < self.bot.indicators["rsi"]["oversold"] and
             last_mfi < self.bot.indicators["mfi"]["oversold"] and
-            self.bot.wallet.money >= (self.bot.user["wallet"]["budget"] + self.bot.user["wallet"]["minimum_cash"])
+            self.bot.wallet.money[self.currency] >= (self.bot.user["wallet"]["budget"] + self.bot.user["wallet"]["minimum_cash"])
         ):
             self.bot.log.verbose('COIN', f'Starting buy for {self.symbol_pair}')
 
