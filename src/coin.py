@@ -100,6 +100,8 @@ class Coin:
     async def update_socket(self, msg):
         event = msg[EVENT_TYPE]
 
+        self.bot.log.info('COIN', f'{msg}')
+
         if event == 'executionReport':
             error = msg[EXECUTION_ERROR]
             if error != 'NONE':
@@ -118,7 +120,6 @@ class Coin:
                     self.allow_piramidding = False
                     await asyncio.sleep(1) # why?
                     self.has_position = False
-
                     fee = msg["n"]
                     fee_currency = msg["N"]
                     self.bot.influx.write_trade(self, order_id, side, order_type, msg["q"], msg["p"], fee, fee_currency)

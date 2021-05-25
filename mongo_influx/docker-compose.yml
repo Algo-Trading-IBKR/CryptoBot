@@ -16,7 +16,7 @@ services:
       - /var/mongodb:/data/db
 
   influxdb:
-      image: influxdb:latest
+      image: influxdb:alpine
       container_name: influxdb
       restart: unless-stopped
       environment:
