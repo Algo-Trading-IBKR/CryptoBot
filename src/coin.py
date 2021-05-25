@@ -99,55 +99,57 @@ class Coin:
 
     async def update_socket(self, msg):
         event = msg[EVENT_TYPE]
-        asset = msg['s']
+        
         
         # check if the execution report is in fact for this coin pair
-        if event == 'executionReport' and asset == self.symbol_pair:
-            error = msg[EXECUTION_ERROR]
-            if error != 'NONE':
-                self.bot.log.error('COIN', f'Execution Report error: {error}')
+        if event == 'executionReport':
+            asset = msg['s']
+            if asset == self.symbol_pair:
+                error = msg[EXECUTION_ERROR]
+                if error != 'NONE':
+                    self.bot.log.error('COIN', f'Execution Report error: {error}')
 
-                return
-            side = msg[SIDE]
-            order_type = msg[ORDER_TYPE]
-            execution_type = msg[EXECUTION_TYPE]
-            execution_status = msg[EXECUTION_STATUS]
-            order_id = msg[EXECUTION_ORDER_ID]
+                    return
+                side = msg[SIDE]
+                order_type = msg[ORDER_TYPE]
+                execution_type = msg[EXECUTION_TYPE]
+                execution_status = msg[EXECUTION_STATUS]
+                order_id = msg[EXECUTION_ORDER_ID]
 
-            if execution_type == 'TRADE' and execution_status == 'FILLED':
-                if side == 'SELL' and self.bot.order_manager.has_order_id(self.symbol_pair, order_id):
-                    self.bot.log.verbose('COIN', f'Filled SELL order for {self.symbol_pair}')
-                    self.allow_piramidding = False
-                    await asyncio.sleep(1) # why?
-                    self.has_position = False
-                    fee = msg["n"]
-                    fee_currency = msg["N"]
-                    self.bot.influx.write_trade(self, order_id, side, order_type, msg["q"], msg["p"], fee, fee_currency)
+                if execution_type == 'TRADE' and execution_status == 'FILLED':
+                    if side == 'SELL' and self.bot.order_manager.has_order_id(self.symbol_pair, order_id):
+                        self.bot.log.verbose('COIN', f'Filled SELL order for {self.symbol_pair}')
+                        self.allow_piramidding = False
+                        await asyncio.sleep(1) # why?
+                        self.has_position = False
+                        fee = msg["n"]
+                        fee_currency = msg["N"]
+                        self.bot.influx.write_trade(self, order_id, side, order_type, msg["q"], msg["p"], fee, fee_currency)
 
-                elif side == 'BUY' and self.has_open_order:
-                    self.bot.log.verbose('COIN', f'Filled BUY order for {self.symbol_pair}')
+                    elif side == 'BUY' and self.has_open_order:
+                        self.bot.log.verbose('COIN', f'Filled BUY order for {self.symbol_pair}')
 
-                    self.has_open_order = False
-                    self.has_position = True
+                        self.has_open_order = False
+                        self.has_position = True
 
-                    fee = msg["n"]
-                    fee_currency = msg["N"]
-                    self.bot.influx.write_trade(self, order_id, side, order_type, msg["q"], msg["p"], fee, fee_currency)
+                        fee = msg["n"]
+                        fee_currency = msg["N"]
+                        self.bot.influx.write_trade(self, order_id, side, order_type, msg["q"], msg["p"], fee, fee_currency)
 
-                    asset = await self.bot.client.get_asset_balance(self.symbol)
-                    self.amount = util.get_amount(float(asset['free']), self.precision)
+                        asset = await self.bot.client.get_asset_balance(self.symbol)
+                        self.amount = util.get_amount(float(asset['free']), self.precision)
 
-                    take_profit_order = await self.bot.order_manager.send_order(
-                        coin = self,
-                        side = SIDE_SELL,
-                        quantity = Decimal(self.amount),
-                        price = self.take_profit,
-                        order_type = ORDER_TYPE_LIMIT,
-                        time_in_force = TIME_IN_FORCE_GTC
-                    )
+                        take_profit_order = await self.bot.order_manager.send_order(
+                            coin = self,
+                            side = SIDE_SELL,
+                            quantity = Decimal(self.amount),
+                            price = self.take_profit,
+                            order_type = ORDER_TYPE_LIMIT,
+                            time_in_force = TIME_IN_FORCE_GTC
+                        )
 
-                    if not self.allow_piramidding:
-                        self.piramidding_price = self.average_price * self.bot.user["strategy"]["piramidding_percentage"]
+                        if not self.allow_piramidding:
+                            self.piramidding_price = self.average_price * self.bot.user["strategy"]["piramidding_percentage"]
         if event == 'balanceUpdate' or event == 'outboundAccountPosition':
             await self.bot.wallet.update_money(self.currency)
 
