@@ -68,6 +68,7 @@ class CoinManager:
                     continue
                 try:
                     if res['e'] == "outboundAccountPosition" or res['e'] == "balanceUpdate":
+                        self.bot.log.verbose('COIN_MANAGER', f'event: {res["e"]}')
                         await self.bot.wallet.update_money(self.currency)
                     elif res['e'] == "executionReport":
                         coin = self.get_coin(res['s'])
