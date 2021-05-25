@@ -86,7 +86,7 @@ class Coin:
         self.bot.log.verbose('COIN', f'Starting socket for {self.symbol_pair}')
 
         # s = self.bot.bm.isolated_margin_socket(self.symbol_pair)
-        s = self.bot.bm.user_socket(self.symbol_pair)
+        s = self.bot.bm.user_socket()
         async with s as ts:
             while self._running:
                 res = await ts.recv()
@@ -99,10 +99,10 @@ class Coin:
 
     async def update_socket(self, msg):
         event = msg[EVENT_TYPE]
-
-        self.bot.log.info('COIN', f'{msg}')
-
-        if event == 'executionReport':
+        asset = msg['s']
+        
+        # check if the execution report is in fact for this coin pair
+        if event == 'executionReport' and asset == self.symbol_pair:
             error = msg[EXECUTION_ERROR]
             if error != 'NONE':
                 self.bot.log.error('COIN', f'Execution Report error: {error}')
@@ -148,7 +148,7 @@ class Coin:
 
                     if not self.allow_piramidding:
                         self.piramidding_price = self.average_price * self.bot.user["strategy"]["piramidding_percentage"]
-        if event == 'balanceUpdate':
+        if event == 'balanceUpdate' or event == 'outboundAccountPosition':
             await self.bot.wallet.update_money(self.currency)
 
     async def update(self, candle):
