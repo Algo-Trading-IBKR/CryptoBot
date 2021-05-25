@@ -52,8 +52,6 @@ class Coin:
         return self.trade_symbol + self.currency_symbol
 
     async def init(self):
-        # await asyncio.sleep(uniform(1, 20)) # fix api ban
-
         self.bot.log.verbose('COIN', f'init')
         candles = await self.bot.client.get_historical_klines(self.symbol_pair, interval = AsyncClient.KLINE_INTERVAL_1MINUTE, start_str = '150 minutes ago CET', end_str = '1 minutes ago CET')
         for candle in candles:
@@ -75,83 +73,53 @@ class Coin:
 
         self.bot.log.verbose('COIN', f'Got symbol info for {self.symbol_pair}')
 
-        try:
-            await self.run()
-        except CancelledError:
-            self._running = False
-
-    async def run(self):
-        self._running = True
-
-        self.bot.log.verbose('COIN', f'Starting socket for {self.symbol_pair}')
-
-        # s = self.bot.bm.isolated_margin_socket(self.symbol_pair)
-        s = self.bot.bm.user_socket()
-        async with s as ts:
-            while self._running:
-                res = await ts.recv()
-                if not res:
-                    continue
-                try:
-                    await self.update_socket(res)
-                except:
-                    self.bot.log.error('COIN', f'Error occurred on socket:\n{traceback.format_exc()}')
-
     async def update_socket(self, msg):
-        event = msg[EVENT_TYPE]
+        error = msg[EXECUTION_ERROR]
+        if error != 'NONE':
+            self.bot.log.error('COIN', f'Execution Report error: {error}')
+            return
+
+        side = msg[SIDE]
+        order_type = msg[ORDER_TYPE]
+        execution_type = msg[EXECUTION_TYPE]
+        execution_status = msg[EXECUTION_STATUS]
+        order_id = msg[EXECUTION_ORDER_ID]
+
+        if execution_type == 'TRADE' and execution_status == 'FILLED':
+            if side == 'SELL' and self.bot.order_manager.has_order_id(self.symbol_pair, order_id):
+                self.bot.log.verbose('COIN', f'Filled SELL order for {self.symbol_pair}')
+                self.allow_piramidding = False
+                await asyncio.sleep(0.1) # why?
+                self.has_position = False
+                fee = msg["n"]
+                fee_currency = msg["N"]
+                self.bot.influx.write_trade(self, order_id, side, order_type, msg["q"], msg["p"], fee, fee_currency)
+
+            elif side == 'BUY' and self.has_open_order:
+                self.bot.log.verbose('COIN', f'Filled BUY order for {self.symbol_pair}')
+
+                self.has_open_order = False
+                self.has_position = True
+
+                fee = msg["n"]
+                fee_currency = msg["N"]
+                self.bot.influx.write_trade(self, order_id, side, order_type, msg["q"], msg["p"], fee, fee_currency)
+
+                asset = await self.bot.client.get_asset_balance(self.symbol)
+                self.amount = util.get_amount(float(asset['free']), self.precision)
+
+                take_profit_order = await self.bot.order_manager.send_order(
+                    coin = self,
+                    side = SIDE_SELL,
+                    quantity = Decimal(self.amount),
+                    price = self.take_profit,
+                    order_type = ORDER_TYPE_LIMIT,
+                    time_in_force = TIME_IN_FORCE_GTC
+                )
+
+                if not self.allow_piramidding:
+                    self.piramidding_price = self.average_price * self.bot.user["strategy"]["piramidding_percentage"]
         
-        
-        # check if the execution report is in fact for this coin pair
-        if event == 'executionReport':
-            asset = msg['s']
-            if asset == self.symbol_pair:
-                error = msg[EXECUTION_ERROR]
-                if error != 'NONE':
-                    self.bot.log.error('COIN', f'Execution Report error: {error}')
-
-                    return
-                side = msg[SIDE]
-                order_type = msg[ORDER_TYPE]
-                execution_type = msg[EXECUTION_TYPE]
-                execution_status = msg[EXECUTION_STATUS]
-                order_id = msg[EXECUTION_ORDER_ID]
-
-                if execution_type == 'TRADE' and execution_status == 'FILLED':
-                    if side == 'SELL' and self.bot.order_manager.has_order_id(self.symbol_pair, order_id):
-                        self.bot.log.verbose('COIN', f'Filled SELL order for {self.symbol_pair}')
-                        self.allow_piramidding = False
-                        await asyncio.sleep(1) # why?
-                        self.has_position = False
-                        fee = msg["n"]
-                        fee_currency = msg["N"]
-                        self.bot.influx.write_trade(self, order_id, side, order_type, msg["q"], msg["p"], fee, fee_currency)
-
-                    elif side == 'BUY' and self.has_open_order:
-                        self.bot.log.verbose('COIN', f'Filled BUY order for {self.symbol_pair}')
-
-                        self.has_open_order = False
-                        self.has_position = True
-
-                        fee = msg["n"]
-                        fee_currency = msg["N"]
-                        self.bot.influx.write_trade(self, order_id, side, order_type, msg["q"], msg["p"], fee, fee_currency)
-
-                        asset = await self.bot.client.get_asset_balance(self.symbol)
-                        self.amount = util.get_amount(float(asset['free']), self.precision)
-
-                        take_profit_order = await self.bot.order_manager.send_order(
-                            coin = self,
-                            side = SIDE_SELL,
-                            quantity = Decimal(self.amount),
-                            price = self.take_profit,
-                            order_type = ORDER_TYPE_LIMIT,
-                            time_in_force = TIME_IN_FORCE_GTC
-                        )
-
-                        if not self.allow_piramidding:
-                            self.piramidding_price = self.average_price * self.bot.user["strategy"]["piramidding_percentage"]
-        if event == 'balanceUpdate' or event == 'outboundAccountPosition':
-            await self.bot.wallet.update_money(self.currency)
 
     async def update(self, candle):
         # self.bot.log.info('COIN', f'update')
@@ -191,7 +159,9 @@ class Coin:
 
         # wallet update because it doesn't go in the buy otherwise
         if (last_rsi < self.bot.indicators["rsi"]["oversold"] and
-            last_mfi < self.bot.indicators["mfi"]["oversold"]):
+            last_mfi < self.bot.indicators["mfi"]["oversold"] and
+            self.bot.wallet.money[self.currency] < (self.bot.user["wallet"]["budget"] + self.bot.user["wallet"]["minimum_cash"])
+        ):
             await self.bot.wallet.update_money(self.currency)
 
         # sell

@@ -35,12 +35,10 @@ class CoinManager:
         for coin in self._coins.values():
             await asyncio.sleep(len(self._coins)/50*uniform(1,5))
             tasks.append(asyncio.create_task(coin.init()))
-        tasks.append(self.init_multiplex())
+        tasks.append(asyncio.create_task(self.start_multiplex()))
+        tasks.append(asyncio.create_task(self.start_user_socket()))
 
         return tasks
-
-    def init_multiplex(self):
-        return asyncio.create_task(self.start_multiplex())
 
     async def start_multiplex(self):
         self._running = True
@@ -57,4 +55,23 @@ class CoinManager:
                 if isinstance(e, CancelledError):
                     self._running = False
                 self.bot.log.error('COIN_MANAGER', f'Error occured:\n{traceback.format_exc()}')
+
+    async def start_user_socket(self):
+        self._running = True
+        self.bot.log.verbose('COIN_MANAGER', f'Starting user socket')
+        
+        s = self.bot.bm.user_socket()
+        async with s as ts:
+            while self._running:
+                res = await ts.recv()
+                if not res:
+                    continue
+                try:
+                    if res['e'] == "outboundAccountPosition" or res['e'] == "balanceUpdate":
+                        await self.bot.wallet.update_money(self.currency)
+                    elif res['e'] == "executionReport":
+                        coin = self.get_coin(res['s'])
+                        await coin.update_socket(res)
+                except:
+                    self.bot.log.error('COIN_MANAGER', f'Error occurred on socket:\n{traceback.format_exc()}')
 
