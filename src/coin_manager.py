@@ -70,6 +70,7 @@ class CoinManager:
                     if res['e'] == "executionReport":
                         coin = self.get_coin(res['s'])
                         await coin.update_socket(res)
+
                 except:
                     self.bot.log.error('COIN_MANAGER', f'Error occurred on socket:\n{traceback.format_exc()}')
 

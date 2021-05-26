@@ -50,6 +50,7 @@ class Influx:
     def write_trade(self, coin, order_id, side, order_type, amount, price, fee, fee_currency, profit : float = 0.0, piramidding : bool = False):
         amount = float(amount)
         price = float(price)
+        fee = float(fee)
 
         if side == "SELL":
             query = f'from(bucket: "trades")\

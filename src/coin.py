@@ -120,7 +120,7 @@ class Coin:
                 if not self.allow_piramidding:
                     self.piramidding_price = self.average_price * self.bot.user["strategy"]["piramidding_percentage"]
             
-        await self.bot.wallet.update_money(self.currency)
+            await self.bot.wallet.update_money(self.currency)
         
 
     async def update(self, candle):
@@ -162,14 +162,21 @@ class Coin:
                 self.has_position = True
                 self.allow_piramidding = False
 
-        # wallet update because it doesn't go in the buy otherwise
-        if (self.bot.wallet.money[self.currency] < (self.bot.user["wallet"]["budget"] + self.bot.user["wallet"]["minimum_cash"])):
-            await self.bot.wallet.update_money(self.currency)
+        if (
+            last_rsi < self.bot.indicators["rsi"]["oversold"] and
+            last_mfi < self.bot.indicators["mfi"]["oversold"] and
+            self.bot.wallet.money[self.currency] < (self.bot.user["wallet"]["budget"] + self.bot.user["wallet"]["minimum_cash"])
+        ):
+                await self.bot.wallet.update_money(self.currency)
+
 
         # sell
         if self.has_position:
             current_price = self.closes[-1]
             # current_high = self.highs[-1] # not used
+
+            if (self.bot.wallet.money[self.currency] < (self.bot.user["wallet"]["budget"] + self.bot.user["wallet"]["minimum_cash"])):
+                await self.bot.wallet.update_money(self.currency)
 
             order_succeeded = False
 

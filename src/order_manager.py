@@ -24,10 +24,9 @@ class OrderManager():
             return False
 
 
-    async def get_low(self, symbol):
-        data = await self.bot.client.get_ticker(symbol=symbol)
-
-        return float(data['lowPrice'])
+    # async def get_low(self, symbol):
+    #     data = await self.bot.client.get_ticker(symbol=symbol)
+    #     return float(data['lowPrice'])
 
     def has_order_id(self, symbol_pair, order_id):
         return self.order_book.has_order_id(symbol_pair, order_id)
@@ -54,7 +53,7 @@ class OrderManager():
         if order['status'] == 'FILLED' and order['side'] == 'BUY':
             self.bot.log.verbose('COIN', f'Filled BUY order for {coin.symbol_pair}')
             fee = 0
-            for i in order["fills"]: fee += i["commission"]
+            for i in order["fills"]: fee += int(i["commission"])
             fee_currency = order["fills"][0]["commissionAsset"]
             coin.bot.influx.write_trade(coin, order["orderId"], side, order_type, quantity, price, fee, fee_currency, piramidding=piramidding)
             coin.has_open_order = False
