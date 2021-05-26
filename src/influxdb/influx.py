@@ -1,5 +1,5 @@
 import influxdb_client
-from influxdb_client import Point, WritePrecision
+from influxdb_client import Point, WritePrecision, WriteOptions
 from influxdb_client.client.write_api import SYNCHRONOUS # or ASYNCHRONOUS
 from datetime import datetime
 from time import sleep
@@ -12,23 +12,31 @@ class Influx:
 
         # print(config)
 
-        self.client = influxdb_client.InfluxDBClient(
-            url=self.url,
-            token=self.token,
-            org=self.org,
-            debug=True
-        )
+        self.client = influxdb_client.InfluxDBClient.from_config_file("./src/influxdb/config.ini")
 
-        self.write_api = self.client.write_api(write_options=SYNCHRONOUS)
+        self.write_api = self.client.write_api(write_options=WriteOptions(batch_size=500,
+                                                flush_interval=10000,
+                                                jitter_interval=2000,
+                                                retry_interval=10000,
+                                                max_retries=5,
+                                                max_retry_delay=10000,
+                                                exponential_base=2))
         self.query_api = self.client.query_api()
 
 
     def write(self, bucket, record):
-        self.write_api.write(bucket = bucket, record=record)
+        try:
+            self.write_api.write(bucket = bucket, record=record)
+        except Exception as e:
+            self.bot.log.warning('INFLUX', f'Write Failed: {str(e)}.')
     
     def fetch(self, query):
-        result = self.query_api.query(org=self.org, query=query)
-        return result
+        try:
+            result = self.query_api.query(org=self.org, query=query)
+            return result
+        except Exception as e:
+            self.bot.log.warning('INFLUX', f'Query Failed: {str(e)}.')
+            return False
 
     def write_order(self, coin, order_id, side, order_type, amount, price, piramidding : bool = False):
         amount = float(amount)
