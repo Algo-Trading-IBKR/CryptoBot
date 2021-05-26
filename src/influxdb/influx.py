@@ -31,6 +31,8 @@ class Influx:
         return result
 
     def write_order(self, coin, order_id, side, order_type, amount, price, piramidding : bool = False):
+        amount = float(amount)
+        price = float(price)
         point = Point("order") \
                 .tag("discord_id", coin.bot.user["discord_id"]) \
                 .tag("order_id", order_id) \
@@ -40,12 +42,15 @@ class Influx:
                 .tag("currency", coin.currency) \
                 .field("amount", amount) \
                 .field("price", price) \
-                .field("total", float(amount)*price) \
+                .field("total", amount*price) \
                 .field("piramidding", piramidding) \
                 .time(datetime.utcnow(), WritePrecision.S)
         self.write(bucket="orders", record=point)
         
     def write_trade(self, coin, order_id, side, order_type, amount, price, fee, fee_currency, profit : float = 0.0, piramidding : bool = False):
+        amount = float(amount)
+        price = float(price)
+
         if side == "SELL":
             query = f'from(bucket: "trades")\
                     |> range(start: 0, stop: now())\
@@ -84,7 +89,7 @@ class Influx:
                 .tag("currency", coin.currency) \
                 .field("amount", amount) \
                 .field("price", price) \
-                .field("total", float(amount)*price) \
+                .field("total", amount*price) \
                 .field("fee", fee) \
                 .field("fee_currency", fee_currency) \
                 .field("profit", profit) \
