@@ -119,6 +119,8 @@ class Coin:
 
                 if not self.allow_piramidding:
                     self.piramidding_price = self.average_price * self.bot.user["strategy"]["piramidding_percentage"]
+            
+        await self.bot.wallet.update_money(self.currency)
         
 
     async def update(self, candle):
