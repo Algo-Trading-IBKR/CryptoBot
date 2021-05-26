@@ -52,8 +52,8 @@ class OrderManager():
             return False
         if order['status'] == 'FILLED' and order['side'] == 'BUY':
             self.bot.log.verbose('COIN', f'Filled BUY order for {coin.symbol_pair}')
-            fee = 0
-            for i in order["fills"]: fee += int(i["commission"])
+            fee = 0.0
+            for i in order["fills"]: fee += float(i["commission"])
             fee_currency = order["fills"][0]["commissionAsset"]
             coin.bot.influx.write_trade(coin, order["orderId"], side, order_type, quantity, price, fee, fee_currency, piramidding=piramidding)
             coin.has_open_order = False
