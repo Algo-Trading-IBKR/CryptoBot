@@ -39,6 +39,8 @@ class Coin:
         self.has_position = False
         self.allow_piramidding = False
 
+        self.initialised = False
+
     @property
     def currency(self):
         return self.currency_symbol
@@ -72,6 +74,7 @@ class Coin:
                 self.precision_min_price = round(-math.log(min_price, 10))
 
         self.bot.log.verbose('COIN', f'Got symbol info for {self.symbol_pair}')
+        self.initialised = True
 
     async def update_socket(self, msg):
         error = msg[EXECUTION_ERROR]

@@ -16,7 +16,10 @@ class CoinManager:
             self._coins[coin.symbol_pair] = coin
 
     def get_coin(self, symbol_pair):
-        return self._coins[symbol_pair]
+        if self._coins[symbol_pair].initialised:
+            return self._coins[symbol_pair]
+        else:
+            return False
 
     async def process_message(self, msg):
         data = msg['data']
@@ -28,21 +31,21 @@ class CoinManager:
         candle = data[CANDLE]
         if candle[CANDLE_CLOSED]:
             coin = self.get_coin(data[SYMBOL])
-            await coin.update(candle)
+            if coin:
+                await coin.update(candle)
 
     async def init(self):
         tasks = []
+        tasks.append(asyncio.create_task(self.start_multiplex()))
+        tasks.append(asyncio.create_task(self.start_user_socket()))
         for coin in self._coins.values():
             await asyncio.sleep(len(self._coins)/100*uniform(1,5))
             tasks.append(asyncio.create_task(coin.init()))
-        tasks.append(asyncio.create_task(self.start_multiplex()))
-        tasks.append(asyncio.create_task(self.start_user_socket()))
-
         return tasks
 
     async def start_multiplex(self):
         self._running = True
-
+        self.bot.log.verbose('COIN_MANAGER', f'Starting multiplex socket')
         symbol_pairs = [symbol.lower() + '@kline_1m' for symbol in self._coins.keys()]
         async with self.bot.bm.multiplex_socket(symbol_pairs) as mps:
             try:
@@ -69,7 +72,8 @@ class CoinManager:
                 try:
                     if res['e'] == "executionReport":
                         coin = self.get_coin(res['s'])
-                        await coin.update_socket(res)
+                        if coin:
+                            await coin.update_socket(res)
 
                 except:
                     self.bot.log.error('COIN_MANAGER', f'Error occurred on socket:\n{traceback.format_exc()}')
