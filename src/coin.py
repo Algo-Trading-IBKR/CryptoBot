@@ -153,17 +153,17 @@ class Coin:
 
         if self.has_open_order:
             canceled = await self.bot.order_manager.cancel_order(self, 'BUY')
-
             if canceled:
                 self.has_open_order = False
                 self.has_position = False
                 self.allow_piramidding = False
+            else:
+                self.has_open_order = False
+                self.has_position = True
+                self.allow_piramidding = False
 
         # wallet update because it doesn't go in the buy otherwise
-        if (last_rsi < self.bot.indicators["rsi"]["oversold"] and
-            last_mfi < self.bot.indicators["mfi"]["oversold"] and
-            self.bot.wallet.money[self.currency] < (self.bot.user["wallet"]["budget"] + self.bot.user["wallet"]["minimum_cash"])
-        ):
+        if (self.bot.wallet.money[self.currency] < (self.bot.user["wallet"]["budget"] + self.bot.user["wallet"]["minimum_cash"])):
             await self.bot.wallet.update_money(self.currency)
 
         # sell
@@ -172,7 +172,6 @@ class Coin:
             # current_high = self.highs[-1] # not used
 
             order_succeeded = False
-            await self.bot.wallet.update_money(self.currency)
 
             if current_price < self.piramidding_price and self.bot.wallet.money[self.currency] >= (self.bot.user["wallet"]["budget"] + self.bot.user["wallet"]["minimum_cash"]) and not self.allow_piramidding:
 
