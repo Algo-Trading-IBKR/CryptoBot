@@ -59,7 +59,7 @@ class Influx:
                     |> filter(fn:(r) => r["currency"] == "{coin.currency}")\
                     |> filter(fn:(r) => r["side"] == "BUY")\
                     |> limit(n: 2)\
-                    |> sort(columns: ["_time"], desc: false))'
+                    |> sort(columns: ["_time"], desc: false)'
             # desc false very important
             result = self.fetch(query)
             for table in result:
