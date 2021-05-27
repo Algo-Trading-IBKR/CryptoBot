@@ -65,7 +65,7 @@ class CryptoBot:
         self._socket_manager = BinanceSocketManager(self._client) # user_timeout is now 5 minutes (5 * 60)
 
         status = await self._client.get_system_status()
-        if status['msg'] == "normal":
+        if status['status'] == 0:
             Log.info('BOT', f"Binance system status: {status['msg']}")
         else:
             Log.warning('BOT', f"Binance system status: {status['msg']}")
