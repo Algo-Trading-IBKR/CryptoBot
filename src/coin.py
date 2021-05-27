@@ -8,7 +8,7 @@ import math
 import numpy as np
 import talib
 import traceback
-from .constants import CANDLE_CLOSE, CANDLE_HIGH, CANDLE_LOW, CANDLE_VOLUME, EVENT_TYPE, EXECUTION_ERROR, EXECUTION_TYPE, EXECUTION_STATUS, EXECUTION_ORDER_ID, ORDER_TYPE, SIDE
+from .constants import CANDLE_CLOSE, CANDLE_HIGH, CANDLE_LOW, CANDLE_VOLUME, EVENT_TYPE, EXECUTION_ERROR, EXECUTION_TYPE, EXECUTION_STATUS, EXECUTION_ORDER_ID, ORDER_TYPE, SIDE, SYMBOL
 from src.util.util import util
 
 class Coin:
@@ -89,24 +89,22 @@ class Coin:
         order_id = msg[EXECUTION_ORDER_ID]
 
         if execution_type == 'TRADE' and execution_status == 'FILLED':
+
+            order = self.bot.client.get_order(symbol = msg[SYMBOL], orderId = order_id)
+            old_order = self.bot.mongo.trades.update_one({"orderId": order_id})
+            self.bot.mongo.trades.update_one(old_order, order)
+
             if side == 'SELL' and self.bot.order_manager.has_order_id(self.symbol_pair, order_id):
                 self.bot.log.verbose('COIN', f'Filled SELL order for {self.symbol_pair}')
                 self.allow_piramidding = False
                 await asyncio.sleep(0.1) # why?
                 self.has_position = False
-                fee = msg["n"]
-                fee_currency = msg["N"]
-                self.bot.influx.write_trade(self, order_id, side, order_type, msg["q"], msg["p"], fee, fee_currency)
 
             elif side == 'BUY' and self.has_open_order:
                 self.bot.log.verbose('COIN', f'Filled BUY order for {self.symbol_pair}')
 
                 self.has_open_order = False
                 self.has_position = True
-
-                fee = msg["n"]
-                fee_currency = msg["N"]
-                self.bot.influx.write_trade(self, order_id, side, order_type, msg["q"], msg["p"], fee, fee_currency)
 
                 asset = await self.bot.client.get_asset_balance(self.symbol)
                 self.amount = util.get_amount(float(asset['free']), self.precision)
@@ -221,7 +219,7 @@ class Coin:
                         time_in_force = TIME_IN_FORCE_GTC
                     )
                     self.has_position = True
-            elif self.bot.wallet.money[self.currency] < (self.bot.user["wallet"]["budget"] + self.bot.user["wallet"]["minimum_cash"]):
+            elif current_price < self.piramidding_price and self.bot.wallet.money[self.currency] < (self.bot.user["wallet"]["budget"] + self.bot.user["wallet"]["minimum_cash"]):
                 self.bot.log.warning('COIN', f'Failed to piramid for {self.symbol_pair}, not enough money.')
 
         # buy
