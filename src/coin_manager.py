@@ -39,8 +39,9 @@ class CoinManager:
         tasks.append(asyncio.create_task(self.start_multiplex()))
         tasks.append(asyncio.create_task(self.start_user_socket()))
         for coin in self._coins.values():
-            await asyncio.sleep(len(self._coins)/100*uniform(1,5))
+            await asyncio.sleep(len(self._coins)/100*uniform(1,3))
             tasks.append(asyncio.create_task(coin.init()))
+        self.bot.log.info('COIN_MANAGER', f'All coins and sockets initialised')
         return tasks
 
     async def start_multiplex(self):
