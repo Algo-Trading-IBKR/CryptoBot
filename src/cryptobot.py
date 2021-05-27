@@ -6,7 +6,6 @@ from src.util.util import util
 from .coin_manager import CoinManager
 from .order_manager import OrderManager
 from .wallet import Wallet
-from .influxdb.influx import Influx
 
 class CryptoBot:
     def __init__(self):
@@ -45,18 +44,19 @@ class CryptoBot:
     @property
     def wallet(self) -> Wallet:
         return self._wallet
-
+    
     @property
-    def influx(self) -> Influx:
-        return self._influx
+    def mongo(self):
+        return self._mongo
 
-    async def start(self, config, symbol_pairs, indicators, influx_config):
+    async def start(self, config, symbol_pairs, indicators, mongo):
         self._indicators = {}
         for indicator in indicators:
             self._indicators[indicator['name']] = indicator
 
         self._symbol_pairs = symbol_pairs
         self._user = config
+        self._mongo = mongo
 
         Log.info('BOT', f"Using active config {self._user['name']}")
         Log.info('BOT', f"Using {len(list(self._symbol_pairs.clone()))} coin pairs.")
@@ -70,8 +70,6 @@ class CryptoBot:
         self._coin_manager = CoinManager(self, self._symbol_pairs)
         self._order_manager = OrderManager(self)
         self._wallet = Wallet(self)
-
-        self._influx = Influx(influx_config)
 
         Log.info('BOT', f"Total usable {(await self._wallet.update_money('USDT')):.2f} USDT in spot wallet.")
         Log.info('BOT', f"Total usable {(await self._wallet.update_money('EUR')):.2f} EURO in spot wallet.")
