@@ -89,13 +89,16 @@ class Coin:
         order_id = msg[EXECUTION_ORDER_ID]
 
         if execution_type == 'TRADE' and execution_status == 'FILLED':
+            try:
+                order = await self.bot.client.get_order(symbol = msg[SYMBOL], orderId = order_id)
+                old_order = self.bot.mongo.cryptobot.trades.find_one({"orderId": order_id})
+                if old_order:
+                    order.update({"discord_id": self.bot.user["discord_id"]})
+                    self.bot.log.info('COIN', f'order: {order}')
+                    self.bot.mongo.cryptobot.trades.update_one(old_order, order)
+            except Exception as e:
+                self.bot.log.info('COIN', f'update mongo trade failed')
 
-            order = await self.bot.client.get_order(symbol = msg[SYMBOL], orderId = order_id)
-            old_order = self.bot.mongo.trades.find_one({"orderId": order_id})
-            if old_order:
-                order.update({"discord_id": self.bot.user["discord_id"]})
-                self.bot.log.info('COIN', f'order: {order}')
-                self.bot.mongo.trades.update_one(old_order, order)
 
             if side == 'SELL' and self.bot.order_manager.has_order_id(self.symbol_pair, order_id):
                 self.bot.log.verbose('COIN', f'Filled SELL order for {self.symbol_pair}')
