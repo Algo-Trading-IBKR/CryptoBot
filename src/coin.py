@@ -95,7 +95,7 @@ class Coin:
                 if old_order:
                     order.update({"discord_id": self.bot.user["discord_id"]})
                     self.bot.log.info('COIN', f'order: {order}')
-                    self.bot.mongo.cryptobot.trades.update_one(old_order, order)
+                    self.bot.mongo.cryptobot.trades.replace_one(old_order, order, upsert=True)
             except Exception as e:
                 self.bot.log.info('COIN', f'update mongo trade failed: {str(e)}')
 
@@ -127,7 +127,7 @@ class Coin:
                 if not self.allow_piramidding:
                     self.piramidding_price = self.average_price * self.bot.user["strategy"]["piramidding_percentage"]
             
-            await self.bot.wallet.update_money(self.currency)
+            # await self.bot.wallet.update_money(self.currency)
         
 
     async def update(self, candle):
@@ -182,7 +182,9 @@ class Coin:
             current_price = self.closes[-1]
             # current_high = self.highs[-1] # not used
 
-            if (self.bot.wallet.money[self.currency] < (self.bot.user["wallet"]["budget"] + self.bot.user["wallet"]["minimum_cash"])):
+            if (current_price < self.piramidding_price and 
+            self.bot.wallet.money[self.currency] < (self.bot.user["wallet"]["budget"] + self.bot.user["wallet"]["minimum_cash"])
+            ):
                 await self.bot.wallet.update_money(self.currency)
 
             order_succeeded = False
