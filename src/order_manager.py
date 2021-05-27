@@ -41,6 +41,8 @@ class OrderManager():
             price=price
         )
 
+        order.update({"discord_id": coin.bot.user["discord_id"]})
+        self.bot.log.info('ORDER_MANAGER', f'order: {order}')
         coin.bot.mongo.trades.insert_one(order)
 
         await self.bot.wallet.update_money(coin.currency) # mogelijks overbodig
