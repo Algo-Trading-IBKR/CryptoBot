@@ -37,11 +37,11 @@ class OrderManager():
             side=side,
             type=order_type,
             timeInForce=time_in_force,
-            quantity=f"{round(quantity,coin.precision)}",
+            quantity=f"{round(quantity,coin.precision-1)}", # -1 to prevent issues, sometimes precision is wrong
             price=price
         )
 
-        coin.bot.influx.write_order(coin, order["orderId"], side, order_type, quantity, price)
+        coin.bot.mongo.trades.insert_one(order)
 
         await self.bot.wallet.update_money(coin.currency) # mogelijks overbodig
 
@@ -51,11 +51,6 @@ class OrderManager():
             self.order_book.set_order_for_symbol(coin.symbol_pair, order['side'], order['orderId'])
             return False
         if order['status'] == 'FILLED' and order['side'] == 'BUY':
-            self.bot.log.verbose('COIN', f'Filled BUY order for {coin.symbol_pair}')
-            fee = 0.0
-            for i in order["fills"]: fee += float(i["commission"])
-            fee_currency = order["fills"][0]["commissionAsset"]
-            coin.bot.influx.write_trade(coin, order["orderId"], side, order_type, quantity, price, fee, fee_currency, piramidding=piramidding)
             coin.has_open_order = False
             return True
         if order['side'] == 'BUY':
