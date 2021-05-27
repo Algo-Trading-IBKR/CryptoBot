@@ -65,14 +65,19 @@ class CryptoBot:
         self._socket_manager = BinanceSocketManager(self._client) # user_timeout is now 5 minutes (5 * 60)
 
         status = await self._client.get_system_status()
-        Log.info('BOT', f"System status: {status['msg']}")
+        if status['msg'] == "normal":
+            Log.info('BOT', f"Binance system status: {status['msg']}")
+        else:
+            Log.warning('BOT', f"Binance system status: {status['msg']}")
 
         self._coin_manager = CoinManager(self, self._symbol_pairs)
         self._order_manager = OrderManager(self)
         self._wallet = Wallet(self)
 
-        Log.info('BOT', f"Total usable {(await self._wallet.update_money('USDT')):.2f} USDT in spot wallet.")
-        Log.info('BOT', f"Total usable {(await self._wallet.update_money('EUR')):.2f} EURO in spot wallet.")
+        await self._wallet.update_money('USDT')
+        await self._wallet.update_money('EUR')
+        # Log.info('BOT', f"Total usable {(await self._wallet.update_money('USDT')):.2f} USDT in spot wallet.")
+        # Log.info('BOT', f"Total usable {(await self._wallet.update_money('EUR')):.2f} EURO in spot wallet.")
 
         self.tasks = await self._coin_manager.init()
 
