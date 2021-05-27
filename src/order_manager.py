@@ -39,11 +39,11 @@ class OrderManager():
             type=order_type,
             timeInForce=time_in_force,
             quantity=f"{round(quantity,coin.precision)}", # -1 to prevent issues, sometimes precision is wrong
-            price=f"{round(price,coin.precision)}"
+            price=price
         )
 
         order.update({"discord_id": coin.bot.user["discord_id"]})
-        self.bot.log.info('ORDER_MANAGER', f'order: {order}')
+        # self.bot.log.info('ORDER_MANAGER', f'order: {order}')
         coin.bot.mongo.cryptobot.trades.insert_one(order)
 
         await self.bot.wallet.update_money(coin.currency) # mogelijks overbodig
