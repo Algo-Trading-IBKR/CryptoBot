@@ -16,7 +16,7 @@ class CoinManager:
             self._coins[coin.symbol_pair] = coin
 
     def get_coin(self, symbol_pair):
-        if self._coins[symbol_pair].initialised:
+        if self._coins[symbol_pair] and self._coins[symbol_pair].initialised:
             return self._coins[symbol_pair]
         else:
             return False
