@@ -97,17 +97,17 @@ class Coin:
                     self.bot.log.info('COIN', f'order: {order}')
                     self.bot.mongo.cryptobot.trades.update_one(old_order, order)
             except Exception as e:
-                self.bot.log.info('COIN', f'update mongo trade failed')
+                self.bot.log.info('COIN', f'update mongo trade failed: {str(e)}')
 
 
             if side == 'SELL' and self.bot.order_manager.has_order_id(self.symbol_pair, order_id):
-                self.bot.log.verbose('COIN', f'Filled SELL order for {self.symbol_pair}')
+                self.bot.log.info('COIN', f'Filled SELL order for {self.symbol_pair}')
                 self.allow_piramidding = False
                 await asyncio.sleep(0.1) # why?
                 self.has_position = False
 
             elif side == 'BUY' and self.has_open_order:
-                self.bot.log.verbose('COIN', f'Filled BUY order for {self.symbol_pair}')
+                self.bot.log.info('COIN', f'Filled BUY order for {self.symbol_pair}')
 
                 self.has_open_order = False
                 self.has_position = True
@@ -255,7 +255,7 @@ class Coin:
             )
 
             if order_succeeded:
-                self.bot.log.verbose('COIN', f'Buy order filled for {self.symbol_pair}')
+                self.bot.log.info('COIN', f'Buy order filled for {self.symbol_pair}')
 
                 self.has_position = True
 
