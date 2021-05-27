@@ -90,9 +90,10 @@ class Coin:
 
         if execution_type == 'TRADE' and execution_status == 'FILLED':
 
-            order = self.bot.client.get_order(symbol = msg[SYMBOL], orderId = order_id)
-            old_order = self.bot.mongo.trades.update_one({"orderId": order_id})
-            self.bot.mongo.trades.update_one(old_order, order)
+            order = await self.bot.client.get_order(symbol = msg[SYMBOL], orderId = order_id)
+            old_order = self.bot.mongo.trades.find_one({"orderId": order_id})
+            if old_order:
+                self.bot.mongo.trades.update_one(old_order, order)
 
             if side == 'SELL' and self.bot.order_manager.has_order_id(self.symbol_pair, order_id):
                 self.bot.log.verbose('COIN', f'Filled SELL order for {self.symbol_pair}')
