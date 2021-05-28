@@ -41,6 +41,8 @@ class Coin:
 
         self.initialised = False
 
+        self.wallet_counter = 0
+
     @property
     def currency(self):
         return self.currency_symbol
@@ -127,7 +129,7 @@ class Coin:
                 if not self.allow_piramidding:
                     self.piramidding_price = self.average_price * self.bot.user["strategy"]["piramidding_percentage"]
             
-            # await self.bot.wallet.update_money(self.currency)
+            await self.bot.wallet.update_money(self.currency)
         
 
     async def update(self, candle):
@@ -168,13 +170,14 @@ class Coin:
                 self.has_open_order = False
                 self.has_position = True
                 self.allow_piramidding = False
+            await self.bot.wallet.update_money(self.currency)
 
-        if (
-            last_rsi < self.bot.indicators["rsi"]["oversold"] and
-            last_mfi < self.bot.indicators["mfi"]["oversold"] and
-            self.bot.wallet.money[self.currency] < (self.bot.user["wallet"]["budget"] + self.bot.user["wallet"]["minimum_cash"])
-        ):
-                await self.bot.wallet.update_money(self.currency)
+        # if (
+        #     last_rsi < self.bot.indicators["rsi"]["oversold"] and
+        #     last_mfi < self.bot.indicators["mfi"]["oversold"] and
+        #     self.bot.wallet.money[self.currency] < (self.bot.user["wallet"]["budget"] + self.bot.user["wallet"]["minimum_cash"])
+        # ):
+        #         await self.bot.wallet.update_money(self.currency)
 
 
         # sell
@@ -185,7 +188,10 @@ class Coin:
             if (current_price < self.piramidding_price and 
             self.bot.wallet.money[self.currency] < (self.bot.user["wallet"]["budget"] + self.bot.user["wallet"]["minimum_cash"])
             ):
-                await self.bot.wallet.update_money(self.currency)
+                #stupid temporary fix
+                self.wallet_counter += 1
+                if self.wallet_counter % 10 == 0:
+                    await self.bot.wallet.update_money(self.currency)
 
             order_succeeded = False
 
