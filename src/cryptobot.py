@@ -79,7 +79,7 @@ class CryptoBot:
         # Log.info('BOT', f"Total usable {(await self._wallet.update_money('USDT')):.2f} USDT in spot wallet.")
         # Log.info('BOT', f"Total usable {(await self._wallet.update_money('EUR')):.2f} EURO in spot wallet.")
 
-        user_count = self.mongo.cryptobot.users.count_documents({})
+        user_count = self.mongo.cryptobot.users.count_documents({"active": True})
         self.tasks = await self._coin_manager.init(user_count)
 
         # keep the main event loop active
