@@ -34,12 +34,12 @@ class CoinManager:
             if coin:
                 await coin.update(candle)
 
-    async def init(self):
+    async def init(self, user_count):
         tasks = []
         tasks.append(asyncio.create_task(self.start_multiplex()))
         tasks.append(asyncio.create_task(self.start_user_socket()))
         for coin in self._coins.values():
-            await asyncio.sleep(len(self._coins)/100*uniform(1,3))
+            await asyncio.sleep(1*uniform(1,user_count))
             tasks.append(asyncio.create_task(coin.init()))
         self.bot.log.info('COIN_MANAGER', f'All coins and sockets initialised')
         return tasks
