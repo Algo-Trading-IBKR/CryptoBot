@@ -18,7 +18,13 @@ class OrderManager():
         try:
             result = await self.bot.client.cancel_order(symbol=coin.symbol_pair, orderId=order_id)
             self.bot.log.info('ORDER_MANAGER', f'Order Cancelled: {result}')
-            coin.bot.mongo.cryptobot.trades.delete_one({"orderId": order_id})
+            try:
+                old_order = self.bot.mongo.cryptobot.trades.find_one({"orderId": order_id})
+                if old_order:
+                    result.update({"discord_id": self.bot.user["discord_id"]})
+                    self.bot.mongo.cryptobot.trades.replace_one(old_order, result, upsert=True)
+            except Exception as e:
+                self.bot.log.info('COIN', f'update mongo trade failed: {str(e)}')
             return True
         except Exception as e:
             self.bot.log.warning('ORDER_MANAGER', f'Failed to cancel order: {e}')
