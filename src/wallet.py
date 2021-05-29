@@ -12,6 +12,6 @@ class Wallet:
 
         self._money[asset] = float(res['free'])
 
-        self.bot.log.info('WALLET', f'Updated money in wallet, new wallet total: {self._money[asset]} {asset}')
+        self.bot.log.info('WALLET', f'balance update, new wallet total: {self._money[asset]} {asset}')
 
         return self._money[asset]

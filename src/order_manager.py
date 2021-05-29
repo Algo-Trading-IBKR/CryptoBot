@@ -13,7 +13,7 @@ class OrderManager():
             self.bot.log.warning('ORDER_MANAGER', f'Attempted {side} order cancel for {coin.symbol_pair} but got None')
             return False
 
-        self.bot.log.info('ORDER_MANAGER', f'Cancelled order for {coin.symbol_pair} with ID {order_id}')
+        self.bot.log.info('ORDER_MANAGER', f'Cancelled order for {coin.symbol_pair}')
 
         try:
             result = await self.bot.client.cancel_order(symbol=coin.symbol_pair, orderId=order_id)
@@ -24,7 +24,7 @@ class OrderManager():
                     result.update({"discord_id": self.bot.user["discord_id"]})
                     self.bot.mongo.cryptobot.trades.replace_one(old_order, result, upsert=True)
             except Exception as e:
-                self.bot.log.info('COIN', f'update mongo trade failed: {str(e)}')
+                self.bot.log.warning('COIN', f'update mongo trade failed: {str(e)}')
             return True
         except Exception as e:
             self.bot.log.warning('ORDER_MANAGER', f'Failed to cancel order: {e}')
@@ -54,7 +54,7 @@ class OrderManager():
 
         await self.bot.wallet.update_money(coin.currency) # mogelijks overbodig
 
-        self.bot.log.info('ORDER_MANAGER', f'[{order["status"]} | {order_type}] {order["side"]} order for {coin.symbol_pair} (id: {order["orderId"]}), quantity {str(quantity)[:-10]} at {price} {coin.currency}')
+        self.bot.log.info('ORDER_MANAGER', f'[{order["status"]} | {order_type}] {order["side"]} order for {coin.symbol_pair}, quantity {str(quantity)[:-20]} at {price} {coin.currency}')
 
         if order['side'] == 'SELL':
             self.order_book.set_order_for_symbol(coin.symbol_pair, order['side'], order['orderId'])

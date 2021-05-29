@@ -19,7 +19,8 @@ class OrderBook:
         elif side == 'BUY':
             self._buy[symbol_pair] = order_id
         else:
-            raise ValueError('Invalid/unknown side given for set_order_for_symbol')
+            # raise ValueError('Invalid/unknown side given for set_order_for_symbol')
+            self.bot.log.error('ORDER_MANAGER', f'Invalid/unknown side "{side}" given for set_order_for_symbol')
 
     def symbol_in_orderbook(self, symbol_pair : str, side : str) -> bool:
         if side not in sides:
