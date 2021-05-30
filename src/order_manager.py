@@ -5,7 +5,7 @@ class OrderManager():
     def __init__(self, bot):
         self.bot = bot
 
-        self.order_book = OrderBook()
+        self.order_book = OrderBook(bot)
 
     async def cancel_order(self, coin, side):
         order_id = self.order_book.get_order_for_symbol(coin.symbol_pair, side)
