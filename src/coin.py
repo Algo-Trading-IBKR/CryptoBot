@@ -6,6 +6,7 @@ from decimal import Decimal
 import threading
 import math
 import numpy as np
+from pymongo import DESCENDING
 import talib
 import traceback
 from .constants import CANDLE_CLOSE, CANDLE_HIGH, CANDLE_LOW, CANDLE_VOLUME, EVENT_TYPE, EXECUTION_ERROR, EXECUTION_TYPE, EXECUTION_STATUS, EXECUTION_ORDER_ID, ORDER_TYPE, SIDE, SYMBOL
@@ -76,7 +77,26 @@ class Coin:
                 self.precision_min_price = round(-math.log(min_price, 10))
 
         self.bot.log.verbose('COIN', f'Got symbol info for {self.symbol_pair}')
+
+        await self.get_open_orders()
+
         self.initialised = True
+    
+    async def get_open_orders(self):
+        try:
+            order = self.bot.mongo.cryptobot.trades.find_one({"symbol": self.symbol_pair})
+            if order and not order["status"] == "FILLED":
+                current_order = await self.bot.client.get_order(symbol = self.symbol_pair, orderId = order['orderId'])
+                if current_order and not current_order["status"] == "FILLED":
+                    self.has_open_order = True
+                    self.order_book.set_order_for_symbol(self.symbol_pair, order['side'], order['orderId'])
+                    self.bot.log.info('COIN', f'Found open orders for {self.symbol_pair}')
+                else:
+                    current_order.update({"discord_id": self.bot.user["discord_id"]})
+                    self.bot.log.info('COIN', f'update order in mongo: {order}')
+                    self.bot.mongo.cryptobot.trades.replace_one(order, current_order, upsert=True)
+        except Exception as e:
+            self.bot.log.error('COIN', f'error while fetching open orders: {str(e)}')
 
     async def update_socket(self, msg):
         error = msg[EXECUTION_ERROR]
