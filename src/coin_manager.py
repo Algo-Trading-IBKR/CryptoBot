@@ -40,7 +40,7 @@ class CoinManager:
         tasks.append(asyncio.create_task(self.start_user_socket()))
 
         if user_count < 20:
-            sleep_timer = uniform(2,4)
+            sleep_timer = uniform(2,5)
         else:
             sleep_timer = uniform(2,user_count/2)
 
