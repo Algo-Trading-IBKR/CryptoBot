@@ -58,14 +58,6 @@ class Coin:
 
     async def init(self):
         self.bot.log.verbose('COIN', f'init')
-        candles = await self.bot.client.get_historical_klines(self.symbol_pair, interval = AsyncClient.KLINE_INTERVAL_1MINUTE, start_str = '150 minutes ago CET', end_str = '1 minutes ago CET')
-        for candle in candles:
-            self.closes.append(float(candle[4]))
-            self.highs.append(float(candle[2]))
-            self.lows.append(float(candle[3]))
-            self.volumes.append(float(candle[5]))
-
-        self.bot.log.verbose('COIN', f'Fetched historical klines for {self.symbol_pair}')
 
         info = await self.bot.client.get_symbol_info(self.symbol_pair)
         for f in info['filters']:
@@ -80,32 +72,49 @@ class Coin:
 
         await self.get_open_orders()
 
+        candles = await self.bot.client.get_historical_klines(self.symbol_pair, interval = AsyncClient.KLINE_INTERVAL_1MINUTE, start_str = '150 minutes ago CET', end_str = '1 minutes ago CET')
+        for candle in candles:
+            self.closes.append(float(candle[4]))
+            self.highs.append(float(candle[2]))
+            self.lows.append(float(candle[3]))
+            self.volumes.append(float(candle[5]))
+
+        self.bot.log.verbose('COIN', f'Fetched historical klines for {self.symbol_pair}')
         self.initialised = True
     
     async def get_open_orders(self):
-        #sell
-        try:
-            order = self.bot.mongo.cryptobot.orders.find({"discord_id": self.bot.user["discord_id"], "symbol": self.symbol_pair, "side": "SELL"}).sort("dateTime", -1).limit(1)
-            if len(list(order.clone())) > 0:
-                order = order[0]
-                if order and not (order["status"] == "FILLED") and not (order["status"] == "CANCELED"):
-                    print(order)
-                    current_order = await self.bot.client.get_order(symbol = self.symbol_pair, orderId = order['orderId'])
+        orders = await self.bot.client.get_all_orders(symbol = self.symbol_pair, limit=1)
+        order = orders[0]
+        if order["newClientOrderId"].startswith("CryptoBot"):
+            if order["side"] == "BUY":
+                if order["status"] == "NEW":
+                    self.bot.order_manager.order_book.set_order_for_symbol(self.symbol_pair, order['side'], order['orderId'])
+                    self.has_open_order = True
+                elif order["status"] == "FILLED":
+                    self.bot.log.info('COIN', f'Buy order filled for {self.symbol_pair}')
+                    self.has_position = True
 
-                    if current_order and not current_order["status"] == "FILLED":
-                        self.bot.log.info('COIN', f'in if')
-                        self.bot.order_manager.order_book.set_order_for_symbol(self.symbol_pair, order['side'], order['orderId'])
-                        self.bot.log.info('COIN', f'Found open orders for {self.symbol_pair}')
+                    asset = await self.bot.client.get_asset_balance(self.symbol)
+                    if float(asset['free']) > 0:
+                        self.amount = util.get_amount(float(asset['free']), self.precision)
+                        self.take_profit = util.get_amount(float(order["price"]) * self.bot.user["strategy"]["take_profit_percentage"], self.precision_min_price, False)
 
-                    elif current_order:
-                        self.bot.log.info('COIN', f'in else')
-                        current_order.update({"discord_id": self.bot.user["discord_id"]})
-                        current_order.update({"datetime": datetime.now()})
-                        self.bot.log.info('COIN', f'update order in mongo')
-                        self.bot.mongo.cryptobot.orders.replace_one(order, current_order, upsert=True)
-        except Exception as e:
-            self.bot.log.error('COIN', f'sell error while fetching open orders: {str(e)}')
-        
+                        take_profit_order = await self.bot.order_manager.send_order(
+                            coin = self,
+                            side = SIDE_SELL,
+                            quantity = Decimal(self.amount),
+                            price = self.take_profit,
+                            order_type = ORDER_TYPE_LIMIT,
+                            time_in_force = TIME_IN_FORCE_GTC
+                        )
+                        self.piramidding_price = float(order["price"]) * self.bot.user["strategy"]["piramidding_percentage"]
+
+            elif order["side"] == "SELL":
+                if order["status"] == "NEW":
+                    self.bot.order_manager.order_book.set_order_for_symbol(self.symbol_pair, order['side'], order['orderId'])
+                    self.has_position = True
+                elif order["status"] == "FILLED":
+                    self.has_position = False      
 
     async def update_socket(self, msg):
         error = msg[EXECUTION_ERROR]

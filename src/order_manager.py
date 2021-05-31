@@ -1,6 +1,7 @@
 from decimal import Decimal
 from .order_book import OrderBook
 from datetime import datetime
+import uuid
 
 class OrderManager():
     def __init__(self, bot):
@@ -47,7 +48,8 @@ class OrderManager():
             type=order_type,
             timeInForce=time_in_force,
             quantity=f"{round(quantity,coin.precision)}", # -1 to prevent issues, sometimes precision is wrong
-            price=price
+            price=price,
+            newClientOrderId="CryptoBot"+uuid.uuid4().hex
         )
 
         order.update({"discord_id": coin.bot.user["discord_id"]})
