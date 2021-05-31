@@ -9,6 +9,7 @@ import numpy as np
 from pymongo import DESCENDING
 import talib
 import traceback
+from datetime import datetime
 from .constants import CANDLE_CLOSE, CANDLE_HIGH, CANDLE_LOW, CANDLE_VOLUME, EVENT_TYPE, EXECUTION_ERROR, EXECUTION_TYPE, EXECUTION_STATUS, EXECUTION_ORDER_ID, ORDER_TYPE, SIDE, SYMBOL
 from src.util.util import util
 
@@ -83,39 +84,28 @@ class Coin:
         self.initialised = True
     
     async def get_open_orders(self):
-        # #buy
-        # try:
-        #     order = self.bot.mongo.cryptobot.trades.find_one({"discord_id": self.bot.user["discord_id"], "symbol": self.symbol_pair, "side": "BUY"})
-        #     if order and not (order["status"] == "FILLED"):
-        #         current_order = await self.bot.client.get_order(symbol = self.symbol_pair, orderId = order['orderId'])
-
-        #         if current_order and not current_order["status"] == "FILLED":
-        #             self.bot.order_manager.order_book.set_order_for_symbol(self.symbol_pair, order['side'], order['orderId'])
-        #             self.has_open_order = True
-        #             self.bot.log.verbose('COIN', f'Found open orders for {self.symbol_pair}')
-
-        #         elif current_order:
-        #             current_order.update({"discord_id": self.bot.user["discord_id"]})
-        #             self.bot.log.verbose('COIN', f'update order in mongo')
-        #             self.bot.mongo.cryptobot.trades.replace_one(order, current_order, upsert=True)
-        # except Exception as e:
-        #     self.bot.log.error('COIN', f'error while fetching open orders: {str(e)}')
         #sell
         try:
-            order = self.bot.mongo.cryptobot.trades.find_one({"discord_id": self.bot.user["discord_id"], "symbol": self.symbol_pair, "side": "SELL"})
-            if order and not (order["status"] == "FILLED"):
-                current_order = await self.bot.client.get_order(symbol = self.symbol_pair, orderId = order['orderId'])
+            order = self.bot.mongo.cryptobot.orders.find({"discord_id": self.bot.user["discord_id"], "symbol": self.symbol_pair, "side": "SELL"}).sort("dateTime", -1).limit(1)
+            if len(list(order.clone())) > 0:
+                order = order[0]
+                if order and not (order["status"] == "FILLED") and not (order["status"] == "CANCELED"):
+                    print(order)
+                    current_order = await self.bot.client.get_order(symbol = self.symbol_pair, orderId = order['orderId'])
 
-                if current_order and not current_order["status"] == "FILLED":
-                    self.bot.order_manager.order_book.set_order_for_symbol(self.symbol_pair, order['side'], order['orderId'])
-                    self.bot.log.verbose('COIN', f'Found open orders for {self.symbol_pair}')
+                    if current_order and not current_order["status"] == "FILLED":
+                        self.bot.log.info('COIN', f'in if')
+                        self.bot.order_manager.order_book.set_order_for_symbol(self.symbol_pair, order['side'], order['orderId'])
+                        self.bot.log.info('COIN', f'Found open orders for {self.symbol_pair}')
 
-                elif current_order:
-                    current_order.update({"discord_id": self.bot.user["discord_id"]})
-                    self.bot.log.verbose('COIN', f'update order in mongo')
-                    self.bot.mongo.cryptobot.trades.replace_one(order, current_order, upsert=True)
+                    elif current_order:
+                        self.bot.log.info('COIN', f'in else')
+                        current_order.update({"discord_id": self.bot.user["discord_id"]})
+                        current_order.update({"datetime": datetime.now()})
+                        self.bot.log.info('COIN', f'update order in mongo')
+                        self.bot.mongo.cryptobot.orders.replace_one(order, current_order, upsert=True)
         except Exception as e:
-            self.bot.log.error('COIN', f'error while fetching open orders: {str(e)}')
+            self.bot.log.error('COIN', f'sell error while fetching open orders: {str(e)}')
         
 
     async def update_socket(self, msg):
@@ -133,11 +123,12 @@ class Coin:
         if execution_type == 'TRADE' and execution_status == 'FILLED':
             try:
                 order = await self.bot.client.get_order(symbol = msg[SYMBOL], orderId = order_id)
-                old_order = self.bot.mongo.cryptobot.trades.find_one({"orderId": order_id})
+                old_order = self.bot.mongo.cryptobot.orders.find_one({"orderId": order_id})
                 if old_order:
                     order.update({"discord_id": self.bot.user["discord_id"]})
+                    order.update({"datetime": datetime.now()})
                     self.bot.log.info('COIN', f'order: {order}')
-                    self.bot.mongo.cryptobot.trades.replace_one(old_order, order, upsert=True)
+                    self.bot.mongo.cryptobot.orders.replace_one(old_order, order, upsert=True)
             except Exception as e:
                 self.bot.log.info('COIN', f'update mongo trade failed: {str(e)}')
 
