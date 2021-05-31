@@ -28,7 +28,6 @@ class Coin:
         self.lows = []
         self.volumes = []
 
-        # self.margin_ratio = 0.0
         self.precision = 0
         self.precision_min_price = 0
 
@@ -164,8 +163,6 @@ class Coin:
         
 
     async def update(self, candle):
-        # self.bot.log.info('COIN', f'update')
-
         close = float(candle[CANDLE_CLOSE])
         high = float(candle[CANDLE_HIGH])
         low = float(candle[CANDLE_LOW])
@@ -203,18 +200,9 @@ class Coin:
                 self.allow_piramidding = False
             await self.bot.wallet.update_money(self.currency)
 
-        # if (
-        #     last_rsi < self.bot.indicators["rsi"]["oversold"] and
-        #     last_mfi < self.bot.indicators["mfi"]["oversold"] and
-        #     self.bot.wallet.money[self.currency] < (self.bot.user["wallet"]["budget"] + self.bot.user["wallet"]["minimum_cash"])
-        # ):
-        #         await self.bot.wallet.update_money(self.currency)
-
-
         # sell
         if self.has_position:
             current_price = self.closes[-1]
-            # current_high = self.highs[-1] # not used
 
             if (current_price < self.piramidding_price and 
             self.bot.wallet.money[self.currency] < (self.bot.user["wallet"]["budget"] + self.bot.user["wallet"]["minimum_cash"])

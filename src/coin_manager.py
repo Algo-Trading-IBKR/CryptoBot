@@ -51,8 +51,6 @@ class CoinManager:
         self.bot.log.info('COIN_MANAGER', f'All coins and sockets initialised')
         return tasks
 
-
-
     async def start_multiplex(self):
         self._running = True
         self.bot.log.verbose('COIN_MANAGER', f'Starting multiplex socket')
