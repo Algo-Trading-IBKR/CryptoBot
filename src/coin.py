@@ -6,8 +6,10 @@ from decimal import Decimal
 import threading
 import math
 import numpy as np
+from pymongo import DESCENDING
 import talib
 import traceback
+from datetime import datetime
 from .constants import CANDLE_CLOSE, CANDLE_HIGH, CANDLE_LOW, CANDLE_VOLUME, EVENT_TYPE, EXECUTION_ERROR, EXECUTION_TYPE, EXECUTION_STATUS, EXECUTION_ORDER_ID, ORDER_TYPE, SIDE, SYMBOL
 from src.util.util import util
 
@@ -26,7 +28,6 @@ class Coin:
         self.lows = []
         self.volumes = []
 
-        # self.margin_ratio = 0.0
         self.precision = 0
         self.precision_min_price = 0
 
@@ -76,7 +77,35 @@ class Coin:
                 self.precision_min_price = round(-math.log(min_price, 10))
 
         self.bot.log.verbose('COIN', f'Got symbol info for {self.symbol_pair}')
+
+        await self.get_open_orders()
+
         self.initialised = True
+    
+    async def get_open_orders(self):
+        #sell
+        try:
+            order = self.bot.mongo.cryptobot.orders.find({"discord_id": self.bot.user["discord_id"], "symbol": self.symbol_pair, "side": "SELL"}).sort("dateTime", -1).limit(1)
+            if len(list(order.clone())) > 0:
+                order = order[0]
+                if order and not (order["status"] == "FILLED") and not (order["status"] == "CANCELED"):
+                    print(order)
+                    current_order = await self.bot.client.get_order(symbol = self.symbol_pair, orderId = order['orderId'])
+
+                    if current_order and not current_order["status"] == "FILLED":
+                        self.bot.log.info('COIN', f'in if')
+                        self.bot.order_manager.order_book.set_order_for_symbol(self.symbol_pair, order['side'], order['orderId'])
+                        self.bot.log.info('COIN', f'Found open orders for {self.symbol_pair}')
+
+                    elif current_order:
+                        self.bot.log.info('COIN', f'in else')
+                        current_order.update({"discord_id": self.bot.user["discord_id"]})
+                        current_order.update({"datetime": datetime.now()})
+                        self.bot.log.info('COIN', f'update order in mongo')
+                        self.bot.mongo.cryptobot.orders.replace_one(order, current_order, upsert=True)
+        except Exception as e:
+            self.bot.log.error('COIN', f'sell error while fetching open orders: {str(e)}')
+        
 
     async def update_socket(self, msg):
         error = msg[EXECUTION_ERROR]
@@ -93,11 +122,12 @@ class Coin:
         if execution_type == 'TRADE' and execution_status == 'FILLED':
             try:
                 order = await self.bot.client.get_order(symbol = msg[SYMBOL], orderId = order_id)
-                old_order = self.bot.mongo.cryptobot.trades.find_one({"orderId": order_id})
+                old_order = self.bot.mongo.cryptobot.orders.find_one({"orderId": order_id})
                 if old_order:
                     order.update({"discord_id": self.bot.user["discord_id"]})
+                    order.update({"datetime": datetime.now()})
                     self.bot.log.info('COIN', f'order: {order}')
-                    self.bot.mongo.cryptobot.trades.replace_one(old_order, order, upsert=True)
+                    self.bot.mongo.cryptobot.orders.replace_one(old_order, order, upsert=True)
             except Exception as e:
                 self.bot.log.info('COIN', f'update mongo trade failed: {str(e)}')
 
@@ -133,8 +163,6 @@ class Coin:
         
 
     async def update(self, candle):
-        # self.bot.log.info('COIN', f'update')
-
         close = float(candle[CANDLE_CLOSE])
         high = float(candle[CANDLE_HIGH])
         low = float(candle[CANDLE_LOW])
@@ -172,18 +200,9 @@ class Coin:
                 self.allow_piramidding = False
             await self.bot.wallet.update_money(self.currency)
 
-        # if (
-        #     last_rsi < self.bot.indicators["rsi"]["oversold"] and
-        #     last_mfi < self.bot.indicators["mfi"]["oversold"] and
-        #     self.bot.wallet.money[self.currency] < (self.bot.user["wallet"]["budget"] + self.bot.user["wallet"]["minimum_cash"])
-        # ):
-        #         await self.bot.wallet.update_money(self.currency)
-
-
         # sell
         if self.has_position:
             current_price = self.closes[-1]
-            # current_high = self.highs[-1] # not used
 
             if (current_price < self.piramidding_price and 
             self.bot.wallet.money[self.currency] < (self.bot.user["wallet"]["budget"] + self.bot.user["wallet"]["minimum_cash"])

@@ -1,11 +1,12 @@
 from decimal import Decimal
 from .order_book import OrderBook
+from datetime import datetime
 
 class OrderManager():
     def __init__(self, bot):
         self.bot = bot
 
-        self.order_book = OrderBook()
+        self.order_book = OrderBook(bot)
 
     async def cancel_order(self, coin, side):
         order_id = self.order_book.get_order_for_symbol(coin.symbol_pair, side)
@@ -19,10 +20,11 @@ class OrderManager():
             result = await self.bot.client.cancel_order(symbol=coin.symbol_pair, orderId=order_id)
             self.bot.log.info('ORDER_MANAGER', f'Order Cancelled: {result}')
             try:
-                old_order = self.bot.mongo.cryptobot.trades.find_one({"orderId": order_id})
+                old_order = self.bot.mongo.cryptobot.orders.find_one({"orderId": order_id})
                 if old_order:
                     result.update({"discord_id": self.bot.user["discord_id"]})
-                    self.bot.mongo.cryptobot.trades.replace_one(old_order, result, upsert=True)
+                    result.update({"datetime": datetime.now()})
+                    self.bot.mongo.cryptobot.orders.replace_one(old_order, result, upsert=True)
             except Exception as e:
                 self.bot.log.warning('COIN', f'update mongo trade failed: {str(e)}')
             return True
@@ -49,8 +51,9 @@ class OrderManager():
         )
 
         order.update({"discord_id": coin.bot.user["discord_id"]})
+        order.update({"datetime": datetime.now()})
         # self.bot.log.info('ORDER_MANAGER', f'order: {order}')
-        coin.bot.mongo.cryptobot.trades.insert_one(order)
+        coin.bot.mongo.cryptobot.orders.insert_one(order)
 
         await self.bot.wallet.update_money(coin.currency) # mogelijks overbodig
 
