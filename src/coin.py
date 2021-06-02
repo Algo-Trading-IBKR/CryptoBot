@@ -56,6 +56,7 @@ class Coin:
     def symbol_pair(self):
         return self.trade_symbol + self.currency_symbol
 
+# region create server for this, fetch once, send to all clients
     async def init(self):
         self.bot.log.verbose('COIN', f'init')
 
@@ -72,7 +73,7 @@ class Coin:
 
         await self.get_open_orders()
 
-        candles = await self.bot.client.get_historical_klines(self.symbol_pair, interval = AsyncClient.KLINE_INTERVAL_1MINUTE, start_str = '150 minutes ago CET', end_str = '1 minutes ago CET')
+        candles = await self.bot.client.get_historical_klines(self.symbol_pair, interval = AsyncClient.KLINE_INTERVAL_15MINUTE, start_str = f'{150*15} minutes ago CET', end_str = '1 minutes ago CET')
         for candle in candles:
             self.closes.append(float(candle[4]))
             self.highs.append(float(candle[2]))
@@ -81,7 +82,8 @@ class Coin:
 
         self.bot.log.verbose('COIN', f'Fetched historical klines for {self.symbol_pair}')
         self.initialised = True
-    
+# endregion
+     
     async def get_open_orders(self):
         orders = await self.bot.client.get_all_orders(symbol = self.symbol_pair, limit=1)
         order = orders[0]
