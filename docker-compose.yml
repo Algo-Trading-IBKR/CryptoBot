@@ -1,26 +1,26 @@
 version: "3.8"
 services:
-  cryptobot-andreas:
-    build: .
-    environment:
-      ACTIVE_CONFIG: ANDREAS
-    env_file:
-      - 'variables.env'
-    volumes:
-      - ./logs:/app/logs
-    networks:
-      - shared
+  # cryptobot-andreas:
+  #   build: .
+  #   environment:
+  #     ACTIVE_CONFIG: ANDREAS
+  #   env_file:
+  #     - 'variables.env'
+  #   volumes:
+  #     - ./logs:/app/logs
+  #   networks:
+  #     - shared
 
-  cryptobot-jonas:
-    build: .
-    environment:
-      ACTIVE_CONFIG: JONAS
-    env_file:
-      - 'variables.env'
-    volumes:
-      - ./logs:/app/logs
-    networks:
-      - shared
+  # cryptobot-jonas:
+  #   build: .
+  #   environment:
+  #     ACTIVE_CONFIG: JONAS
+  #   env_file:
+  #     - 'variables.env'
+  #   volumes:
+  #     - ./logs:/app/logs
+  #   networks:
+  #     - shared
 
   cryptobot-joren:
     build: .
@@ -33,27 +33,27 @@ services:
     networks:
       - shared
 
-  cryptobot-yente:
-    build: .
-    environment:
-      ACTIVE_CONFIG: YENTE
-    env_file:
-      - 'variables.env'
-    volumes:
-      - ./logs:/app/logs
-    networks:
-      - shared
+  # cryptobot-yente:
+  #   build: .
+  #   environment:
+  #     ACTIVE_CONFIG: YENTE
+  #   env_file:
+  #     - 'variables.env'
+  #   volumes:
+  #     - ./logs:/app/logs
+  #   networks:
+  #     - shared
     
-  cryptobot-liam:
-    build: .
-    environment:
-      ACTIVE_CONFIG: LIAM
-    env_file:
-      - 'variables.env'
-    volumes:
-      - ./logs:/app/logs
-    networks:
-      - shared
+  # cryptobot-liam:
+  #   build: .
+  #   environment:
+  #     ACTIVE_CONFIG: LIAM
+  #   env_file:
+  #     - 'variables.env'
+  #   volumes:
+  #     - ./logs:/app/logs
+  #   networks:
+  #     - shared
 
 networks:
   shared:

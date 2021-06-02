@@ -74,6 +74,7 @@ class Coin:
         await self.get_open_orders()
 
         candles = await self.bot.client.get_historical_klines(self.symbol_pair, interval = AsyncClient.KLINE_INTERVAL_15MINUTE, start_str = f'{150*15} minutes ago CET', end_str = '1 minutes ago CET')
+
         for candle in candles:
             self.closes.append(float(candle[4]))
             self.highs.append(float(candle[2]))
@@ -85,38 +86,42 @@ class Coin:
 # endregion
      
     async def get_open_orders(self):
-        orders = await self.bot.client.get_all_orders(symbol = self.symbol_pair, limit=1)
-        order = orders[0]
-        if order["newClientOrderId"].startswith("CryptoBot"):
-            if order["side"] == "BUY":
-                if order["status"] == "NEW":
-                    self.bot.order_manager.order_book.set_order_for_symbol(self.symbol_pair, order['side'], order['orderId'])
-                    self.has_open_order = True
-                elif order["status"] == "FILLED":
-                    self.bot.log.info('COIN', f'Buy order filled for {self.symbol_pair}')
-                    self.has_position = True
+        try:
+            orders = await self.bot.client.get_all_orders(symbol = self.symbol_pair, limit=1)
+            if len(orders) > 0:
+                order = orders[0]
+                if order and order["clientOrderId"].startswith("CryptoBot"):
+                    if order["side"] == "BUY":
+                        if order["status"] == "NEW":
+                            self.bot.order_manager.order_book.set_order_for_symbol(self.symbol_pair, order['side'], order['orderId'])
+                            self.has_open_order = True
+                        elif order["status"] == "FILLED":
+                            self.bot.log.info('COIN', f'Buy order filled for {self.symbol_pair}')
+                            self.has_position = True
 
-                    asset = await self.bot.client.get_asset_balance(self.symbol)
-                    if float(asset['free']) > 0:
-                        self.amount = util.get_amount(float(asset['free']), self.precision)
-                        self.take_profit = util.get_amount(float(order["price"]) * self.bot.user["strategy"]["take_profit_percentage"], self.precision_min_price, False)
+                            asset = await self.bot.client.get_asset_balance(self.symbol)
+                            if float(asset['free']) > 0:
+                                self.amount = util.get_amount(float(asset['free']), self.precision)
+                                self.take_profit = util.get_amount(float(order["price"]) * self.bot.user["strategy"]["take_profit_percentage"], self.precision_min_price, False)
 
-                        take_profit_order = await self.bot.order_manager.send_order(
-                            coin = self,
-                            side = SIDE_SELL,
-                            quantity = Decimal(self.amount),
-                            price = self.take_profit,
-                            order_type = ORDER_TYPE_LIMIT,
-                            time_in_force = TIME_IN_FORCE_GTC
-                        )
-                        self.piramidding_price = float(order["price"]) * self.bot.user["strategy"]["piramidding_percentage"]
+                                take_profit_order = await self.bot.order_manager.send_order(
+                                    coin = self,
+                                    side = SIDE_SELL,
+                                    quantity = Decimal(self.amount),
+                                    price = self.take_profit,
+                                    order_type = ORDER_TYPE_LIMIT,
+                                    time_in_force = TIME_IN_FORCE_GTC
+                                )
+                                self.piramidding_price = float(order["price"]) * self.bot.user["strategy"]["piramidding_percentage"]
 
-            elif order["side"] == "SELL":
-                if order["status"] == "NEW":
-                    self.bot.order_manager.order_book.set_order_for_symbol(self.symbol_pair, order['side'], order['orderId'])
-                    self.has_position = True
-                elif order["status"] == "FILLED":
-                    self.has_position = False      
+                    elif order["side"] == "SELL":
+                        if order["status"] == "NEW":
+                            self.bot.order_manager.order_book.set_order_for_symbol(self.symbol_pair, order['side'], order['orderId'])
+                            self.has_position = True
+                        elif order["status"] == "FILLED":
+                            self.has_position = False
+        except Exception as e:
+            self.bot.log.error('COIN', f'startup failed on get open orders {str(e)}')
 
     async def update_socket(self, msg):
         error = msg[EXECUTION_ERROR]
@@ -172,7 +177,6 @@ class Coin:
             
             await self.bot.wallet.update_money(self.currency)
         
-
     async def update(self, candle):
         close = float(candle[CANDLE_CLOSE])
         high = float(candle[CANDLE_HIGH])
