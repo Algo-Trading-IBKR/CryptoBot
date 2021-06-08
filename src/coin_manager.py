@@ -39,7 +39,7 @@ class CoinManager:
         tasks.append(asyncio.create_task(self.start_multiplex()))
         tasks.append(asyncio.create_task(self.start_user_socket()))
 
-        sleep_timer = uniform(2,user_count*3)
+        sleep_timer = uniform(1,user_count*3)
 
         for coin in self._coins.values():
             await asyncio.sleep(sleep_timer)
@@ -51,7 +51,7 @@ class CoinManager:
     async def start_multiplex(self):
         self._running = True
         self.bot.log.verbose('COIN_MANAGER', f'Starting multiplex socket')
-        symbol_pairs = [symbol.lower() + '@kline_15m' for symbol in self._coins.keys()]
+        symbol_pairs = [symbol.lower() + '@kline_1h' for symbol in self._coins.keys()]
         async with self.bot.bm.multiplex_socket(symbol_pairs) as mps:
             try:
                 while self._running:

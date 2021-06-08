@@ -73,7 +73,7 @@ class Coin:
 
         await self.get_open_orders()
 
-        candles = await self.bot.client.get_historical_klines(self.symbol_pair, interval = AsyncClient.KLINE_INTERVAL_15MINUTE, start_str = f'{150*15} minutes ago CET', end_str = '1 minutes ago CET')
+        candles = await self.bot.client.get_historical_klines(self.symbol_pair, interval = AsyncClient.KLINE_INTERVAL_1HOUR, start_str = f'{150*60} minutes ago CET', end_str = '1 minutes ago CET')
 
         for candle in candles:
             self.closes.append(float(candle[4]))

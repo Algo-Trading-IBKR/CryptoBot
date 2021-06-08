@@ -11,16 +11,16 @@ services:
   #   networks:
   #     - shared
 
-  # cryptobot-jonas:
-  #   build: .
-  #   environment:
-  #     ACTIVE_CONFIG: JONAS
-  #   env_file:
-  #     - 'variables.env'
-  #   volumes:
-  #     - ./logs:/app/logs
-  #   networks:
-  #     - shared
+  cryptobot-jonas:
+    build: .
+    environment:
+      ACTIVE_CONFIG: JONAS
+    env_file:
+      - 'variables.env'
+    volumes:
+      - ./logs:/app/logs
+    networks:
+      - shared
 
   cryptobot-joren:
     build: .

@@ -49,7 +49,7 @@ class OrderManager():
             timeInForce=time_in_force,
             quantity=f"{round(quantity,coin.precision)}", # -1 to prevent issues, sometimes precision is wrong
             price=price,
-            newClientOrderId="CryptoBot"+uuid.uuid4().hex
+            newClientOrderId="CryptoBot"+str(uuid.uuid4().hex)[:20] # max 36 characters, hex uuid is 32
         )
 
         order.update({"discord_id": coin.bot.user["discord_id"]})
