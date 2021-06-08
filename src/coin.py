@@ -189,20 +189,44 @@ class Coin:
             self.lows.append(low)
             self.volumes.append(volume)
 
-        if len(self.closes) <= 149:
-            return
+            if len(self.closes) <= 149:
+                return
 
-        rsi = talib.RSI(np.array(self.closes), timeperiod=self.bot.indicators["rsi"]["period"])
-        mfi = talib.MFI(
-            np.array(self.highs),
-            np.array(self.lows),
-            np.array(self.closes),
-            np.array(self.volumes),
-            timeperiod=self.bot.indicators["mfi"]["period"]
-        )
+            rsi = talib.RSI(np.array(self.closes), timeperiod=self.bot.indicators["rsi"]["period"])
+            mfi = talib.MFI(
+                np.array(self.highs),
+                np.array(self.lows),
+                np.array(self.closes),
+                np.array(self.volumes),
+                timeperiod=self.bot.indicators["mfi"]["period"]
+            )
 
-        last_rsi = rsi[-1]
-        last_mfi = mfi[-1]
+            last_rsi = rsi[-1]
+            last_mfi = mfi[-1]
+        else: 
+            temp_close = self.closes
+            temp_high = self.closes
+            temp_low = self.closes
+            temp_volume = self.closes
+
+            temp_close.append(close)
+            temp_high.append(high)
+            temp_low.append(low)
+            temp_volume.append(volume)
+
+            if len(temp_close) <= 149:
+                return
+            rsi = talib.RSI(np.array(temp_close), timeperiod=self.bot.indicators["rsi"]["period"])
+            mfi = talib.MFI(
+                np.array(temp_high),
+                np.array(temp_low),
+                np.array(temp_close),
+                np.array(temp_volume),
+                timeperiod=self.bot.indicators["mfi"]["period"]
+            )
+
+            last_rsi = rsi[-1]
+            last_mfi = mfi[-1]
 
         if self.has_open_order:
             canceled = await self.bot.order_manager.cancel_order(self, 'BUY')
@@ -218,7 +242,10 @@ class Coin:
 
         # sell
         if self.has_position:
-            current_price = self.closes[-1]
+            if candle[CANDLE_CLOSED]:
+                current_price = self.closes[-1]
+            else:
+                current_price = temp_close[-1]
 
             if (current_price < self.piramidding_price and 
             self.bot.wallet.money[self.currency] < (self.bot.user["wallet"]["budget"] + self.bot.user["wallet"]["minimum_cash"])
@@ -279,7 +306,11 @@ class Coin:
         ):
             self.bot.log.verbose('COIN', f'Starting buy for {self.symbol_pair}')
 
-            self.average_price = self.closes[-1]
+            if candle[CANDLE_CLOSED]:
+                self.average_price = self.closes[-1]
+            else:
+                self.average_price = temp_close[-1]
+                
             self.amount = util.get_amount(self.bot.user["wallet"]["budget"] / self.average_price, self.precision)
 
             self.piramidding_price = self.average_price * self.bot.user["strategy"]["piramidding_percentage"]

@@ -39,7 +39,8 @@ class CoinManager:
         tasks.append(asyncio.create_task(self.start_multiplex()))
         tasks.append(asyncio.create_task(self.start_user_socket()))
 
-        sleep_timer = uniform(1,user_count*3)
+        # sleep_timer = uniform(1,user_count*3)
+        sleep_timer = uniform(1,user_count)
 
         for coin in self._coins.values():
             await asyncio.sleep(sleep_timer)
