@@ -29,10 +29,10 @@ class CoinManager:
             return
 
         candle = data[CANDLE]
-        if candle[CANDLE_CLOSED]:
-            coin = self.get_coin(data[SYMBOL])
-            if coin:
-                await coin.update(candle)
+        # if candle[CANDLE_CLOSED]:
+        coin = self.get_coin(data[SYMBOL])
+        if coin:
+            await coin.update(candle)
 
     async def init(self, user_count):
         tasks = []

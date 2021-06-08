@@ -10,7 +10,7 @@ from pymongo import DESCENDING
 import talib
 import traceback
 from datetime import datetime
-from .constants import CANDLE_CLOSE, CANDLE_HIGH, CANDLE_LOW, CANDLE_VOLUME, EVENT_TYPE, EXECUTION_ERROR, EXECUTION_TYPE, EXECUTION_STATUS, EXECUTION_ORDER_ID, ORDER_TYPE, SIDE, SYMBOL
+from .constants import CANDLE_CLOSE, CANDLE_HIGH, CANDLE_LOW, CANDLE_VOLUME, EVENT_TYPE, EXECUTION_ERROR, EXECUTION_TYPE, EXECUTION_STATUS, EXECUTION_ORDER_ID, ORDER_TYPE, SIDE, SYMBOL, CANDLE_CLOSED
 from src.util.util import util
 
 class Coin:
@@ -183,10 +183,11 @@ class Coin:
         low = float(candle[CANDLE_LOW])
         volume = float(candle[CANDLE_VOLUME])
 
-        self.closes.append(close)
-        self.highs.append(high)
-        self.lows.append(low)
-        self.volumes.append(volume)
+        if candle[CANDLE_CLOSED]:
+            self.closes.append(close)
+            self.highs.append(high)
+            self.lows.append(low)
+            self.volumes.append(volume)
 
         if len(self.closes) <= 149:
             return
