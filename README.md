@@ -14,12 +14,8 @@
 
 # To Do
 
- - Logging to files
- - Add extra verbose logging on each step
  - Extended logging on exceptions, lines, file, etc...
  - more user-defined config values (take profit %, etc.)
- - multiple accounts (one account per docker container) - done but not yet automatic generation of containers from database
- - automatic checking of isolated wallets for trace amounts of coins that need to be transfered
- - automatic conversion of small amounts to bnb ( and possibly to card )
+ - multiple accounts (one account per docker container) - done but no automatic generation of containers from database
 
 # only raspberry pi 64 bit
