@@ -72,7 +72,7 @@ class Coin:
 
             # self.bot.log.verbose('COIN', f'Got symbol info for {self.symbol_pair}')
 
-            # await self.get_open_orders()
+            await self.get_open_orders()
 
             params = {'api_secret': self.bot.user["api_keys"]["secret"],
                     'symbol_pair': self.symbol_pair,

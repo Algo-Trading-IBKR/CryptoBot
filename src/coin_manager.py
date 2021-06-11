@@ -45,7 +45,7 @@ class CoinManager:
             tasks.append(asyncio.create_task(self.start_user_socket()))
 
             # sleep_timer = uniform(1,user_count*3)
-            sleep_timer = 1
+            sleep_timer = uniform(1,5)
 
             for symbol in self.bot.exchange_info["data"]["symbols"]:
                 coin = self.get_coin(symbol["symbol"], False)
