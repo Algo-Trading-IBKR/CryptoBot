@@ -3,6 +3,7 @@ from concurrent.futures import CancelledError
 import traceback
 from .coin import Coin
 from random import uniform
+import math
 from .constants import CANDLE, CANDLE_CLOSED, EVENT_TYPE, SYMBOL, TIMESTAMP
 
 class CoinManager:
@@ -15,11 +16,14 @@ class CoinManager:
             coin = Coin(bot, pair["trade_symbol"], pair["currency_symbol"])
             self._coins[coin.symbol_pair] = coin
 
-    def get_coin(self, symbol_pair):
-        if symbol_pair in self._coins and self._coins[symbol_pair].initialised:
-            return self._coins[symbol_pair]
+    def get_coin(self, symbol_pair, initcheck = True):
+        if initcheck:
+            if symbol_pair in self._coins and self._coins[symbol_pair].initialised:
+                return self._coins[symbol_pair]
         else:
-            return False
+            if symbol_pair in self._coins:
+                return self._coins[symbol_pair]
+        return False
 
     async def process_message(self, msg):
         data = msg['data']
@@ -29,22 +33,38 @@ class CoinManager:
             return
 
         candle = data[CANDLE]
-        # if candle[CANDLE_CLOSED]:
-        coin = self.get_coin(data[SYMBOL])
-        if coin:
-            await coin.update(candle)
+        if candle[CANDLE_CLOSED]:
+            coin = self.get_coin(data[SYMBOL])
+            if coin:
+                await coin.update(candle)
 
     async def init(self, user_count):
-        tasks = []
-        tasks.append(asyncio.create_task(self.start_multiplex()))
-        tasks.append(asyncio.create_task(self.start_user_socket()))
+        try:
+            tasks = []
+            tasks.append(asyncio.create_task(self.start_multiplex()))
+            tasks.append(asyncio.create_task(self.start_user_socket()))
 
-        # sleep_timer = uniform(1,user_count*3)
-        sleep_timer = uniform(1,user_count)
+            # sleep_timer = uniform(1,user_count*3)
+            sleep_timer = 1
 
-        for coin in self._coins.values():
-            await asyncio.sleep(sleep_timer)
-            tasks.append(asyncio.create_task(coin.init()))
+            for symbol in self.bot.exchange_info["data"]["symbols"]:
+                coin = self.get_coin(symbol["symbol"], False)
+                if coin:
+                    for f in symbol['filters']:
+                        if f['filterType'] == 'LOT_SIZE':
+                            step_size = float(f['stepSize'])
+                            coin.precision = round(-math.log(step_size, 10))
+                        elif f['filterType'] == 'PRICE_FILTER':
+                            min_price = float(f['minPrice'])
+                            coin.precision_min_price = round(-math.log(min_price, 10))
+                    self.bot.log.verbose('COIN_MANAGER', f'Got symbol info for {coin.symbol_pair}')
+
+        
+            for coin in self._coins.values():
+                await asyncio.sleep(sleep_timer)
+                tasks.append(asyncio.create_task(coin.init()))
+        except Exception as e:
+            print(str(e))
 
         self.bot.log.info('COIN_MANAGER', f'All coins and sockets initialised')
         return tasks

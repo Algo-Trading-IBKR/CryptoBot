@@ -54,12 +54,11 @@ class OrderManager():
 
         order.update({"discord_id": coin.bot.user["discord_id"]})
         order.update({"datetime": datetime.now()})
-        # self.bot.log.info('ORDER_MANAGER', f'order: {order}')
         coin.bot.mongo.cryptobot.orders.insert_one(order)
 
         await self.bot.wallet.update_money(coin.currency) # mogelijks overbodig
 
-        self.bot.log.info('ORDER_MANAGER', f'[{order["status"]} | {order_type}] {order["side"]} order for {coin.symbol_pair}, quantity {str(quantity)[:-20]} at {price} {coin.currency}')
+        self.bot.log.info('ORDER_MANAGER', f'[{order["status"]} | {order_type}] {order["side"]} order for {coin.symbol_pair}, quantity {str(quantity)[:-30]} at {price} {coin.currency}')
 
         if order['side'] == 'SELL':
             self.order_book.set_order_for_symbol(coin.symbol_pair, order['side'], order['orderId'])

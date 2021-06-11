@@ -6,6 +6,9 @@ from src.util.util import util
 from .coin_manager import CoinManager
 from .order_manager import OrderManager
 from .wallet import Wallet
+import os
+import requests
+# import json
 
 class CryptoBot:
     def __init__(self):
@@ -49,10 +52,20 @@ class CryptoBot:
     def mongo(self):
         return self._mongo
 
+    @property
+    def api_url(self):
+        return self._api_url
+
+    @property
+    def exchange_info(self):
+        return self._exchange_info
+
     async def start(self, config, symbol_pairs, indicators, mongo):
         self._indicators = {}
         for indicator in indicators:
             self._indicators[indicator['name']] = indicator
+        
+        self._api_url = os.environ.get('API_URL')
 
         self._symbol_pairs = symbol_pairs
         self._user = config
@@ -64,6 +77,9 @@ class CryptoBot:
         self._client = await AsyncClient.create(api_key=self._user["api_keys"]["key"], api_secret=self._user["api_keys"]["secret"])
         self._socket_manager = BinanceSocketManager(self._client) # user_timeout is now 5 minutes (5 * 60)
 
+        await self.get_exchange_info()
+
+        # remove if user count increases too much, could cause api ban
         status = await self._client.get_system_status()
         if status['status'] == 0:
             Log.info('BOT', f"Binance system status: {status['msg']}")
@@ -87,6 +103,12 @@ class CryptoBot:
             await asyncio.sleep(0.01)
         # close our connection cleanly
         await self._client.close_connection()
+    
+    async def get_exchange_info(self):
+        params = {'api_secret': self.user["api_keys"]["secret"]}
+        url = self.api_url+"/binance/exchange_info"
+        info = requests.get(url=url, params=params)
+        self._exchange_info = info.json()
 
     def shutdown(self, signal, stack_frame):
         Log.info('BOT', 'Application exitted.')

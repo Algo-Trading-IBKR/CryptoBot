@@ -9,6 +9,7 @@ import numpy as np
 from pymongo import DESCENDING
 import talib
 import traceback
+import requests
 from datetime import datetime
 from .constants import CANDLE_CLOSE, CANDLE_HIGH, CANDLE_LOW, CANDLE_VOLUME, EVENT_TYPE, EXECUTION_ERROR, EXECUTION_TYPE, EXECUTION_STATUS, EXECUTION_ORDER_ID, ORDER_TYPE, SIDE, SYMBOL, CANDLE_CLOSED
 from src.util.util import util
@@ -56,34 +57,43 @@ class Coin:
     def symbol_pair(self):
         return self.trade_symbol + self.currency_symbol
 
-# region create server for this, fetch once, send to all clients
     async def init(self):
-        self.bot.log.verbose('COIN', f'init')
+        try:
+            self.bot.log.verbose('COIN', f'init')
 
-        info = await self.bot.client.get_symbol_info(self.symbol_pair)
-        for f in info['filters']:
-            if f['filterType'] == 'LOT_SIZE':
-                step_size = float(f['stepSize'])
-                self.precision = round(-math.log(step_size, 10))
-            elif f['filterType'] == 'PRICE_FILTER':
-                min_price = float(f['minPrice'])
-                self.precision_min_price = round(-math.log(min_price, 10))
+            # info = await self.bot.client.get_symbol_info(self.symbol_pair)
+            # for f in info['filters']:
+            #     if f['filterType'] == 'LOT_SIZE':
+            #         step_size = float(f['stepSize'])
+            #         self.precision = round(-math.log(step_size, 10))
+            #     elif f['filterType'] == 'PRICE_FILTER':
+            #         min_price = float(f['minPrice'])
+            #         self.precision_min_price = round(-math.log(min_price, 10))
 
-        self.bot.log.verbose('COIN', f'Got symbol info for {self.symbol_pair}')
+            # self.bot.log.verbose('COIN', f'Got symbol info for {self.symbol_pair}')
 
-        await self.get_open_orders()
+            # await self.get_open_orders()
 
-        candles = await self.bot.client.get_historical_klines(self.symbol_pair, interval = AsyncClient.KLINE_INTERVAL_1HOUR, start_str = f'{150*60} minutes ago CET', end_str = '1 minutes ago CET')
+            params = {'api_secret': self.bot.user["api_keys"]["secret"],
+                    'symbol_pair': self.symbol_pair,
+                    'kline_interval': '1h',
+                    'length': 150*60*60*1000} # amount of candles * minutes * seconds * millis
 
-        for candle in candles:
-            self.closes.append(float(candle[4]))
-            self.highs.append(float(candle[2]))
-            self.lows.append(float(candle[3]))
-            self.volumes.append(float(candle[5]))
+            url = self.bot.api_url + "/binance/historicalklines"
+            info = requests.get(url=url, params=params)
+            candles = info.json()["data"]
+            
+            # candles = await self.bot.client.get_historical_klines(self.symbol_pair, interval = AsyncClient.KLINE_INTERVAL_1HOUR, start_str = f'{150*60} minutes ago CET', end_str = '1 minutes ago CET')
+            for candle in candles:
+                self.closes.append(float(candle[4]))
+                self.highs.append(float(candle[2]))
+                self.lows.append(float(candle[3]))
+                self.volumes.append(float(candle[5]))
 
-        self.bot.log.verbose('COIN', f'Fetched historical klines for {self.symbol_pair}')
-        self.initialised = True
-# endregion
+            self.bot.log.verbose('COIN', f'Fetched historical klines for {self.symbol_pair}')
+            self.initialised = True
+        except Exception as e:
+            print(str(e))
      
     async def get_open_orders(self):
         try:
@@ -121,7 +131,7 @@ class Coin:
                         elif order["status"] == "FILLED":
                             self.has_position = False
         except Exception as e:
-            self.bot.log.error('COIN', f'startup failed on get open orders {str(e)}')
+            self.bot.log.error('COIN', f'startup failed for {self.symbol_pair} on get open orders {str(e)}')
 
     async def update_socket(self, msg):
         error = msg[EXECUTION_ERROR]
@@ -142,7 +152,7 @@ class Coin:
                 if old_order:
                     order.update({"discord_id": self.bot.user["discord_id"]})
                     order.update({"datetime": datetime.now()})
-                    self.bot.log.info('COIN', f'order: {order}')
+                    # self.bot.log.info('COIN', f'order: {order}')
                     self.bot.mongo.cryptobot.orders.replace_one(old_order, order, upsert=True)
             except Exception as e:
                 self.bot.log.info('COIN', f'update mongo trade failed: {str(e)}')
@@ -182,51 +192,72 @@ class Coin:
         high = float(candle[CANDLE_HIGH])
         low = float(candle[CANDLE_LOW])
         volume = float(candle[CANDLE_VOLUME])
+        #region constant updates
+        # if candle[CANDLE_CLOSED]:
+        #     self.closes.append(close)
+        #     self.highs.append(high)
+        #     self.lows.append(low)
+        #     self.volumes.append(volume)
 
-        if candle[CANDLE_CLOSED]:
-            self.closes.append(close)
-            self.highs.append(high)
-            self.lows.append(low)
-            self.volumes.append(volume)
+        #     if len(self.closes) <= 149:
+        #         return
 
-            if len(self.closes) <= 149:
-                return
+        #     rsi = talib.RSI(np.array(self.closes), timeperiod=self.bot.indicators["rsi"]["period"])
+        #     mfi = talib.MFI(
+        #         np.array(self.highs),
+        #         np.array(self.lows),
+        #         np.array(self.closes),
+        #         np.array(self.volumes),
+        #         timeperiod=self.bot.indicators["mfi"]["period"]
+        #     )
 
-            rsi = talib.RSI(np.array(self.closes), timeperiod=self.bot.indicators["rsi"]["period"])
-            mfi = talib.MFI(
-                np.array(self.highs),
-                np.array(self.lows),
-                np.array(self.closes),
-                np.array(self.volumes),
-                timeperiod=self.bot.indicators["mfi"]["period"]
-            )
+        #     last_rsi = rsi[-1]
+        #     last_mfi = mfi[-1]
+        # else: 
+        #     temp_close = self.closes
+        #     temp_high = self.closes
+        #     temp_low = self.closes
+        #     temp_volume = self.closes
 
-            last_rsi = rsi[-1]
-            last_mfi = mfi[-1]
-        else: 
-            temp_close = self.closes
-            temp_high = self.closes
-            temp_low = self.closes
-            temp_volume = self.closes
+        #     temp_close.append(close)
+        #     temp_high.append(high)
+        #     temp_low.append(low)
+        #     temp_volume.append(volume)
 
-            temp_close.append(close)
-            temp_high.append(high)
-            temp_low.append(low)
-            temp_volume.append(volume)
+        #     if len(temp_close) <= 149:
+        #         return
+        #     rsi = talib.RSI(np.array(temp_close), timeperiod=self.bot.indicators["rsi"]["period"])
+        #     mfi = talib.MFI(
+        #         np.array(temp_high),
+        #         np.array(temp_low),
+        #         np.array(temp_close),
+        #         np.array(temp_volume),
+        #         timeperiod=self.bot.indicators["mfi"]["period"]
+        #     )
 
-            if len(temp_close) <= 149:
-                return
-            rsi = talib.RSI(np.array(temp_close), timeperiod=self.bot.indicators["rsi"]["period"])
-            mfi = talib.MFI(
-                np.array(temp_high),
-                np.array(temp_low),
-                np.array(temp_close),
-                np.array(temp_volume),
-                timeperiod=self.bot.indicators["mfi"]["period"]
-            )
+        #     last_rsi = rsi[-1]
+        #     last_mfi = mfi[-1]
+        #endregion
 
-            last_rsi = rsi[-1]
-            last_mfi = mfi[-1]
+        self.closes.append(close)
+        self.highs.append(high)
+        self.lows.append(low)
+        self.volumes.append(volume)
+
+        if len(self.closes) <= 149:
+            return
+
+        rsi = talib.RSI(np.array(self.closes), timeperiod=self.bot.indicators["rsi"]["period"])
+        mfi = talib.MFI(
+            np.array(self.highs),
+            np.array(self.lows),
+            np.array(self.closes),
+            np.array(self.volumes),
+            timeperiod=self.bot.indicators["mfi"]["period"]
+        )
+
+        last_rsi = rsi[-1]
+        last_mfi = mfi[-1]
 
         if self.has_open_order:
             canceled = await self.bot.order_manager.cancel_order(self, 'BUY')
@@ -234,18 +265,19 @@ class Coin:
                 self.has_open_order = False
                 self.has_position = False
                 self.allow_piramidding = False
-            else:
-                self.has_open_order = False
-                self.has_position = True
-                self.allow_piramidding = False
+            # else:
+            #     self.has_open_order = True
+            #     self.has_position = False
+            #     self.allow_piramidding = False
             await self.bot.wallet.update_money(self.currency)
 
         # sell
         if self.has_position:
-            if candle[CANDLE_CLOSED]:
-                current_price = self.closes[-1]
-            else:
-                current_price = temp_close[-1]
+            # if candle[CANDLE_CLOSED]:
+            #     current_price = self.closes[-1]
+            # else:
+            #     current_price = temp_close[-1]
+            current_price = self.closes[-1]
 
             if (current_price < self.piramidding_price and 
             self.bot.wallet.money[self.currency] < (self.bot.user["wallet"]["budget"] + self.bot.user["wallet"]["minimum_cash"])
@@ -306,10 +338,11 @@ class Coin:
         ):
             self.bot.log.verbose('COIN', f'Starting buy for {self.symbol_pair}')
 
-            if candle[CANDLE_CLOSED]:
-                self.average_price = self.closes[-1]
-            else:
-                self.average_price = temp_close[-1]
+            # if candle[CANDLE_CLOSED]:
+            #     self.average_price = self.closes[-1]
+            # else:
+            #     self.average_price = temp_close[-1]
+            self.average_price = self.closes[-1]
                 
             self.amount = util.get_amount(self.bot.user["wallet"]["budget"] / self.average_price, self.precision)
 
