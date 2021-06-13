@@ -106,7 +106,7 @@ class Coin:
                             self.bot.order_manager.order_book.set_order_for_symbol(self.symbol_pair, order['side'], order['orderId'])
                             self.has_open_order = True
                         elif order["status"] == "FILLED":
-                            self.bot.log.info('COIN', f'Buy order filled for {self.symbol_pair}')
+                            self.bot.log.info('COIN', f'{order["side"]} order filled for {self.symbol_pair}')
                             self.has_position = True
 
                             asset = await self.bot.client.get_asset_balance(self.symbol)
@@ -159,13 +159,13 @@ class Coin:
 
 
             if side == 'SELL' and self.bot.order_manager.has_order_id(self.symbol_pair, order_id):
-                self.bot.log.info('COIN', f'Filled SELL order for {self.symbol_pair}')
+                self.bot.log.info('COIN', f'Filled {side} order for {self.symbol_pair}')
                 self.allow_piramidding = False
                 await asyncio.sleep(0.1) # why?
                 self.has_position = False
 
             elif side == 'BUY' and self.has_open_order:
-                self.bot.log.info('COIN', f'Filled BUY order for {self.symbol_pair}')
+                self.bot.log.info('COIN', f'Filled {side} order for {self.symbol_pair}')
 
                 self.has_open_order = False
                 self.has_position = True

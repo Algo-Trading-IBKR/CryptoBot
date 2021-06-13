@@ -27,7 +27,7 @@ class OrderManager():
                     result.update({"datetime": datetime.now()})
                     self.bot.mongo.cryptobot.orders.replace_one(old_order, result, upsert=True)
             except Exception as e:
-                self.bot.log.warning('COIN', f'update mongo trade failed: {str(e)}')
+                self.bot.log.warning('ORDER_MANAGER', f'update mongo trade failed: {str(e)}')
             return True
         except Exception as e:
             self.bot.log.warning('ORDER_MANAGER', f'Failed to cancel order: {e}')
@@ -49,7 +49,7 @@ class OrderManager():
             timeInForce=time_in_force,
             quantity=f"{round(quantity,coin.precision)}", # -1 to prevent issues, sometimes precision is wrong
             price=price,
-            newClientOrderId="CryptoBot"+str(uuid.uuid4().hex)[:20] # max 36 characters, hex uuid is 32
+            newClientOrderId="CryptoBot"+str(uuid.uuid4().hex)[:25] # max 36 characters
         )
 
         order.update({"discord_id": coin.bot.user["discord_id"]})
