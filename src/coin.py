@@ -279,42 +279,88 @@ class Coin:
             #     current_price = temp_close[-1]
             current_price = self.closes[-1]
 
-            if (current_price < self.piramidding_price and 
-            self.bot.wallet.money[self.currency] < (self.bot.user["wallet"]["budget"] + self.bot.user["wallet"]["minimum_cash"])
-            ):
-                #stupid temporary fix
-                self.wallet_counter += 1
-                if self.wallet_counter % 10 == 0:
-                    await self.bot.wallet.update_money(self.currency)
-
             order_succeeded = False
 
-            if current_price < self.piramidding_price and self.bot.wallet.money[self.currency] >= (self.bot.user["wallet"]["budget"] + self.bot.user["wallet"]["minimum_cash"]) and not self.allow_piramidding:
+            if current_price < self.piramidding_price and not self.allow_piramidding:
+                await self.bot.wallet.update_money(self.currency)
+                if self.bot.wallet.money[self.currency] >= (self.bot.user["wallet"]["budget"] + self.bot.user["wallet"]["minimum_cash"]): 
 
-                self.allow_piramidding = True
+                    self.allow_piramidding = True
 
-                # asset = await self.bot.client.get_asset_balance(self.symbol)
-                # self.amount = util.get_amount(float(asset['free']), self.precision)
+                    # asset = await self.bot.client.get_asset_balance(self.symbol)
+                    # self.amount = util.get_amount(float(asset['free']), self.precision)
 
-                await self.bot.order_manager.cancel_order(self, 'SELL')
+                    await self.bot.order_manager.cancel_order(self, 'SELL')
 
-                self.piramidding_amount = util.get_amount(self.bot.user["wallet"]["budget"] / current_price, self.precision)
-                self.buy_price = current_price
+                    self.piramidding_amount = util.get_amount(self.bot.user["wallet"]["budget"] / current_price, self.precision)
+                    self.buy_price = current_price
 
+                    order_succeeded = await self.bot.order_manager.send_order(
+                        coin = self,
+                        side = SIDE_BUY,
+                        quantity = Decimal(self.piramidding_amount),
+                        price = current_price,
+                        order_type = ORDER_TYPE_LIMIT,
+                        time_in_force = TIME_IN_FORCE_GTC,
+                        piramidding=True
+                    )
+
+                    self.average_price_piramidding = (self.amount * self.average_price + self.piramidding_amount * current_price) / (self.amount + self.piramidding_amount)
+                    self.take_profit = util.get_amount(self.average_price_piramidding * self.bot.user["strategy"]["take_profit_percentage"], self.precision_min_price, False)
+
+                    if order_succeeded:
+                        asset = await self.bot.client.get_asset_balance(self.symbol)
+                        self.amount = util.get_amount(float(asset['free']), self.precision)
+
+                        take_profit_order = await self.bot.order_manager.send_order(
+                            coin = self,
+                            side = SIDE_SELL,
+                            quantity = Decimal(self.amount),
+                            price = self.take_profit,
+                            order_type = ORDER_TYPE_LIMIT,
+                            time_in_force = TIME_IN_FORCE_GTC
+                        )
+                        self.has_position = True
+            elif current_price < self.piramidding_price and self.bot.wallet.money[self.currency] < (self.bot.user["wallet"]["budget"] + self.bot.user["wallet"]["minimum_cash"]):
+                self.bot.log.warning('COIN', f'Failed to piramid for {self.symbol_pair}, not enough money.')
+
+        # buy
+        elif (
+            last_rsi < self.bot.indicators["rsi"]["oversold"] and
+            last_mfi < self.bot.indicators["mfi"]["oversold"]   
+        ):
+            await self.bot.wallet.update_money(self.currency)
+            if self.bot.wallet.money[self.currency] >= (self.bot.user["wallet"]["budget"] + self.bot.user["wallet"]["minimum_cash"]):
+                self.bot.log.verbose('COIN', f'Starting buy for {self.symbol_pair}')
+
+                # if candle[CANDLE_CLOSED]:
+                #     self.average_price = self.closes[-1]
+                # else:
+                #     self.average_price = temp_close[-1]
+                self.average_price = self.closes[-1]
+                    
+                self.amount = util.get_amount(self.bot.user["wallet"]["budget"] / self.average_price, self.precision)
+
+                self.piramidding_price = self.average_price * self.bot.user["strategy"]["piramidding_percentage"]
+
+                self.take_profit = util.get_amount(self.average_price * self.bot.user["strategy"]["take_profit_percentage"], self.precision_min_price, False)
+
+                self.buy_price = self.average_price
+                # await asyncio.sleep(0.1)
                 order_succeeded = await self.bot.order_manager.send_order(
                     coin = self,
                     side = SIDE_BUY,
-                    quantity = Decimal(self.piramidding_amount),
-                    price = current_price,
+                    quantity = Decimal(self.amount),
+                    price = self.buy_price,
                     order_type = ORDER_TYPE_LIMIT,
-                    time_in_force = TIME_IN_FORCE_GTC,
-                    piramidding=True
+                    time_in_force = TIME_IN_FORCE_GTC
                 )
 
-                self.average_price_piramidding = (self.amount * self.average_price + self.piramidding_amount * current_price) / (self.amount + self.piramidding_amount)
-                self.take_profit = util.get_amount(self.average_price_piramidding * self.bot.user["strategy"]["take_profit_percentage"], self.precision_min_price, False)
-
                 if order_succeeded:
+                    self.bot.log.info('COIN', f'Buy order filled for {self.symbol_pair}')
+
+                    self.has_position = True
+
                     asset = await self.bot.client.get_asset_balance(self.symbol)
                     self.amount = util.get_amount(float(asset['free']), self.precision)
 
@@ -326,59 +372,8 @@ class Coin:
                         order_type = ORDER_TYPE_LIMIT,
                         time_in_force = TIME_IN_FORCE_GTC
                     )
-                    self.has_position = True
-            elif current_price < self.piramidding_price and self.bot.wallet.money[self.currency] < (self.bot.user["wallet"]["budget"] + self.bot.user["wallet"]["minimum_cash"]):
-                self.bot.log.warning('COIN', f'Failed to piramid for {self.symbol_pair}, not enough money.')
 
-        # buy
-        elif (
-            last_rsi < self.bot.indicators["rsi"]["oversold"] and
-            last_mfi < self.bot.indicators["mfi"]["oversold"] and
-            self.bot.wallet.money[self.currency] >= (self.bot.user["wallet"]["budget"] + self.bot.user["wallet"]["minimum_cash"])
-        ):
-            self.bot.log.verbose('COIN', f'Starting buy for {self.symbol_pair}')
-
-            # if candle[CANDLE_CLOSED]:
-            #     self.average_price = self.closes[-1]
-            # else:
-            #     self.average_price = temp_close[-1]
-            self.average_price = self.closes[-1]
-                
-            self.amount = util.get_amount(self.bot.user["wallet"]["budget"] / self.average_price, self.precision)
-
-            self.piramidding_price = self.average_price * self.bot.user["strategy"]["piramidding_percentage"]
-
-            self.take_profit = util.get_amount(self.average_price * self.bot.user["strategy"]["take_profit_percentage"], self.precision_min_price, False)
-
-            self.buy_price = self.average_price
-            # await asyncio.sleep(0.1)
-            order_succeeded = await self.bot.order_manager.send_order(
-                coin = self,
-                side = SIDE_BUY,
-                quantity = Decimal(self.amount),
-                price = self.buy_price,
-                order_type = ORDER_TYPE_LIMIT,
-                time_in_force = TIME_IN_FORCE_GTC
-            )
-
-            if order_succeeded:
-                self.bot.log.info('COIN', f'Buy order filled for {self.symbol_pair}')
-
-                self.has_position = True
-
-                asset = await self.bot.client.get_asset_balance(self.symbol)
-                self.amount = util.get_amount(float(asset['free']), self.precision)
-
-                take_profit_order = await self.bot.order_manager.send_order(
-                    coin = self,
-                    side = SIDE_SELL,
-                    quantity = Decimal(self.amount),
-                    price = self.take_profit,
-                    order_type = ORDER_TYPE_LIMIT,
-                    time_in_force = TIME_IN_FORCE_GTC
-                )
-
-                self.piramidding_price = self.average_price * self.bot.user["strategy"]["piramidding_percentage"]
+                    self.piramidding_price = self.average_price * self.bot.user["strategy"]["piramidding_percentage"]
 
         self.closes = self.closes[-150:]
         self.highs = self.highs[-150:]
