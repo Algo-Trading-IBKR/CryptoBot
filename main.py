@@ -16,17 +16,15 @@ async def main():
 
     Mongo = MongoClient(mongo_connect_url)
 
-    indicators = Mongo.cryptobot.indicators.find({})
     symbol_pairs = Mongo.cryptobot.symbol_pairs.find({ "active": True })
     user_config = Mongo.cryptobot.users.find_one({ "active": True, "name": active_config })
     
-
     cryptobot.log.set_log_group(active_config)
 
     if user_config == None:
         return cryptobot.log.info('MAIN', f'User config "{active_config}" is disabled')
 
-    await cryptobot.start(user_config, symbol_pairs, indicators, Mongo)
+    await cryptobot.start(user_config, symbol_pairs, Mongo)
 
 if __name__ == '__main__':
     loop = asyncio.get_event_loop()

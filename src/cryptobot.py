@@ -8,6 +8,7 @@ from .order_manager import OrderManager
 from .wallet import Wallet
 import os
 import requests
+import sys
 # import json
 
 class CryptoBot:
@@ -60,16 +61,16 @@ class CryptoBot:
     def exchange_info(self):
         return self._exchange_info
 
-    async def start(self, config, symbol_pairs, indicators, mongo):
-        self._indicators = {}
-        for indicator in indicators:
-            self._indicators[indicator['name']] = indicator
-        
+    async def start(self, config, symbol_pairs, mongo):
         self._api_url = os.environ.get('API_URL')
 
         self._symbol_pairs = symbol_pairs
         self._user = config
         self._mongo = mongo
+
+        self._indicators = {}
+        for indicator in self._user['strategy']['indicators']:
+            self._indicators[indicator['name']] = indicator
 
         Log.info('BOT', f"Using active config {self._user['name']}")
         Log.info('BOT', f"Using {len(list(self._symbol_pairs.clone()))} coin pairs.")
@@ -100,10 +101,13 @@ class CryptoBot:
 
         # keep the main event loop active
         while self._running:
-            await asyncio.sleep(0.01)
+            await asyncio.sleep(0.1)
+            if str(await self._client.ping()) != '{}':
+                sys.exit()
         # close our connection cleanly
         await self._client.close_connection()
     
+    # if this fails try restarting REST API
     async def get_exchange_info(self):
         params = {'api_secret': self.user["api_keys"]["secret"]}
         url = self.api_url+"/binance/exchange_info"
