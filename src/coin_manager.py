@@ -4,6 +4,7 @@ import traceback
 from .coin import Coin
 from random import uniform
 import math
+import sys
 from .constants import CANDLE, CANDLE_CLOSED, EVENT_TYPE, SYMBOL, TIMESTAMP
 
 class CoinManager:
@@ -44,8 +45,7 @@ class CoinManager:
             tasks.append(asyncio.create_task(self.start_multiplex()))
             tasks.append(asyncio.create_task(self.start_user_socket()))
 
-            # sleep_timer = uniform(1,user_count*3)
-            sleep_timer = uniform(2,6)
+            sleep_timer = 3 # this is safe using the rest api + caching, 2 is not
 
             for symbol in self.bot.exchange_info["data"]["symbols"]:
                 coin = self.get_coin(symbol["symbol"], False)
@@ -100,6 +100,9 @@ class CoinManager:
                         coin = self.get_coin(res['s'])
                         if coin:
                             await coin.update_socket(res)
+                    else:
+                        self.bot.log.verbose('COIN_MANAGER', f'socket message {res}')
+                        # sys.exit()
 
                 except:
                     self.bot.log.error('COIN_MANAGER', f'Error occurred on socket:\n{traceback.format_exc()}')
