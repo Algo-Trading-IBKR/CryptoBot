@@ -16,7 +16,7 @@ class Wallet:
 
     async def update_money(self, asset : str ):
         if not asset in self._last_update:
-            self.bot.log.info('WALLET', f'new asset')
+            self.bot.log.verbose('WALLET', f'new asset {asset}')
             self._last_update[asset] = datetime.now()
             res = await self.bot.client.get_asset_balance(asset)
             self._money[asset] = float(res['free'])
