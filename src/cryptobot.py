@@ -102,6 +102,7 @@ class CryptoBot:
             await asyncio.sleep(0.1)
             if str(await self._client.ping()) != '{}':
                 sys.exit()
+                
         # close our connection cleanly
         await self._client.close_connection()
     

@@ -18,4 +18,4 @@
  - more user-defined config values (take profit %, etc.)
  - multiple accounts (one account per docker container) - done but no automatic generation of containers from database
 
-# only raspberry pi 64 bit
+# only X86 or arm 64 bit
