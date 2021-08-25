@@ -17,7 +17,7 @@ async def main():
 
         Mongo = MongoClient(mongo_connect_url)
 
-        symbol_pairs = Mongo.cryptobot.symbol_pairs.find({ "active": True })
+        # symbol_pairs = Mongo.cryptobot.symbol_pairs.find({ "active": True })
         user_config = Mongo.cryptobot.users.find_one({ "active": True, "name": active_config })
         
         cryptobot.log.set_log_group(active_config)
@@ -25,7 +25,7 @@ async def main():
         if user_config == None:
             return cryptobot.log.info('MAIN', f'User config "{active_config}" is disabled')
 
-        await cryptobot.start(user_config, symbol_pairs, Mongo)
+        await cryptobot.start(user_config, Mongo)
     except Exception as e:
         print(str(e))
 

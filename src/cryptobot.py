@@ -3,6 +3,7 @@ from binance import AsyncClient, BinanceSocketManager
 from time import sleep
 from src.util.logger import Log
 from src.util.util import util
+from src.util.coin_updater import updater
 from .coin_manager import CoinManager
 from .order_manager import OrderManager
 from .wallet import Wallet
@@ -61,10 +62,10 @@ class CryptoBot:
     def exchange_info(self):
         return self._exchange_info
 
-    async def start(self, config, symbol_pairs, mongo):
+    async def start(self, config, mongo):
         self._api_url = os.environ.get('API_URL')
 
-        self._symbol_pairs = symbol_pairs
+        # self._symbol_pairs = symbol_pairs
         self._user = config
         self._mongo = mongo
 
@@ -73,12 +74,17 @@ class CryptoBot:
             self._indicators[indicator['name']] = indicator
 
         Log.info('BOT', f"Using active config {self._user['name']}")
-        Log.info('BOT', f"Using {len(list(self._symbol_pairs.clone()))} coin pairs.")
 
         self._client = await AsyncClient.create(api_key=self._user["api_keys"]["key"], api_secret=self._user["api_keys"]["secret"])
         self._socket_manager = BinanceSocketManager(self._client) # user_timeout is now 5 minutes (5 * 60)
 
         await self.get_exchange_info()
+
+        await updater(self)
+
+        self._symbol_pairs = mongo.cryptobot.symbol_pairs.find({ "active": True })
+        
+        Log.info('BOT', f"Using {len(list(self._symbol_pairs.clone()))} coin pairs.")
 
         # remove if user count increases too much, could cause api ban
         status = await self._client.get_system_status()
