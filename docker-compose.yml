@@ -59,6 +59,18 @@ services:
       - ./logs:/app/logs
     networks:
       - shared
+  
+  cryptobot-kilian:
+    build: .
+    environment:
+      ACTIVE_CONFIG: KILIAN
+    env_file:
+      - 'variables.env'
+    restart: always
+    volumes:
+      - ./logs:/app/logs
+    networks:
+      - shared
 
 networks:
   shared:

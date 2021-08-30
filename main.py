@@ -30,11 +30,9 @@ async def main():
         print(str(e))
 
 if __name__ == '__main__':
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(main())
+    try:
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(main())
+    except Exception as e:
+        print(str(e))
 
-
-    # self.bucket = config
-    # self.org = config
-    # self.token = config
-    # self.url = config
