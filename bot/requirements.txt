@@ -1,0 +1,5 @@
+asyncio
+pymongo
+python-binance~=1.0.12
+numpy
+TA-Lib

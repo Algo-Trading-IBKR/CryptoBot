@@ -3,6 +3,7 @@ import os
 import signal
 from pymongo import MongoClient
 from src.cryptobot import CryptoBot
+from bson.objectid import ObjectId
 
 cryptobot = CryptoBot()
 cryptobot.log.log_level = 'INFO' # VERB/INFO/WARN/ERR/CRIT
@@ -17,13 +18,15 @@ async def main():
 
         Mongo = MongoClient(mongo_connect_url)
 
-        # symbol_pairs = Mongo.cryptobot.symbol_pairs.find({ "active": True })
-        user_config = Mongo.cryptobot.users.find_one({ "active": True, "name": active_config })
-        
         cryptobot.log.set_log_group(active_config)
 
+        # symbol_pairs = Mongo.cryptobot.symbol_pairs.find({ "active": True })
+        
+        user_id = active_config.split('_')[1]
+        user_config = Mongo.cryptobot.users.find_one({ "active": True, "_id": ObjectId(user_id) })
+        
         if user_config == None:
-            return cryptobot.log.info('MAIN', f'User config "{active_config}" is disabled')
+            return cryptobot.log.info('MAIN', f'User config "{user_id}" is disabled')
 
         await cryptobot.start(user_config, Mongo)
     except Exception as e:
