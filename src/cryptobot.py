@@ -7,6 +7,7 @@ from src.util.coin_updater import updater
 from .coin_manager import CoinManager
 from .order_manager import OrderManager
 from .wallet import Wallet
+from bson.objectid import ObjectId
 import os
 import requests
 import sys
@@ -82,11 +83,20 @@ class CryptoBot:
 
         await updater(self)
 
-        self._symbol_pairs = mongo.cryptobot.symbol_pairs.find({ "active": True })
-        
-        Log.info('BOT', f"Using {len(list(self._symbol_pairs.clone()))} coin pairs.")
+        # self._symbol_pairs = mongo.cryptobot.symbol_pairs.find({ "active": True })
+        # Log.info('TESTING', f"pairs: {self._symbol_pairs}")
+        # Log.info('BOT', f"Using {len(list(self._symbol_pairs.clone()))} coin pairs.")
 
-        # remove if user count increases too much, could cause api ban
+        # NEW VERSION #
+        #####################################################
+        self._symbol_pair_ids = self._user['coins']['inactive']
+        self._symbol_pairs = mongo.cryptobot.symbol_pairs.find({ "active": True })
+        self._symbol_pairs = [coin for coin in self._symbol_pairs if str(coin["_id"]) not in self._symbol_pair_ids]
+        
+        Log.info('BOT', f"Using {len(list(self._symbol_pairs))} coin pairs.")
+        ####################################################
+
+        # remove if user count increases too much or move to rest api using caching, could cause api ban
         status = await self._client.get_system_status()
         if status['status'] == 0:
             Log.info('BOT', f"Binance system status: {status['msg']}")

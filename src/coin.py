@@ -161,7 +161,6 @@ class Coin:
             if side == 'SELL' and self.bot.order_manager.has_order_id(self.symbol_pair, order_id):
                 self.bot.log.info('COIN', f'Filled {side} order for {self.symbol_pair}')
                 self.allow_piramidding = False
-                await asyncio.sleep(0.1) # why?
                 self.has_position = False
 
             elif side == 'BUY' and self.has_open_order:
