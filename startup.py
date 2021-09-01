@@ -37,20 +37,10 @@ def main():
 
         dockerfile.close()
 
-        # docker = DockerClient(compose_files=["./bot/mongo/docker-compose.yml"])
-        # docker.compose.down(remove_orphans=True)
-        # docker = DockerClient(compose_files=["./bot/docker-compose.yml"])
-        # docker.compose.down(remove_orphans=True)
-
-        # docker = DockerClient(compose_files=["./bot/mongo/docker-compose.yml"])
-        # docker.compose.down(remove_orphans=True)
-        # docker.compose.build()
-        # docker.compose.up()
-
         docker = DockerClient(compose_files=["./bot/docker-compose.yml"])
         docker.compose.down(remove_orphans=True)
         docker.compose.build()
-        docker.compose.up()
+        docker.compose.up(detach=True)
         
     except Exception as e:
         print(str(e))
