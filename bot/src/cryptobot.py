@@ -1,5 +1,8 @@
 import asyncio
 from binance import AsyncClient, BinanceSocketManager
+from time import time
+from concurrent.futures import CancelledError
+import traceback
 from time import sleep
 from src.util.logger import Log
 from src.util.util import util
@@ -10,6 +13,7 @@ from .wallet import Wallet
 from bson.objectid import ObjectId
 import os
 import requests
+
 import sys
 # import json
 
@@ -66,7 +70,6 @@ class CryptoBot:
     async def start(self, config, mongo):
         self._api_url = os.environ.get('API_URL')
 
-        # self._symbol_pairs = symbol_pairs
         self._user = config
         self._mongo = mongo
 
@@ -83,36 +86,27 @@ class CryptoBot:
 
         await updater(self)
 
-        # self._symbol_pairs = mongo.cryptobot.symbol_pairs.find({ "active": True })
-        # Log.info('TESTING', f"pairs: {self._symbol_pairs}")
-        # Log.info('BOT', f"Using {len(list(self._symbol_pairs.clone()))} coin pairs.")
-
         # NEW VERSION #
         #####################################################
         self._symbol_pair_ids = self._user['coins']['inactive']
         self._symbol_pairs = mongo.cryptobot.symbol_pairs.find({ "active": True })
-        self._symbol_pairs = [coin for coin in self._symbol_pairs if str(coin["_id"]) not in self._symbol_pair_ids]
+        self.active_symbol_pairs = [coin for coin in self._symbol_pairs if str(coin["_id"]) not in self._symbol_pair_ids]
+        self.inactive_symbol_pairs = [coin for coin in self._symbol_pairs if str(coin["_id"]) in self._symbol_pair_ids]
         
-        Log.info('BOT', f"Using {len(list(self._symbol_pairs))} coin pairs.")
+        Log.info('BOT', f"Using {len(self.active_symbol_pairs)+len(self.inactive_symbol_pairs)} coin pairs.")
         ####################################################
 
-        # remove if user count increases too much or move to rest api using caching, could cause api ban
-        status = await self._client.get_system_status()
-        if status['status'] == 0:
-            Log.info('BOT', f"Binance system status: {status['msg']}")
-        else:
-            Log.warning('BOT', f"Binance system status: {status['msg']}")
-
-        self._coin_manager = CoinManager(self, self._symbol_pairs)
+        self._coin_manager = CoinManager(self, self.active_symbol_pairs, self.inactive_symbol_pairs)
         self._order_manager = OrderManager(self)
         self._wallet = Wallet(self)
 
         await self._wallet.update_money('USDT')
         await self._wallet.update_money('EUR')
 
-        user_count = self.mongo.cryptobot.users.count_documents({"active": True})
-        self.tasks = await self._coin_manager.init(user_count)
+        self.tasks.append(asyncio.create_task(self.user_check()))
 
+        self.tasks.append(await self._coin_manager.init())
+        
         # keep the main event loop active
         while self._running:
             await asyncio.sleep(0.1)
@@ -128,6 +122,40 @@ class CryptoBot:
         url = self.api_url+"/binance/exchange_info"
         info = requests.get(url=url, params=params)
         self._exchange_info = info.json()
+
+
+    ### ON STARTUP: coins in active and inactive list stay there untill after startup, this might need to be updated 
+    async def user_check(self):
+        self._running = True
+        Log.verbose('BOT', f'Starting perpetual user check')
+        while self._running:
+            try:
+                await asyncio.sleep(5)
+                userObject = self._mongo.cryptobot.users.find_one({ "active": True, "_id": ObjectId(self._user["_id"]) })
+                if userObject["coins"] != self._user["coins"]:
+                    deactivatedPairs = []
+                    for coinId in userObject["coins"]["inactive"]:
+                        coin = self._mongo.cryptobot.symbol_pairs.find_one({ "active": True, "_id": ObjectId(coinId) })
+                        deactivatedPairs.append(coin["trade_symbol"]+coin["currency_symbol"])
+                        if coin and coin["trade_symbol"]+coin["currency_symbol"] in self._coin_manager._coins:
+                            self._coin_manager._coins[coin["trade_symbol"]+coin["currency_symbol"]].initialised = False
+                            self._coin_manager._coins[coin["trade_symbol"]+coin["currency_symbol"]].active = False
+                            Log.verbose('BOT', f"Coin {coin['trade_symbol']}/{coin['currency_symbol']} disabled")
+
+                    for coin in self._coin_manager._coins.values():
+                        if coin.active == False and coin.symbol_pair not in deactivatedPairs:
+                            coin.active = True
+                            asyncio.create_task(coin.init())
+                            Log.verbose('BOT', f"Coin {coin.symbol_pair} enabled")
+
+                    self._user = userObject
+                elif userObject != self._user:
+                    self._user = userObject
+                
+            except (CancelledError,Exception) as e:
+                if isinstance(e, CancelledError):
+                    self._running = False
+                Log.error('BOT', f'Error occured:\n{traceback.format_exc()}')
 
     def shutdown(self, signal, stack_frame):
         Log.info('BOT', 'Application exitted.')

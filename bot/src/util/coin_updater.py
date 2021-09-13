@@ -3,7 +3,7 @@ from random import shuffle
 import requests
 import json
 
-unwanted = ["EUR", "GBP", "AED", "ARS", "AUD", "BRL", "CAD", "CHF", "CZK", "DKK", "GHS", "HKD", "HUF", "JPY", "KES", "KZT", "KES", "KZT", "MXN", "NGN", "NOK", "NZD", "PEN", "PLN", "RUB", "SEK", "TRY", "UAH", "UGX", "VND", "ZAR", "PAX", "SUSDT", "BUSD", "TUSD", "USDC", "USDSB"]
+unwanted = ["EUR", "GBP", "AED", "ARS", "AUD", "BRL", "CAD", "CHF", "CZK", "DKK", "GHS", "HKD", "HUF", "JPY", "KES", "KZT", "KES", "KZT", "MXN", "NGN", "NOK", "NZD", "PEN", "PLN", "RUB", "SEK", "TRY", "UAH", "UGX", "VND", "ZAR", "PAX", "SUSDT", "BUSD", "TUSD", "USDC", "USDSB", "USDP", "USDS", "SUSD", "USDSB"]
 
 async def updater(bot):
     API_KEY = bot.user["api_keys"]["key"]

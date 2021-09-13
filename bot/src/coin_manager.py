@@ -8,14 +8,19 @@ import sys
 from .constants import CANDLE, CANDLE_CLOSED, EVENT_TYPE, SYMBOL, TIMESTAMP
 
 class CoinManager:
-    def __init__(self, bot, pairs):
+    def __init__(self, bot, active_pairs, inactive_pairs):
         self.bot = bot
 
         self._coins = {}
 
-        for pair in pairs:
+        for pair in active_pairs:
             coin = Coin(bot, pair["trade_symbol"], pair["currency_symbol"])
             self._coins[coin.symbol_pair] = coin
+
+        for pair in inactive_pairs:
+            coin = Coin(bot, pair["trade_symbol"], pair["currency_symbol"])
+            self._coins[coin.symbol_pair] = coin
+            coin.active = False
 
     def get_coin(self, symbol_pair, initcheck = True):
         if initcheck:
@@ -39,13 +44,13 @@ class CoinManager:
             if coin:
                 await coin.update(candle)
 
-    async def init(self, user_count):
+    async def init(self):
         try:
             tasks = []
             tasks.append(asyncio.create_task(self.start_multiplex()))
             tasks.append(asyncio.create_task(self.start_user_socket()))
 
-            sleep_timer = 4 # this is safe using the rest api + caching
+            sleep_timer = 10 # this is safe using the rest api + caching
 
             for symbol in self.bot.exchange_info["data"]["symbols"]:
                 coin = self.get_coin(symbol["symbol"], False)
@@ -59,10 +64,10 @@ class CoinManager:
                             coin.precision_min_price = round(-math.log(min_price, 10))
                     self.bot.log.verbose('COIN_MANAGER', f'Got symbol info for {coin.symbol_pair}')
 
-        
             for coin in self._coins.values():
-                await asyncio.sleep(sleep_timer)
-                tasks.append(asyncio.create_task(coin.init()))
+                if coin.active:
+                    await asyncio.sleep(sleep_timer)
+                    tasks.append(asyncio.create_task(coin.init()))
         except Exception as e:
             print(str(e))
 
@@ -106,4 +111,6 @@ class CoinManager:
 
                 except:
                     self.bot.log.error('COIN_MANAGER', f'Error occurred on socket:\n{traceback.format_exc()}')
+
+
 

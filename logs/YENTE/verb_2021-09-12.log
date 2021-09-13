@@ -1,0 +1,748 @@
+[15:08:22] [WALLET/VERB] new asset USDT
+[15:08:22] [WALLET/VERB] new asset EUR
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for BCCUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for NEOUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for QTUMUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for ADAUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for IOTAUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for XLMUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for ONTUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for ICXUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for VENUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for NULSUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for VETUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for BCHABCUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for BCHSVUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for LINKUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for WAVESUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for BTTUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for USDSUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for ONGUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for HOTUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for ZILUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for ZRXUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for FETUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for BATUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for XMRUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for ZECUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for IOSTUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for CELRUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for DASHUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for NANOUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for OMGUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for THETAUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for ENJUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for MITHUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for ATOMUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for TFUELUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for ONEUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for FTMUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for ALGOUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for USDSBUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for GTOUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for ERDUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for DOGEUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for DUSKUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for ANKRUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for WINUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for COSUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for NPXSUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for COCOSUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for MTLUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for TOMOUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for PERLUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for DENTUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for MFTUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for KEYUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for STORMUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for DOCKUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for WANUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for FUNUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for CVCUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for BANDUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for BEAMUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for XTZUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for RENUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for RVNUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for HCUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for HBARUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for NKNUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for STXUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for KAVAUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for ARPAUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for IOTXUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for RLCUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for MCOUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for CTXCUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for BCHUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for TROYUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for VITEUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for FTTUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for BTCEUR
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for ETHEUR
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for BNBEUR
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for XRPEUR
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for OGNUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for DREPUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for TCTUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for BTSUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for LSKUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for BNTUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for LTOUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for STRATUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for AIONUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for MBLUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for COTIUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for STPTUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for WTCUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for DATAUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for XZCUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for SOLUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for CTSIUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for HIVEUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for CHRUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for GXSUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for ARDRUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for LENDUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for MDTUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for STMXUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for KNCUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for REPUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for LRCUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for PNTUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for COMPUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for BKRWUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for SCUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for ZENUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for SNXUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for VTHOUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for DGBUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for SXPUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for MKRUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for DAIUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for DCRUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for STORJUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for MANAUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for YFIUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for BALUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for BLZUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for IRISUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for KMDUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for JSTUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for SRMUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for ANTUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for CRVUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for SANDUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for OCEANUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for NMRUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for LUNAUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for RSRUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for PAXGUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for WNXMUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for TRBUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for BZRXUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for SUSHIUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for YFIIUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for KSMUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for EGLDUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for DIAUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for FIOUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for UMAUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for BELUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for WINGUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for NBSUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for OXTUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for SUNUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for HNTUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for FLMUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for ORNUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for UTKUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for XVSUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for ALPHAUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for AAVEUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for NEARUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for FILUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for INJUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for AUDIOUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for CTKUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for DOTEUR
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for AKROUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for AXSUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for HARDUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for LTCEUR
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for DNTUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for STRAXUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for UNFIUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for ROSEUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for AVAUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for XEMUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for SKLUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for SUSDUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for GRTUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for JUVUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for PSGUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for 1INCHUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for REEFUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for OGUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for ATMUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for ASRUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for CELOUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for RIFUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for BTCSTUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for TRUUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for EOSEUR
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for CKBUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for TWTUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for FIROUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for LITUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for SFPUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for DODOUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for CAKEUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for ACMUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for BADGERUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for FISUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for OMUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for PONDUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for DEGOUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for AVAXEUR
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for UNIEUR
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for ALICEUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for CHZEUR
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for LINAUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for MATICEUR
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for PERPUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for RAMPUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for SUPERUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for CFXUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for EPSUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for AUTOUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for TKOUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for PUNDIXUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for TLMUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for BTGUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for MIRUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for BARUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for FORTHUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for WRXEUR
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for BAKEUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for BURGERUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for SLPUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for TRXEUR
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for ICPUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for SHIBEUR
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for ETCEUR
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for ARUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for POLSUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for MDXUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for MASKUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for LPTUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for NUUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for XVGUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for ATAUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for GTCUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for TORNUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for KEEPUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for ERNUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for KLAYUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for RUNEEUR
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for PHAUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for BONDUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for MLNUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for DEXEUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for C98USDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for CLVUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for QNTUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for FLOWUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for TVKUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for MINAUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for RAYUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for FARMUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for ALPACAUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for QUICKUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for MBOXUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for FORUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for REQUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for GHSTUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for WAXPUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for TRIBEUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for GNOUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for XECUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for ELFUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for DYDXUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for POLYUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for IDEXUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for VIDTUSDT
+[15:08:23] [COIN_MANAGER/VERB] Got symbol info for USDPUSDT
+[15:08:23] [COIN_MANAGER/VERB] Starting multiplex socket
+[15:08:23] [COIN_MANAGER/VERB] Starting user socket
+[15:08:26] [COIN/VERB] init
+[15:08:27] [COIN/VERB] Fetched historical klines for YFIUSDT
+[15:08:29] [COIN/VERB] init
+[15:08:30] [COIN/VERB] Fetched historical klines for WINUSDT
+[15:08:32] [COIN/VERB] init
+[15:08:33] [COIN/VERB] Fetched historical klines for TCTUSDT
+[15:08:35] [COIN/VERB] init
+[15:08:36] [COIN/VERB] Fetched historical klines for LTOUSDT
+[15:08:39] [COIN/VERB] init
+[15:08:40] [COIN/VERB] Fetched historical klines for DOTEUR
+[15:08:43] [COIN/VERB] init
+[15:08:43] [COIN/VERB] Fetched historical klines for DOCKUSDT
+[15:08:46] [COIN/VERB] init
+[15:08:47] [COIN/VERB] Fetched historical klines for LRCUSDT
+[15:08:49] [COIN/VERB] init
+[15:08:50] [COIN/VERB] Fetched historical klines for PUNDIXUSDT
+[15:08:52] [COIN/VERB] init
+[15:08:53] [COIN/VERB] Fetched historical klines for JUVUSDT
+[15:08:55] [COIN/VERB] init
+[15:08:59] [COIN/VERB] init
+[15:09:02] [COIN/VERB] init
+[15:09:02] [COIN/VERB] Fetched historical klines for EOSEUR
+[15:09:05] [COIN/VERB] init
+[15:09:06] [COIN/VERB] Fetched historical klines for ERNUSDT
+[15:09:08] [COIN/VERB] init
+[15:09:09] [COIN/VERB] Fetched historical klines for BKRWUSDT
+[15:09:11] [COIN/VERB] init
+[15:09:12] [COIN/VERB] Fetched historical klines for KAVAUSDT
+[15:09:15] [COIN/VERB] init
+[15:09:15] [COIN/VERB] Fetched historical klines for GTCUSDT
+[15:09:18] [COIN/VERB] init
+[15:09:19] [COIN/VERB] Fetched historical klines for XEMUSDT
+[15:09:21] [COIN/VERB] init
+[15:09:22] [COIN/VERB] Fetched historical klines for COCOSUSDT
+[15:09:24] [COIN/VERB] init
+[15:09:25] [COIN/VERB] Fetched historical klines for MATICEUR
+[15:09:27] [COIN/VERB] init
+[15:09:28] [COIN/VERB] Fetched historical klines for HOTUSDT
+[15:09:31] [COIN/VERB] init
+[15:09:31] [COIN/VERB] Fetched historical klines for SUSDUSDT
+[15:09:34] [COIN/VERB] init
+[15:09:35] [COIN/VERB] Fetched historical klines for WNXMUSDT
+[15:09:37] [COIN/VERB] init
+[15:09:38] [COIN/VERB] Fetched historical klines for UNFIUSDT
+[15:09:40] [COIN/VERB] init
+[15:09:43] [COIN/VERB] init
+[15:09:47] [COIN/VERB] init
+[15:09:50] [COIN/VERB] init
+[15:09:53] [COIN/VERB] init
+[15:09:56] [COIN/VERB] init
+[15:09:59] [COIN/VERB] init
+[15:10:03] [COIN/VERB] init
+[15:10:06] [COIN/VERB] init
+[15:10:09] [COIN/VERB] init
+[15:10:12] [COIN/VERB] init
+[15:10:15] [COIN/VERB] init
+[15:10:19] [COIN/VERB] init
+[15:10:22] [COIN/VERB] init
+[15:10:25] [COIN/VERB] init
+[15:10:28] [COIN/VERB] init
+[15:10:31] [COIN/VERB] init
+[15:10:35] [COIN/VERB] init
+[15:10:38] [COIN/VERB] init
+[15:10:41] [COIN/VERB] init
+[15:10:44] [COIN/VERB] init
+[15:10:47] [COIN/VERB] init
+[15:10:51] [COIN/VERB] init
+[15:10:54] [COIN/VERB] init
+[15:10:57] [COIN/VERB] init
+[15:11:00] [COIN/VERB] init
+[15:11:03] [COIN/VERB] init
+[15:11:07] [COIN/VERB] init
+[15:11:10] [COIN/VERB] init
+[15:11:13] [COIN/VERB] init
+[15:11:16] [COIN/VERB] init
+[15:11:19] [COIN/VERB] init
+[15:11:23] [COIN/VERB] init
+[15:11:26] [COIN/VERB] init
+[15:11:29] [COIN/VERB] init
+[15:11:32] [COIN/VERB] init
+[15:11:35] [COIN/VERB] init
+[15:11:39] [COIN/VERB] init
+[15:11:42] [COIN/VERB] init
+[15:11:45] [COIN/VERB] init
+[15:11:48] [COIN/VERB] init
+[15:11:49] [COIN/VERB] Fetched historical klines for VITEUSDT
+[15:11:51] [COIN/VERB] init
+[15:11:53] [COIN/VERB] Fetched historical klines for MANAUSDT
+[15:11:55] [COIN/VERB] init
+[15:11:55] [COIN/VERB] Fetched historical klines for SUNUSDT
+[15:11:58] [COIN/VERB] init
+[15:11:59] [COIN/VERB] Fetched historical klines for GRTUSDT
+[15:12:01] [COIN/VERB] init
+[15:12:02] [COIN/VERB] Fetched historical klines for FISUSDT
+[15:12:04] [COIN/VERB] init
+[15:12:05] [COIN/VERB] Fetched historical klines for UMAUSDT
+[15:12:07] [COIN/VERB] init
+[15:12:08] [COIN/VERB] Fetched historical klines for BEAMUSDT
+[15:12:11] [COIN/VERB] init
+[15:12:11] [COIN/VERB] Fetched historical klines for HIVEUSDT
+[15:12:14] [COIN/VERB] init
+[15:12:15] [COIN/VERB] Fetched historical klines for PERPUSDT
+[15:12:17] [COIN/VERB] init
+[15:12:18] [COIN/VERB] Fetched historical klines for BTSUSDT
+[15:12:20] [COIN/VERB] init
+[15:12:21] [COIN/VERB] Fetched historical klines for ENJUSDT
+[15:12:23] [COIN/VERB] init
+[15:12:24] [COIN/VERB] Fetched historical klines for ACMUSDT
+[15:12:27] [COIN/VERB] init
+[15:12:27] [COIN/VERB] Fetched historical klines for ETCEUR
+[15:12:30] [COIN/VERB] init
+[15:12:31] [COIN/VERB] Fetched historical klines for LPTUSDT
+[15:12:33] [COIN/VERB] init
+[15:12:34] [COIN/VERB] Fetched historical klines for MFTUSDT
+[15:12:36] [COIN/VERB] init
+[15:12:37] [COIN/VERB] Fetched historical klines for MLNUSDT
+[15:12:39] [COIN/VERB] init
+[15:12:40] [COIN/VERB] Fetched historical klines for ALPHAUSDT
+[15:12:43] [COIN/VERB] init
+[15:12:43] [COIN/VERB] Fetched historical klines for STMXUSDT
+[15:12:46] [COIN/VERB] init
+[15:12:47] [COIN/VERB] Fetched historical klines for AVAXEUR
+[15:12:49] [COIN/VERB] init
+[15:12:50] [COIN/VERB] Fetched historical klines for LINAUSDT
+[15:12:52] [COIN/VERB] init
+[15:12:55] [COIN/VERB] init
+[15:12:59] [COIN/VERB] init
+[15:13:02] [COIN/VERB] init
+[15:13:03] [COIN/VERB] Fetched historical klines for EGLDUSDT
+[15:13:05] [COIN/VERB] init
+[15:13:06] [COIN/VERB] Fetched historical klines for INJUSDT
+[15:13:08] [COIN/VERB] init
+[15:13:09] [COIN/VERB] Fetched historical klines for LUNAUSDT
+[15:13:11] [COIN/VERB] init
+[15:13:12] [COIN/VERB] Fetched historical klines for STPTUSDT
+[15:13:15] [COIN/VERB] init
+[15:13:15] [COIN/VERB] Fetched historical klines for BALUSDT
+[15:13:18] [COIN/VERB] init
+[15:13:19] [COIN/VERB] Fetched historical klines for XTZUSDT
+[15:13:21] [COIN/VERB] init
+[15:13:22] [COIN/VERB] Fetched historical klines for CELOUSDT
+[15:13:24] [COIN/VERB] init
+[15:13:25] [COIN/VERB] Fetched historical klines for WRXEUR
+[15:13:27] [COIN/VERB] init
+[15:13:28] [COIN/VERB] Fetched historical klines for OMGUSDT
+[15:13:31] [COIN/VERB] init
+[15:13:31] [COIN/VERB] Fetched historical klines for FTTUSDT
+[15:13:34] [COIN/VERB] init
+[15:13:35] [COIN/VERB] Fetched historical klines for SUPERUSDT
+[15:13:37] [COIN/VERB] init
+[15:13:38] [COIN/VERB] Fetched historical klines for FETUSDT
+[15:13:40] [COIN/VERB] init
+[15:13:43] [COIN/VERB] init
+[15:13:47] [COIN/VERB] init
+[15:13:50] [COIN/VERB] init
+[15:13:53] [COIN/VERB] init
+[15:13:56] [COIN/VERB] init
+[15:13:59] [COIN/VERB] init
+[15:14:03] [COIN/VERB] init
+[15:14:06] [COIN/VERB] init
+[15:14:09] [COIN/VERB] init
+[15:14:12] [COIN/VERB] init
+[15:14:15] [COIN/VERB] init
+[15:14:19] [COIN/VERB] init
+[15:14:22] [COIN/VERB] init
+[15:14:25] [COIN/VERB] init
+[15:14:28] [COIN/VERB] init
+[15:14:31] [COIN/VERB] init
+[15:14:35] [COIN/VERB] init
+[15:14:38] [COIN/VERB] init
+[15:14:41] [COIN/VERB] init
+[15:14:44] [COIN/VERB] init
+[15:14:47] [COIN/VERB] init
+[15:14:51] [COIN/VERB] init
+[15:14:54] [COIN/VERB] init
+[15:14:57] [COIN/VERB] init
+[15:15:00] [COIN/VERB] init
+[15:15:03] [COIN/VERB] init
+[15:15:07] [COIN/VERB] init
+[15:15:10] [COIN/VERB] init
+[15:15:11] [COIN/VERB] Fetched historical klines for DCRUSDT
+[15:15:13] [COIN/VERB] init
+[15:15:14] [COIN/VERB] Fetched historical klines for LSKUSDT
+[15:15:16] [COIN/VERB] init
+[15:15:17] [COIN/VERB] Fetched historical klines for LINKUSDT
+[15:15:19] [COIN/VERB] init
+[15:15:20] [COIN/VERB] Fetched historical klines for MKRUSDT
+[15:15:23] [COIN/VERB] init
+[15:15:23] [COIN/VERB] Fetched historical klines for NKNUSDT
+[15:15:26] [COIN/VERB] init
+[15:15:27] [COIN/VERB] Fetched historical klines for DAIUSDT
+[15:15:29] [COIN/VERB] init
+[15:15:30] [COIN/VERB] Fetched historical klines for STORJUSDT
+[15:15:32] [COIN/VERB] init
+[15:15:33] [COIN/VERB] Fetched historical klines for BURGERUSDT
+[15:15:35] [COIN/VERB] init
+[15:15:36] [COIN/VERB] Fetched historical klines for PERLUSDT
+[15:15:39] [COIN/VERB] init
+[15:15:39] [COIN/VERB] Fetched historical klines for WINGUSDT
+[15:15:42] [COIN/VERB] init
+[15:15:43] [COIN/VERB] Fetched historical klines for STRATUSDT
+[15:15:45] [COIN/VERB] init
+[15:15:46] [COIN/VERB] Fetched historical klines for BLZUSDT
+[15:15:48] [COIN/VERB] init
+[15:15:49] [COIN/VERB] Fetched historical klines for OGNUSDT
+[15:15:51] [COIN/VERB] init
+[15:15:52] [COIN/VERB] Fetched historical klines for ANKRUSDT
+[15:15:55] [COIN/VERB] init
+[15:15:55] [COIN/VERB] Fetched historical klines for TKOUSDT
+[15:15:58] [COIN/VERB] init
+[15:15:59] [COIN/VERB] Fetched historical klines for BADGERUSDT
+[15:16:01] [COIN/VERB] init
+[15:16:02] [COIN/VERB] Fetched historical klines for COSUSDT
+[15:16:04] [COIN/VERB] init
+[15:16:05] [COIN/VERB] Fetched historical klines for REPUSDT
+[15:16:07] [COIN/VERB] init
+[15:16:08] [COIN/VERB] Fetched historical klines for DATAUSDT
+[15:16:11] [COIN/VERB] init
+[15:16:11] [COIN/VERB] Fetched historical klines for SKLUSDT
+[15:16:14] [COIN/VERB] init
+[15:16:14] [COIN/VERB] Fetched historical klines for GXSUSDT
+[15:16:17] [COIN/VERB] init
+[15:16:18] [COIN/VERB] Fetched historical klines for NMRUSDT
+[15:16:20] [COIN/VERB] init
+[15:16:21] [COIN/VERB] Fetched historical klines for RUNEEUR
+[15:16:23] [COIN/VERB] init
+[15:16:25] [COIN/VERB] Fetched historical klines for ROSEUSDT
+[15:16:27] [COIN/VERB] init
+[15:16:27] [COIN/VERB] Fetched historical klines for MDTUSDT
+[15:16:30] [COIN/VERB] init
+[15:16:31] [COIN/VERB] Fetched historical klines for BATUSDT
+[15:16:33] [COIN/VERB] init
+[15:16:34] [COIN/VERB] Fetched historical klines for OGUSDT
+[15:16:36] [COIN/VERB] init
+[15:16:37] [COIN/VERB] Fetched historical klines for REEFUSDT
+[15:16:39] [COIN/VERB] init
+[15:16:40] [COIN/VERB] Fetched historical klines for FIROUSDT
+[15:16:43] [COIN/VERB] init
+[15:16:43] [COIN/VERB] Fetched historical klines for KNCUSDT
+[15:16:46] [COIN/VERB] init
+[15:16:47] [COIN/VERB] Fetched historical klines for FUNUSDT
+[15:16:49] [COIN/VERB] init
+[15:16:50] [COIN/VERB] Fetched historical klines for BELUSDT
+[15:16:52] [COIN/VERB] init
+[15:16:53] [COIN/VERB] Fetched historical klines for SUSHIUSDT
+[15:16:55] [COIN/VERB] init
+[15:16:56] [COIN/VERB] Fetched historical klines for QTUMUSDT
+[15:16:59] [COIN/VERB] init
+[15:17:00] [COIN/VERB] Fetched historical klines for ALGOUSDT
+[15:17:02] [COIN/VERB] init
+[15:17:03] [COIN/VERB] Fetched historical klines for FIOUSDT
+[15:17:05] [COIN/VERB] init
+[15:17:06] [COIN/VERB] Fetched historical klines for ZRXUSDT
+[15:17:08] [COIN/VERB] init
+[15:17:09] [COIN/VERB] Fetched historical klines for DODOUSDT
+[15:17:11] [COIN/VERB] init
+[15:17:12] [COIN/VERB] Fetched historical klines for ICPUSDT
+[15:17:15] [COIN/VERB] init
+[15:17:16] [COIN/VERB] Fetched historical klines for ANTUSDT
+[15:17:18] [COIN/VERB] init
+[15:17:19] [COIN/VERB] Fetched historical klines for CHRUSDT
+[15:17:21] [COIN/VERB] init
+[15:17:22] [COIN/VERB] Fetched historical klines for FTMUSDT
+[15:17:24] [COIN/VERB] init
+[15:17:25] [COIN/VERB] Fetched historical klines for GTOUSDT
+[15:17:27] [COIN/VERB] init
+[15:17:28] [COIN/VERB] Fetched historical klines for FORTHUSDT
+[15:17:31] [COIN/VERB] init
+[15:17:32] [COIN/VERB] Fetched historical klines for COMPUSDT
+[15:17:34] [COIN/VERB] init
+[15:17:35] [COIN/VERB] Fetched historical klines for HNTUSDT
+[15:17:37] [COIN/VERB] init
+[15:17:38] [COIN/VERB] Fetched historical klines for ONEUSDT
+[15:17:40] [COIN/VERB] init
+[15:17:41] [COIN/VERB] Fetched historical klines for WANUSDT
+[15:17:43] [COIN/VERB] init
+[15:17:44] [COIN/VERB] Fetched historical klines for TRUUSDT
+[15:17:47] [COIN/VERB] init
+[15:17:48] [COIN/VERB] Fetched historical klines for RIFUSDT
+[15:17:50] [COIN/VERB] init
+[15:17:51] [COIN/VERB] Fetched historical klines for HCUSDT
+[15:17:53] [COIN/VERB] init
+[15:17:54] [COIN/VERB] Fetched historical klines for BCHABCUSDT
+[15:17:56] [COIN/VERB] init
+[15:17:57] [COIN/VERB] Fetched historical klines for MBLUSDT
+[15:18:00] [COIN/VERB] init
+[15:18:00] [COIN/VERB] Fetched historical klines for XLMUSDT
+[15:18:03] [COIN/VERB] init
+[15:18:04] [COIN/VERB] Fetched historical klines for ERDUSDT
+[15:18:06] [COIN/VERB] init
+[15:18:07] [COIN/VERB] Fetched historical klines for FILUSDT
+[15:18:09] [COIN/VERB] init
+[15:18:10] [COIN/VERB] Fetched historical klines for SANDUSDT
+[15:18:12] [COIN/VERB] init
+[15:18:13] [COIN/VERB] Fetched historical klines for MASKUSDT
+[15:18:16] [COIN/VERB] init
+[15:18:16] [COIN/VERB] Fetched historical klines for TWTUSDT
+[15:18:19] [COIN/VERB] init
+[15:18:20] [COIN/VERB] Fetched historical klines for CTKUSDT
+[15:18:22] [COIN/VERB] init
+[15:18:23] [COIN/VERB] Fetched historical klines for KSMUSDT
+[15:18:25] [COIN/VERB] init
+[15:18:26] [COIN/VERB] Fetched historical klines for ZENUSDT
+[15:18:28] [COIN/VERB] init
+[15:18:29] [COIN/VERB] Fetched historical klines for SFPUSDT
+[15:18:32] [COIN/VERB] init
+[15:18:32] [COIN/VERB] Fetched historical klines for PSGUSDT
+[15:18:35] [COIN/VERB] init
+[15:18:36] [COIN/VERB] Fetched historical klines for DEGOUSDT
+[15:18:38] [COIN/VERB] init
+[15:18:39] [COIN/VERB] Fetched historical klines for AXSUSDT
+[15:18:41] [COIN/VERB] init
+[15:18:42] [COIN/VERB] Fetched historical klines for 1INCHUSDT
+[15:18:44] [COIN/VERB] init
+[15:18:45] [COIN/VERB] Fetched historical klines for CKBUSDT
+[15:18:48] [COIN/VERB] init
+[15:18:48] [COIN/VERB] Fetched historical klines for BTTUSDT
+[15:18:51] [COIN/VERB] init
+[15:18:51] [COIN/VERB] Fetched historical klines for ATMUSDT
+[15:18:54] [COIN/VERB] init
+[15:18:55] [COIN/VERB] Fetched historical klines for IRISUSDT
+[15:18:57] [COIN/VERB] init
+[15:18:58] [COIN/VERB] Fetched historical klines for SNXUSDT
+[15:19:00] [COIN/VERB] init
+[15:19:01] [COIN/VERB] Fetched historical klines for AIONUSDT
+[15:19:04] [COIN/VERB] init
+[15:19:05] [COIN/VERB] Fetched historical klines for TLMUSDT
+[15:19:07] [COIN/VERB] init
+[15:19:07] [COIN/VERB] Fetched historical klines for VETUSDT
+[15:19:10] [COIN/VERB] init
+[15:19:11] [COIN/VERB] Fetched historical klines for CTSIUSDT
+[15:19:13] [COIN/VERB] init
+[15:19:14] [COIN/VERB] Fetched historical klines for BZRXUSDT
+[15:19:16] [COIN/VERB] init
+[15:19:17] [COIN/VERB] Fetched historical klines for CTXCUSDT
+[15:19:20] [COIN/VERB] init
+[15:19:20] [COIN/VERB] Fetched historical klines for WAVESUSDT
+[15:19:23] [COIN/VERB] init
+[15:19:23] [COIN/VERB] Fetched historical klines for XVGUSDT
+[15:19:26] [COIN/VERB] init
+[15:19:27] [COIN/VERB] Fetched historical klines for AKROUSDT
+[15:19:29] [COIN/VERB] init
+[15:19:30] [COIN/VERB] Fetched historical klines for ONTUSDT
+[15:19:32] [COIN/VERB] init
+[15:19:33] [COIN/VERB] Fetched historical klines for DUSKUSDT
+[15:19:36] [COIN/VERB] init
+[15:19:36] [COIN/VERB] Fetched historical klines for ALICEUSDT
+[15:19:39] [COIN/VERB] init
+[15:19:40] [COIN/VERB] Fetched historical klines for NULSUSDT
+[15:19:42] [COIN/VERB] init
+[15:19:43] [COIN/VERB] Fetched historical klines for MDXUSDT
+[15:19:45] [COIN/VERB] init
+[15:19:46] [COIN/VERB] Fetched historical klines for COTIUSDT
+[15:19:48] [COIN/VERB] init
+[15:19:49] [COIN/VERB] Fetched historical klines for ZILUSDT
+[15:19:52] [COIN/VERB] init
+[15:19:52] [COIN/VERB] Fetched historical klines for ORNUSDT
+[15:19:55] [COIN/VERB] init
+[15:19:56] [COIN/VERB] Fetched historical klines for ICXUSDT
+[15:19:58] [COIN/VERB] init
+[15:19:59] [COIN/VERB] Fetched historical klines for XMRUSDT
+[15:20:01] [COIN/VERB] init
+[15:20:02] [COIN/VERB] Fetched historical klines for AUTOUSDT
+[15:20:04] [COIN/VERB] init
+[15:20:06] [COIN/VERB] Fetched historical klines for STORMUSDT
+[15:20:08] [COIN/VERB] init
+[15:20:08] [COIN/VERB] Fetched historical klines for VTHOUSDT
+[15:20:11] [COIN/VERB] init
+[15:20:12] [COIN/VERB] Fetched historical klines for MITHUSDT
+[15:20:14] [COIN/VERB] init
+[15:20:15] [COIN/VERB] Fetched historical klines for IOSTUSDT
+[15:20:17] [COIN/VERB] init
+[15:20:18] [COIN/VERB] Fetched historical klines for BTCSTUSDT
+[15:20:20] [COIN/VERB] init
+[15:20:21] [COIN/VERB] Fetched historical klines for PHAUSDT
+[15:20:24] [COIN/VERB] init
+[15:20:24] [COIN/VERB] Fetched historical klines for BAKEUSDT
+[15:20:27] [COIN/VERB] init
+[15:20:57] [COIN/VERB] init
+[15:21:27] [COIN/VERB] init
+[15:21:44] [COIN/VERB] Fetched historical klines for HBARUSDT
+[15:21:44] [COIN/VERB] init
+[15:21:45] [COIN/VERB] Fetched historical klines for POLSUSDT
+[15:21:47] [COIN/VERB] init
+[15:21:48] [COIN/VERB] Fetched historical klines for TOMOUSDT
+[15:21:50] [COIN/VERB] init
+[15:21:52] [COIN/VERB] Fetched historical klines for NPXSUSDT
+[15:21:54] [COIN/VERB] init
+[15:21:55] [COIN/VERB] Fetched historical klines for USDSUSDT
+[15:21:57] [COIN/VERB] init
+[15:21:58] [COIN/VERB] Fetched historical klines for STXUSDT
+[15:22:00] [COIN/VERB] init
+[15:22:02] [COIN/VERB] Fetched historical klines for BARUSDT
+[15:22:03] [COIN/VERB] init
+[15:22:04] [COIN/VERB] Fetched historical klines for DIAUSDT
+[15:22:06] [COIN/VERB] init
+[15:22:07] [COIN/VERB] Fetched historical klines for RSRUSDT
+[15:22:10] [COIN/VERB] init
+[15:22:10] [COIN/VERB] Fetched historical klines for RAMPUSDT
+[15:22:13] [COIN/VERB] init
+[15:22:13] [COIN/VERB] Fetched historical klines for CRVUSDT
+[15:22:16] [COIN/VERB] init
+[15:22:17] [COIN/VERB] Fetched historical klines for VENUSDT
+[15:22:19] [COIN/VERB] init
+[15:22:20] [COIN/VERB] Fetched historical klines for DEXEUSDT
+[15:22:22] [COIN/VERB] init
+[15:22:23] [COIN/VERB] Fetched historical klines for TRBUSDT
+[15:22:26] [COIN/VERB] init
+[15:22:27] [COIN/VERB] Fetched historical klines for TROYUSDT
+[15:22:29] [COIN/VERB] init
+[15:22:29] [COIN/VERB] Fetched historical klines for QUICKUSDT
+[15:22:32] [COIN/VERB] init
+[15:22:33] [COIN/VERB] Fetched historical klines for ALPACAUSDT
+[15:22:35] [COIN/VERB] init
+[15:22:36] [COIN/VERB] Fetched historical klines for FARMUSDT
+[15:22:38] [COIN/VERB] init
+[15:22:39] [COIN/VERB] Fetched historical klines for MINAUSDT
+[15:22:42] [COIN/VERB] init
+[15:22:42] [COIN/VERB] Fetched historical klines for RAYUSDT
+[15:22:45] [COIN/VERB] init
+[15:22:46] [COIN/VERB] Fetched historical klines for RVNUSDT
+[15:22:48] [COIN/VERB] init
+[15:22:49] [COIN/VERB] Fetched historical klines for MBOXUSDT
+[15:22:51] [COIN/VERB] init
+[15:22:52] [COIN/VERB] Fetched historical klines for GHSTUSDT
+[15:22:54] [COIN/VERB] init
+[15:22:55] [COIN/VERB] Fetched historical klines for REQUSDT
+[15:22:58] [COIN/VERB] init
+[15:22:58] [COIN/VERB] Fetched historical klines for TRIBEUSDT
+[15:23:01] [COIN/VERB] init
+[15:23:02] [COIN/VERB] Fetched historical klines for FORUSDT
+[15:23:04] [COIN/VERB] init
+[15:23:05] [COIN/VERB] Fetched historical klines for WAXPUSDT
+[15:23:07] [COIN/VERB] init
+[15:23:08] [COIN/VERB] Fetched historical klines for SOLUSDT
+[15:23:10] [COIN/VERB] init
+[15:23:11] [COIN/VERB] Fetched historical klines for DOGEUSDT
+[15:23:14] [COIN/VERB] init
+[15:23:14] [COIN/VERB] Fetched historical klines for PNTUSDT
+[15:23:17] [COIN/VERB] init
+[15:23:17] [COIN/VERB] Fetched historical klines for BNTUSDT
+[15:23:20] [COIN/VERB] init
+[15:23:21] [COIN/VERB] Fetched historical klines for MTLUSDT
+[15:23:23] [COIN/VERB] init
+[15:23:24] [COIN/VERB] Fetched historical klines for LTCEUR
+[15:23:26] [COIN/VERB] init
+[15:23:27] [COIN/VERB] Fetched historical klines for ADAUSDT
+[15:23:30] [COIN/VERB] init
+[15:23:30] [COIN/VERB] Fetched historical klines for RENUSDT
+[15:23:33] [COIN/VERB] init
+[15:23:33] [COIN/VERB] Fetched historical klines for THETAUSDT
+[15:23:36] [COIN/VERB] init
+[15:23:37] [COIN/VERB] Fetched historical klines for LENDUSDT
+[15:23:39] [COIN/VERB] init
+[15:23:40] [COIN/VERB] Fetched historical klines for KLAYUSDT
+[15:23:42] [COIN/VERB] init
+[15:23:43] [COIN/VERB] Fetched historical klines for GNOUSDT
+[15:23:46] [COIN/VERB] init
+[15:23:46] [COIN/VERB] Fetched historical klines for DYDXUSDT
+[15:23:49] [COIN/VERB] init
+[15:23:50] [COIN/VERB] Fetched historical klines for POLYUSDT
+[15:23:52] [COIN/VERB] init
+[15:23:53] [COIN/VERB] Fetched historical klines for VIDTUSDT
+[15:23:55] [COIN/VERB] init
+[15:23:56] [COIN/VERB] Fetched historical klines for USDPUSDT
+[15:23:58] [COIN/VERB] init
+[15:23:59] [COIN/VERB] Fetched historical klines for ELFUSDT
+[15:24:02] [COIN/VERB] init
+[15:24:03] [COIN/VERB] Fetched historical klines for XECUSDT
+[15:24:05] [COIN/VERB] init
+[15:24:05] [COIN/VERB] Fetched historical klines for IDEXUSDT

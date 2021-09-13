@@ -41,6 +41,7 @@ class Coin:
         self.has_position = False
         self.allow_piramidding = False
 
+        self.active = True
         self.initialised = False
 
         self.wallet_counter = 0
@@ -60,6 +61,7 @@ class Coin:
     async def init(self):
         try:
             self.bot.log.verbose('COIN', f'init')
+            self.active = True
 
             # info = await self.bot.client.get_symbol_info(self.symbol_pair)
             # for f in info['filters']:

@@ -1,0 +1,24 @@
+[00:28:06] [COIN_MANAGER/VERB] socket message {'e': 'balanceUpdate', 'E': 1631492885954, 'a': 'ADA', 'd': '0.00263845', 'T': 1631492885953}
+[00:28:06] [COIN_MANAGER/VERB] socket message {'e': 'outboundAccountPosition', 'E': 1631492885954, 'u': 1631492885953, 'B': [{'a': 'ADA', 'f': '0.00263845', 'l': '0.00000000'}]}
+[00:43:25] [COIN_MANAGER/VERB] socket message {'e': 'balanceUpdate', 'E': 1631493805277, 'a': 'VET', 'd': '926.94384451', 'T': 1631493805277}
+[00:43:25] [COIN_MANAGER/VERB] socket message {'e': 'outboundAccountPosition', 'E': 1631493805277, 'u': 1631493805277, 'B': [{'a': 'VET', 'f': '10055.04224981', 'l': '0.00000000'}]}
+[01:39:58] [COIN_MANAGER/VERB] socket message {'e': 'balanceUpdate', 'E': 1631497198366, 'a': 'SHIB', 'd': '268.81', 'T': 1631497198366}
+[01:39:58] [COIN_MANAGER/VERB] socket message {'e': 'outboundAccountPosition', 'E': 1631497198366, 'u': 1631497198366, 'B': [{'a': 'SHIB', 'f': '2956.91', 'l': '0.00'}]}
+[02:52:27] [COIN_MANAGER/VERB] socket message {'e': 'balanceUpdate', 'E': 1631501546909, 'a': 'ADA', 'd': '-0.00263845', 'T': 1631501546908}
+[02:52:27] [COIN_MANAGER/VERB] socket message {'e': 'outboundAccountPosition', 'E': 1631501546909, 'u': 1631501546908, 'B': [{'a': 'ADA', 'f': '0.00000000', 'l': '0.00000000'}]}
+[02:52:27] [COIN_MANAGER/VERB] socket message {'e': 'balanceUpdate', 'E': 1631501547063, 'a': 'LDADA', 'd': '0.00263845', 'T': 1631501547063}
+[02:52:27] [COIN_MANAGER/VERB] socket message {'e': 'outboundAccountPosition', 'E': 1631501547063, 'u': 1631501547063, 'B': [{'a': 'LDADA', 'f': '0.09528975', 'l': '0.00000000'}]}
+[03:03:43] [COIN_MANAGER/VERB] socket message {'e': 'balanceUpdate', 'E': 1631502223044, 'a': 'ADA', 'd': '0.00000118', 'T': 1631502223042}
+[03:03:43] [COIN_MANAGER/VERB] socket message {'e': 'outboundAccountPosition', 'E': 1631502223044, 'u': 1631502223042, 'B': [{'a': 'ADA', 'f': '0.00000118', 'l': '0.00000000'}]}
+[03:12:44] [COIN_MANAGER/VERB] socket message {'e': 'balanceUpdate', 'E': 1631502764800, 'a': 'DODO', 'd': '0.00020391', 'T': 1631502764797}
+[03:12:44] [COIN_MANAGER/VERB] socket message {'e': 'outboundAccountPosition', 'E': 1631502764800, 'u': 1631502764797, 'B': [{'a': 'DODO', 'f': '0.00020391', 'l': '0.00000000'}]}
+[03:16:29] [COIN_MANAGER/VERB] socket message {'e': 'balanceUpdate', 'E': 1631502989335, 'a': 'BUSD', 'd': '0.00000036', 'T': 1631502989332}
+[03:16:29] [COIN_MANAGER/VERB] socket message {'e': 'outboundAccountPosition', 'E': 1631502989335, 'u': 1631502989332, 'B': [{'a': 'BUSD', 'f': '0.00000036', 'l': '0.00000000'}]}
+[03:19:31] [COIN_MANAGER/VERB] socket message {'e': 'balanceUpdate', 'E': 1631503171779, 'a': 'MANA', 'd': '0.00000023', 'T': 1631503171776}
+[03:19:31] [COIN_MANAGER/VERB] socket message {'e': 'outboundAccountPosition', 'E': 1631503171779, 'u': 1631503171776, 'B': [{'a': 'MANA', 'f': '0.00000023', 'l': '0.00000000'}]}
+[03:23:38] [COIN_MANAGER/VERB] socket message {'e': 'balanceUpdate', 'E': 1631503418517, 'a': 'DOGE', 'd': '0.00001267', 'T': 1631503418515}
+[03:23:38] [COIN_MANAGER/VERB] socket message {'e': 'outboundAccountPosition', 'E': 1631503418517, 'u': 1631503418515, 'B': [{'a': 'DOGE', 'f': '0.00001267', 'l': '102.00000000'}]}
+[03:30:38] [COIN_MANAGER/VERB] socket message {'e': 'balanceUpdate', 'E': 1631503838461, 'a': 'KMD', 'd': '0.00000008', 'T': 1631503838458}
+[03:30:38] [COIN_MANAGER/VERB] socket message {'e': 'outboundAccountPosition', 'E': 1631503838461, 'u': 1631503838458, 'B': [{'a': 'KMD', 'f': '0.00000008', 'l': '15.68000000'}]}
+[03:46:13] [COIN_MANAGER/VERB] socket message {'e': 'balanceUpdate', 'E': 1631504773155, 'a': 'ZIL', 'd': '0.00000053', 'T': 1631504773153}
+[03:46:13] [COIN_MANAGER/VERB] socket message {'e': 'outboundAccountPosition', 'E': 1631504773155, 'u': 1631504773153, 'B': [{'a': 'ZIL', 'f': '0.00000053', 'l': '0.00000000'}]}

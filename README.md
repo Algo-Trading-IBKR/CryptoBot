@@ -15,10 +15,6 @@
 # To Do
 
  - Extended logging on exceptions, lines, file, etc...
- - more user-defined config values (take profit %, etc.)
- - multiple accounts (one account per docker container) - done but no automatic generation of containers from database
-
-# only X86 or arm 64 bit
 
 ## startup script
 to fix startup.py script:
