@@ -23,7 +23,7 @@ class OrderManager():
             try:
                 old_order = self.bot.mongo.cryptobot.orders.find_one({"orderId": order_id})
                 if old_order:
-                    result.update({"discord_id": self.bot.user["discord_id"]})
+                    result.update({"user_id": coin.bot.user["_id"]})
                     result.update({"datetime": datetime.now()})
                     self.bot.mongo.cryptobot.orders.replace_one(old_order, result, upsert=True)
             except Exception as e:
@@ -52,7 +52,7 @@ class OrderManager():
             newClientOrderId="CryptoBot"+str(uuid.uuid4().hex)[:25] # max 36 characters
         )
 
-        order.update({"discord_id": coin.bot.user["discord_id"]})
+        order.update({"user_id": coin.bot.user["_id"]})
         order.update({"datetime": datetime.now()})
         coin.bot.mongo.cryptobot.orders.insert_one(order)
 

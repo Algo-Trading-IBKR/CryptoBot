@@ -152,7 +152,7 @@ class Coin:
                 order = await self.bot.client.get_order(symbol = msg[SYMBOL], orderId = order_id)
                 old_order = self.bot.mongo.cryptobot.orders.find_one({"orderId": order_id})
                 if old_order:
-                    order.update({"discord_id": self.bot.user["discord_id"]})
+                    order.update({"user_id": coin.bot.user["_id"]})
                     order.update({"datetime": datetime.now()})
                     # self.bot.log.info('COIN', f'order: {order}')
                     self.bot.mongo.cryptobot.orders.replace_one(old_order, order, upsert=True)
