@@ -130,7 +130,7 @@ class CryptoBot:
         Log.verbose('BOT', f'Starting perpetual user check')
         while self._running:
             try:
-                await asyncio.sleep(5)
+                await asyncio.sleep(60)
                 userObject = self._mongo.cryptobot.users.find_one({ "active": True, "_id": ObjectId(self._user["_id"]) })
                 if userObject["coins"] != self._user["coins"]:
                     deactivatedPairs = []
