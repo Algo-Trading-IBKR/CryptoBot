@@ -1,17 +1,17 @@
 version: "3.8"
 services:
   
-#   cryptobot-andreas_609aced8abde8f36ec86cb83:
-#     build: .
-#     environment:
-#         ACTIVE_CONFIG: ANDREAS_609aced8abde8f36ec86cb83
-#     env_file:
-#         - variables.env
-#     restart: always
-#     volumes:
-#         - ./logs:/app/logs
-#     networks:
-#         - shared
+  cryptobot-andreas_609aced8abde8f36ec86cb83:
+    build: .
+    environment:
+        ACTIVE_CONFIG: ANDREAS_609aced8abde8f36ec86cb83
+    env_file:
+        - variables.env
+    restart: always
+    volumes:
+        - ./logs:/app/logs
+    networks:
+        - shared
   cryptobot-joren_609acf42abde8f36ec86cbc4:
     build: .
     environment:
@@ -23,50 +23,61 @@ services:
         - ./logs:/app/logs
     networks:
         - shared
-#   cryptobot-liam_60a669d776dfe5001188bc2e:
-#     build: .
-#     environment:
-#         ACTIVE_CONFIG: LIAM_60a669d776dfe5001188bc2e
-#     env_file:
-#         - variables.env
-#     restart: always
-#     volumes:
-#         - ./logs:/app/logs
-#     networks:
-#         - shared
-#   cryptobot-jonas_609ad9ffabde8f36ec86d1ac:
-#     build: .
-#     environment:
-#         ACTIVE_CONFIG: JONAS_609ad9ffabde8f36ec86d1ac
-#     env_file:
-#         - variables.env
-#     restart: always
-#     volumes:
-#         - ./logs:/app/logs
-#     networks:
-#         - shared
-#   cryptobot-yente_609ada24abde8f36ec86d1c5:
-#     build: .
-#     environment:
-#         ACTIVE_CONFIG: YENTE_609ada24abde8f36ec86d1c5
-#     env_file:
-#         - variables.env
-#     restart: always
-#     volumes:
-#         - ./logs:/app/logs
-#     networks:
-#         - shared
-#   cryptobot-kilian_6127c4943623fe7460a974b6:
-#     build: .
-#     environment:
-#         ACTIVE_CONFIG: KILIAN_6127c4943623fe7460a974b6
-#     env_file:
-#         - variables.env
-#     restart: always
-#     volumes:
-#         - ./logs:/app/logs
-#     networks:
-#         - shared
+  cryptobot-liam_60a669d776dfe5001188bc2e:
+    build: .
+    environment:
+        ACTIVE_CONFIG: LIAM_60a669d776dfe5001188bc2e
+    env_file:
+        - variables.env
+    restart: always
+    volumes:
+        - ./logs:/app/logs
+    networks:
+        - shared
+  cryptobot-jonas_609ad9ffabde8f36ec86d1ac:
+    build: .
+    environment:
+        ACTIVE_CONFIG: JONAS_609ad9ffabde8f36ec86d1ac
+    env_file:
+        - variables.env
+    restart: always
+    volumes:
+        - ./logs:/app/logs
+    networks:
+        - shared
+  cryptobot-yente_609ada24abde8f36ec86d1c5:
+    build: .
+    environment:
+        ACTIVE_CONFIG: YENTE_609ada24abde8f36ec86d1c5
+    env_file:
+        - variables.env
+    restart: always
+    volumes:
+        - ./logs:/app/logs
+    networks:
+        - shared
+  cryptobot-kilian_6127c4943623fe7460a974b6:
+    build: .
+    environment:
+        ACTIVE_CONFIG: KILIAN_6127c4943623fe7460a974b6
+    env_file:
+        - variables.env
+    restart: always
+    volumes:
+        - ./logs:/app/logs
+    networks:
+        - shared
+  cryptobot-renza_614082e9bb751fada5a12a0d:
+    build: .
+    environment:
+        ACTIVE_CONFIG: RENZA_614082e9bb751fada5a12a0d
+    env_file:
+        - variables.env
+    restart: always
+    volumes:
+        - ./logs:/app/logs
+    networks:
+        - shared
 
 networks:
             shared:
