@@ -23,7 +23,7 @@ def main():
         - {env_file}
     restart: always
     volumes:
-        - ./logs:/app/logs
+        - ./logs:/app/bot/logs
     networks:
         - shared"""
 
