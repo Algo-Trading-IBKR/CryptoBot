@@ -172,16 +172,17 @@ class Coin:
                 self.has_position = True
 
                 asset = await self.bot.client.get_asset_balance(self.symbol)
-                self.amount = util.get_amount(float(asset['free']), self.precision)
+                if float(asset['free']) > 0:
+                    self.amount = util.get_amount(float(asset['free']), self.precision)
 
-                take_profit_order = await self.bot.order_manager.send_order(
-                    coin = self,
-                    side = SIDE_SELL,
-                    quantity = Decimal(self.amount),
-                    price = self.take_profit,
-                    order_type = ORDER_TYPE_LIMIT,
-                    time_in_force = TIME_IN_FORCE_GTC
-                )
+                    take_profit_order = await self.bot.order_manager.send_order(
+                        coin = self,
+                        side = SIDE_SELL,
+                        quantity = Decimal(self.amount),
+                        price = self.take_profit,
+                        order_type = ORDER_TYPE_LIMIT,
+                        time_in_force = TIME_IN_FORCE_GTC
+                    )
 
                 if not self.allow_piramidding:
                     self.piramidding_price = self.average_price * self.bot.user["strategy"]["piramidding_percentage"]
@@ -363,16 +364,17 @@ class Coin:
                     self.has_position = True
 
                     asset = await self.bot.client.get_asset_balance(self.symbol)
-                    self.amount = util.get_amount(float(asset['free']), self.precision)
+                    if float(asset['free']) > 0:
+                        self.amount = util.get_amount(float(asset['free']), self.precision)
 
-                    take_profit_order = await self.bot.order_manager.send_order(
-                        coin = self,
-                        side = SIDE_SELL,
-                        quantity = Decimal(self.amount),
-                        price = self.take_profit,
-                        order_type = ORDER_TYPE_LIMIT,
-                        time_in_force = TIME_IN_FORCE_GTC
-                    )
+                        take_profit_order = await self.bot.order_manager.send_order(
+                            coin = self,
+                            side = SIDE_SELL,
+                            quantity = Decimal(self.amount),
+                            price = self.take_profit,
+                            order_type = ORDER_TYPE_LIMIT,
+                            time_in_force = TIME_IN_FORCE_GTC
+                        )
 
                     self.piramidding_price = self.average_price * self.bot.user["strategy"]["piramidding_percentage"]
 
