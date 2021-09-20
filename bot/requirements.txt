@@ -1,5 +1,6 @@
 asyncio
 pymongo
 python-binance~=1.0.12
+requests
 numpy
 TA-Lib
