@@ -50,7 +50,7 @@ class CoinManager:
             tasks.append(asyncio.create_task(self.start_multiplex()))
             tasks.append(asyncio.create_task(self.start_user_socket()))
 
-            sleep_timer = 7 # this is safe using the rest api + caching
+            sleep_timer = 10 # this is safe using the rest api + caching
 
             for symbol in self.bot.exchange_info["data"]["symbols"]:
                 coin = self.get_coin(symbol["symbol"], False)
@@ -84,6 +84,9 @@ class CoinManager:
                     res = await mps.recv()
                     if not res:
                         continue
+                    if not res['data']:
+                        continue
+                    
                     await self.process_message(res)
             except (CancelledError,Exception) as e:
                 if isinstance(e, CancelledError):
